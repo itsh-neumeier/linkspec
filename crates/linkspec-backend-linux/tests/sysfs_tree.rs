@@ -2,6 +2,8 @@
 //! kernel layout), runs the real collector and interpreter, and checks the
 //! snapshot. The dump is also written as a fixture (`fixtures/linux/`).
 
+#![cfg_attr(not(unix), allow(unused_imports, dead_code))]
+
 use std::fs;
 use std::path::Path;
 
