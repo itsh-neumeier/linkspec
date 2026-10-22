@@ -12,7 +12,7 @@ Status: angenommen (Phase 8)
 
 - Release-Builds laufen im Workflow `.github/workflows/release.yml` bei Tags
   `v*`. Zu jedem Artefakt gibt es eine SHA256-Prüfsumme (`SHA256SUMS`).
-- Reproduzierbarkeit: fester Toolchain-Stand (`rust-toolchain.toml`),
+- Reproduzierbarkeit: fester Toolchain-Stand (1.99.1 in den Workflows),
   `--locked`, `SOURCE_DATE_EPOCH` aus dem Commit, `strip = true`.
 - Signierung (Developer ID, Notarisierung, Authenticode) ist vorbereitet, läuft
   aber nur, wenn die Secrets gesetzt sind. Ohne Secrets entstehen unsignierte

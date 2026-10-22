@@ -12,7 +12,11 @@ pub fn set_autostart(on: bool) -> Result<(), String> {
     #[cfg(windows)]
     {
         use windows_sys::Win32::System::Registry::*;
-        let wide = |s: &str| s.encode_utf16().chain(std::iter::once(0)).collect::<Vec<u16>>();
+        let wide = |s: &str| {
+            s.encode_utf16()
+                .chain(std::iter::once(0))
+                .collect::<Vec<u16>>()
+        };
         let key = wide(r"Software\Microsoft\Windows\CurrentVersion\Run");
         let name = wide("LinkSpec");
         let mut hkey: HKEY = std::ptr::null_mut();
@@ -23,7 +27,14 @@ pub fn set_autostart(on: bool) -> Result<(), String> {
             }
             let rc = if on {
                 let val = wide(&format!("\"{}\" --tray", exe.display()));
-                RegSetValueExW(hkey, name.as_ptr(), 0, REG_SZ, val.as_ptr().cast(), (val.len() * 2) as u32)
+                RegSetValueExW(
+                    hkey,
+                    name.as_ptr(),
+                    0,
+                    REG_SZ,
+                    val.as_ptr().cast(),
+                    (val.len() * 2) as u32,
+                )
             } else {
                 RegDeleteValueW(hkey, name.as_ptr())
             };
@@ -92,7 +103,11 @@ pub fn write_widget_snapshot(v: &serde_json::Value) {
     #[cfg(target_os = "macos")]
     if let Some(h) = std::env::var_os("HOME") {
         // App Group container shared with the widget extension (ADR 0005).
-        paths.push(PathBuf::from(h).join("Library/Group Containers/group.io.github.itsh-neumeier.linkspec/widget.json"));
+        paths.push(
+            PathBuf::from(h).join(
+                "Library/Group Containers/group.io.github.itsh-neumeier.linkspec/widget.json",
+            ),
+        );
     }
     let text = serde_json::to_string(v).unwrap_or_default();
     for p in paths {
@@ -144,8 +159,11 @@ pub fn set_dock_icon(visible: bool) {
 /// extension, so LinkSpec falls back to the window there.
 pub fn tray_probably_available() -> bool {
     if cfg!(all(unix, not(target_os = "macos"))) {
-        let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default().to_ascii_lowercase();
-        let has_display = std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_some();
+        let desktop = std::env::var("XDG_CURRENT_DESKTOP")
+            .unwrap_or_default()
+            .to_ascii_lowercase();
+        let has_display =
+            std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_some();
         has_display && !(desktop.contains("gnome") && !desktop.contains("unity"))
     } else {
         true
@@ -197,7 +215,10 @@ pub fn check_update(force: bool) -> Result<Option<(String, String)>, String> {
         let _ = std::fs::write(s, now.to_string());
     }
     let body: serde_json::Value = ureq::get(RELEASES_API)
-        .header("User-Agent", &format!("LinkSpec/{}", linkspec_engine::APP_VERSION))
+        .header(
+            "User-Agent",
+            &format!("LinkSpec/{}", linkspec_engine::APP_VERSION),
+        )
         .header("Accept", "application/vnd.github+json")
         .call()
         .map_err(|e| e.to_string())?

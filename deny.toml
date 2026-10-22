@@ -6,6 +6,9 @@ all-features = false
 [advisories]
 version = 2
 yanked = "deny"
+# Unmaintained notices for transitive crates (Slint, zbus) are reported as
+# warnings in the log; only direct dependencies fail the build.
+unmaintained = "workspace"
 
 [licenses]
 version = 2
@@ -23,6 +26,7 @@ allow = [
     "Unicode-3.0",
     "Unicode-DFS-2016",
     "CC0-1.0",
+    "Unlicense",
     "MPL-2.0",
     "OFL-1.1",
     "Ubuntu-font-1.0",

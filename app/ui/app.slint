@@ -120,7 +120,7 @@ component StatusIcon inherits Text {
     accessible-role: none;
 }
 
-export component PortCard inherits Rectangle {
+component PortCard inherits Rectangle {
     in property <Port> port;
     in property <bool> compact;
     border-radius: 8px;
@@ -130,9 +130,12 @@ export component PortCard inherits Rectangle {
     VerticalLayout {
         padding: 10px;
         spacing: 4px;
+        alignment: start;
         HorizontalLayout {
             spacing: 8px;
+            alignment: start;
             StatusIcon {
+                vertical-alignment: center;
                 status: port.status;
                 font-size: 1.2rem;
             }
@@ -236,6 +239,7 @@ component PortList inherits ScrollView {
     VerticalLayout {
         padding: 8px;
         spacing: 8px;
+        alignment: start;
         if State.ports.length == 0: Text {
             text: State.no-ports-text;
             wrap: word-wrap;
@@ -341,6 +345,7 @@ component MonitorView inherits VerticalBox {
 
 component NegotiationView inherits ScrollView {
     VerticalLayout {
+        alignment: start;
         padding: 8px;
         spacing: 2px;
         HorizontalLayout {
@@ -364,6 +369,7 @@ component NegotiationView inherits ScrollView {
 
 component DisplayView inherits ScrollView {
     VerticalLayout {
+        alignment: start;
         padding: 8px;
         spacing: 8px;
         if State.displays.length == 0: Text {
@@ -386,6 +392,7 @@ component DisplayView inherits ScrollView {
 
 component CableView inherits ScrollView {
     VerticalLayout {
+        alignment: start;
         padding: 8px;
         spacing: 8px;
         Text {
@@ -432,6 +439,7 @@ component CableView inherits ScrollView {
 
 component SettingsView inherits ScrollView {
     VerticalLayout {
+        alignment: start;
         padding: 12px;
         spacing: 8px;
         CheckBox { text: Tr.t("set-hide-empty", Tr.rev); checked <=> State.hide-empty; toggled => { State.setting-changed("hide_empty"); } }
@@ -467,6 +475,7 @@ component SettingsView inherits ScrollView {
 
 component AboutView inherits ScrollView {
     VerticalLayout {
+        alignment: start;
         padding: 12px;
         spacing: 8px;
         Text { text: "LinkSpec " + State.version; font-size: 1.4rem; font-weight: 700; color: Palette.foreground; }

@@ -238,7 +238,9 @@ impl Win32Hubs {
         };
         let words: Vec<u16> = buf
             .get(8..)?
-            .as_chunks::<2>().0.iter()
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|c| u16::from_le_bytes([c[0], c[1]]))
             .collect();
         let s = from_wide(&words);

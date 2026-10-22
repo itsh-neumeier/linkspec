@@ -52,7 +52,7 @@ fn load_icon(bytes: &[u8], template: bool) -> Option<Icon> {
     let mut rgba = buf[..info.buffer_size()].to_vec();
     if template {
         // macOS template image: black with alpha.
-        for px in rgba.chunks_exact_mut(4) {
+        for px in rgba.as_chunks_mut::<4>().0 {
             px[0] = 0;
             px[1] = 0;
             px[2] = 0;
@@ -190,10 +190,12 @@ fn main() {
         Ok(s) => s,
         Err(e) => {
             let msg = match &e {
-                linkspec_platform::SourceError::Unsupported(linkspec_platform::Unsupported::IntelMac) => {
-                    i18n.borrow().t("cli-unsupported-intel-mac", &[])
-                }
-                other => i18n.borrow().t("cli-unsupported", &[("reason", other.to_string().into())]),
+                linkspec_platform::SourceError::Unsupported(
+                    linkspec_platform::Unsupported::IntelMac,
+                ) => i18n.borrow().t("cli-unsupported-intel-mac", &[]),
+                other => i18n
+                    .borrow()
+                    .t("cli-unsupported", &[("reason", other.to_string().into())]),
             };
             for s in [main_window.global::<State>(), flyout.global::<State>()] {
                 s.set_no_ports_text(msg.clone().into());
@@ -236,9 +238,12 @@ fn main() {
     let notifications_on = Rc::new(RefCell::new(settings.notifications));
     let hide_empty = Rc::new(RefCell::new(settings.hide_empty_ports));
     let (status_tx, status_rx) = std::sync::mpsc::channel::<Status>();
-    let notif_flag = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(settings.notifications));
+    let notif_flag =
+        std::sync::Arc::new(std::sync::atomic::AtomicBool::new(settings.notifications));
     let notif_flag_w = notif_flag.clone();
-    let hide_flag = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(settings.hide_empty_ports));
+    let hide_flag = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(
+        settings.hide_empty_ports,
+    ));
     let hide_flag_w = hide_flag.clone();
     let cmd = worker::spawn(engine, move |u| {
         let mw = mw_weak.clone();
@@ -280,7 +285,11 @@ fn main() {
         });
         let c = cmd.clone();
         s.on_dismiss(move |id, kind| {
-            let k = if kind == "overcurrent" { FaultKind::Overcurrent } else { FaultKind::DropReconnect };
+            let k = if kind == "overcurrent" {
+                FaultKind::Overcurrent
+            } else {
+                FaultKind::DropReconnect
+            };
             let _ = c.send(Command::Dismiss(id.to_string(), k));
         });
         let c = cmd.clone();
@@ -335,16 +344,24 @@ fn main() {
         let mw = main_window.as_weak();
         let last_tab = Rc::new(RefCell::new(-1));
         let timer = slint::Timer::default();
-        timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(300), move || {
-            if let Some(mw) = mw.upgrade() {
-                let visible = mw.window().is_visible();
-                let tab = if visible { mw.global::<State>().get_current_tab() } else { -1 };
-                if *last_tab.borrow() != tab {
-                    *last_tab.borrow_mut() = tab;
-                    let _ = c.send(Command::Monitor(tab == TAB_POWER));
+        timer.start(
+            slint::TimerMode::Repeated,
+            std::time::Duration::from_millis(300),
+            move || {
+                if let Some(mw) = mw.upgrade() {
+                    let visible = mw.window().is_visible();
+                    let tab = if visible {
+                        mw.global::<State>().get_current_tab()
+                    } else {
+                        -1
+                    };
+                    if *last_tab.borrow() != tab {
+                        *last_tab.borrow_mut() = tab;
+                        let _ = c.send(Command::Monitor(tab == TAB_POWER));
+                    }
                 }
-            }
-        });
+            },
+        );
         std::mem::forget(timer);
     }
 
@@ -359,12 +376,22 @@ fn main() {
         let notif_flag = notif_flag.clone();
         let hide_flag = hide_flag.clone();
         Rc::new(move |source_is_main: bool, key: SharedString| {
-            let (Some(mw), Some(fo)) = (mw.upgrade(), fo.upgrade()) else { return };
-            let src = if source_is_main { mw.global::<State>() } else { fo.global::<State>() };
+            let (Some(mw), Some(fo)) = (mw.upgrade(), fo.upgrade()) else {
+                return;
+            };
+            let src = if source_is_main {
+                mw.global::<State>()
+            } else {
+                fo.global::<State>()
+            };
             let mut s = st.borrow_mut();
             s.hide_empty_ports = src.get_hide_empty();
             s.start_at_login = src.get_start_at_login();
-            s.mode = if src.get_window_mode() { UiMode::Window } else { UiMode::Tray };
+            s.mode = if src.get_window_mode() {
+                UiMode::Window
+            } else {
+                UiMode::Tray
+            };
             s.technical_details = src.get_tech_details();
             s.usb_probe = src.get_usb_probe();
             s.notifications = src.get_notifications();
@@ -418,9 +445,13 @@ fn main() {
     };
     {
         let f = on_setting.clone();
-        main_window.global::<State>().on_setting_changed(move |k| f(true, k));
+        main_window
+            .global::<State>()
+            .on_setting_changed(move |k| f(true, k));
         let f = on_setting.clone();
-        flyout.global::<State>().on_setting_changed(move |k| f(false, k));
+        flyout
+            .global::<State>()
+            .on_setting_changed(move |k| f(false, k));
     }
 
     // Update check (at most every 6 hours, never for package manager installs).
@@ -460,7 +491,9 @@ fn main() {
     };
     {
         let u = update_text.clone();
-        main_window.global::<State>().on_check_updates(move || u(true));
+        main_window
+            .global::<State>()
+            .on_check_updates(move || u(true));
         let u = update_text.clone();
         flyout.global::<State>().on_check_updates(move || u(true));
     }
@@ -486,13 +519,24 @@ fn main() {
         slint::Timer::single_shot(std::time::Duration::from_millis(0), move || {
             let menus = Menus::new(&i18n.borrow(), keep_open);
             let template = cfg!(target_os = "macos");
-            let icon = load_icon(include_bytes!("../../packaging/icons/tray-32.png"), template);
+            let icon = load_icon(
+                include_bytes!("../../packaging/icons/tray-32.png"),
+                template,
+            );
             let mut b = TrayIconBuilder::new()
                 .with_menu(Box::new(menus.menu()))
                 .with_tooltip("LinkSpec")
                 .with_menu_on_left_click(false);
             if let Some(i) = icon {
-                b = b.with_icon(i).with_icon_as_template(template);
+                // macOS draws the menu bar icon as a template image.
+                #[cfg(target_os = "macos")]
+                {
+                    b = b.with_icon_templated(i);
+                }
+                #[cfg(not(target_os = "macos"))]
+                {
+                    b = b.with_icon(i);
+                }
             }
             match b.build() {
                 Ok(t) => *tray.borrow_mut() = Some((t, menus)),
@@ -516,85 +560,98 @@ fn main() {
         let update_text = update_text.clone();
         let last_lang = RefCell::new(lang);
         let timer = slint::Timer::default();
-        timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(100), move || {
-            // Tray icon tooltip follows the worst status.
-            while let Ok(worst) = status_rx.try_recv() {
-                if let Some((t, _)) = tray.borrow().as_ref() {
-                    let tip = match worst {
-                        Status::Ok => "LinkSpec ✓",
-                        Status::Warn => "LinkSpec !",
-                        Status::Fault => "LinkSpec ✗",
-                    };
-                    let _ = t.set_tooltip(Some(tip));
-                }
-            }
-            let cur = st.borrow().lang();
-            if *last_lang.borrow() != cur {
-                *last_lang.borrow_mut() = cur;
-                if let Some((_, m)) = tray.borrow().as_ref() {
-                    m.relabel(&i18n.borrow());
-                }
-            }
-            while let Ok(ev) = TrayIconEvent::receiver().try_recv() {
-                if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, rect, .. } = ev
-                    && let Some(fo) = fo.upgrade()
-                {
-                    if fo.window().is_visible() {
-                        let _ = fo.hide();
-                    } else {
-                        let size = fo.window().size();
-                        let x = rect.position.x as i32 + (rect.size.width as i32 / 2) - (size.width as i32 / 2);
-                        let y = if cfg!(windows) {
-                            rect.position.y as i32 - size.height as i32 - 8
-                        } else {
-                            rect.position.y as i32 + rect.size.height as i32 + 4
+        timer.start(
+            slint::TimerMode::Repeated,
+            std::time::Duration::from_millis(100),
+            move || {
+                // Tray icon tooltip follows the worst status.
+                while let Ok(worst) = status_rx.try_recv() {
+                    if let Some((t, _)) = tray.borrow().as_ref() {
+                        let tip = match worst {
+                            Status::Ok => "LinkSpec ✓",
+                            Status::Warn => "LinkSpec !",
+                            Status::Fault => "LinkSpec ✗",
                         };
-                        fo.window().set_position(slint::PhysicalPosition::new(x.max(0), y.max(0)));
-                        let _ = fo.show();
+                        let _ = t.set_tooltip(Some(tip));
                     }
                 }
-            }
-            while let Ok(ev) = MenuEvent::receiver().try_recv() {
-                let tb = tray.borrow();
-                let Some((_, menus)) = tb.as_ref() else { continue };
-                let id = ev.id;
-                if id == *menus.refresh.id() {
-                    let _ = c.send(Command::Refresh);
-                } else if id == *menus.keep_open.id() {
-                    let on = menus.keep_open.is_checked();
-                    if let Some(fo) = fo.upgrade() {
-                        fo.global::<State>().set_keep_open(on);
+                let cur = st.borrow().lang();
+                if *last_lang.borrow() != cur {
+                    *last_lang.borrow_mut() = cur;
+                    if let Some((_, m)) = tray.borrow().as_ref() {
+                        m.relabel(&i18n.borrow());
                     }
-                    if let Some(mw) = mw.upgrade() {
-                        mw.global::<State>().set_keep_open(on);
-                    }
-                    st.borrow_mut().keep_window_open = on;
-                    let _ = st.borrow().save();
-                } else if id == *menus.settings.id() {
-                    open_tab(5);
-                } else if id == *menus.power.id() {
-                    open_tab(1);
-                } else if id == *menus.negotiation.id() {
-                    open_tab(2);
-                } else if id == *menus.display.id() {
-                    open_tab(3);
-                } else if id == *menus.cables.id() {
-                    open_tab(4);
-                } else if id == *menus.about.id() {
-                    open_tab(6);
-                } else if id == *menus.updates.id() {
-                    open_tab(6);
-                    update_text(true);
-                } else if id == *menus.report.id() {
-                    let _ = c.send(Command::Report);
-                } else if id == *menus.github.id() {
-                    platform::open_url("https://github.com/itsh-neumeier/linkspec");
-                } else if id == *menus.quit.id() {
-                    let _ = c.send(Command::Quit);
-                    let _ = slint::quit_event_loop();
                 }
-            }
-        });
+                while let Ok(ev) = TrayIconEvent::receiver().try_recv() {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        rect,
+                        ..
+                    } = ev
+                        && let Some(fo) = fo.upgrade()
+                    {
+                        if fo.window().is_visible() {
+                            let _ = fo.hide();
+                        } else {
+                            let size = fo.window().size();
+                            let x = rect.position.x as i32 + (rect.size.width as i32 / 2)
+                                - (size.width as i32 / 2);
+                            let y = if cfg!(windows) {
+                                rect.position.y as i32 - size.height as i32 - 8
+                            } else {
+                                rect.position.y as i32 + rect.size.height as i32 + 4
+                            };
+                            fo.window()
+                                .set_position(slint::PhysicalPosition::new(x.max(0), y.max(0)));
+                            let _ = fo.show();
+                        }
+                    }
+                }
+                while let Ok(ev) = MenuEvent::receiver().try_recv() {
+                    let tb = tray.borrow();
+                    let Some((_, menus)) = tb.as_ref() else {
+                        continue;
+                    };
+                    let id = ev.id;
+                    if id == *menus.refresh.id() {
+                        let _ = c.send(Command::Refresh);
+                    } else if id == *menus.keep_open.id() {
+                        let on = menus.keep_open.is_checked();
+                        if let Some(fo) = fo.upgrade() {
+                            fo.global::<State>().set_keep_open(on);
+                        }
+                        if let Some(mw) = mw.upgrade() {
+                            mw.global::<State>().set_keep_open(on);
+                        }
+                        st.borrow_mut().keep_window_open = on;
+                        let _ = st.borrow().save();
+                    } else if id == *menus.settings.id() {
+                        open_tab(5);
+                    } else if id == *menus.power.id() {
+                        open_tab(1);
+                    } else if id == *menus.negotiation.id() {
+                        open_tab(2);
+                    } else if id == *menus.display.id() {
+                        open_tab(3);
+                    } else if id == *menus.cables.id() {
+                        open_tab(4);
+                    } else if id == *menus.about.id() {
+                        open_tab(6);
+                    } else if id == *menus.updates.id() {
+                        open_tab(6);
+                        update_text(true);
+                    } else if id == *menus.report.id() {
+                        let _ = c.send(Command::Report);
+                    } else if id == *menus.github.id() {
+                        platform::open_url("https://github.com/itsh-neumeier/linkspec");
+                    } else if id == *menus.quit.id() {
+                        let _ = c.send(Command::Quit);
+                        let _ = slint::quit_event_loop();
+                    }
+                }
+            },
+        );
         std::mem::forget(timer);
     }
 
@@ -620,13 +677,40 @@ fn main() {
         });
     }
 
+    // Start tab (screenshots, deep links): --tab N.
+    if let Some(tab) = args
+        .iter()
+        .position(|a| a == "--tab")
+        .and_then(|i| args.get(i + 1))
+        .and_then(|t| t.parse::<i32>().ok())
+    {
+        main_window.global::<State>().set_current_tab(tab);
+    }
+
+    // Performance measurement: quit after the first rendered frame.
+    if std::env::var_os("LINKSPEC_PERF_EXIT_AFTER_FIRST_FRAME").is_some() {
+        let _ = main_window.show();
+        let _ = main_window.window().set_rendering_notifier(|state, _| {
+            if matches!(state, slint::RenderingState::AfterRendering) {
+                let _ = slint::quit_event_loop();
+            }
+        });
+    }
+
     let _ = slint::run_event_loop_until_quit();
     let _ = cmd.send(Command::Quit);
 }
 
 fn apply(s: &State<'_>, u: &Update, hide_empty: bool) {
     match u {
-        Update::Data { ports, negotiation, displays, cables, service, .. } => {
+        Update::Data {
+            ports,
+            negotiation,
+            displays,
+            cables,
+            service,
+            ..
+        } => {
             let ports: Vec<Port> = ports
                 .iter()
                 .filter(|p| !(hide_empty && p.empty))
@@ -643,23 +727,43 @@ fn apply(s: &State<'_>, u: &Update, hide_empty: bool) {
                     verdicts: ModelRc::new(VecModel::from(
                         p.verdicts
                             .iter()
-                            .map(|v| Verdict { domain: v.domain.clone().into(), text: v.text.clone().into(), warn: v.warn })
+                            .map(|v| Verdict {
+                                domain: v.domain.clone().into(),
+                                text: v.text.clone().into(),
+                                warn: v.warn,
+                            })
                             .collect::<Vec<_>>(),
                     )),
                     banners: ModelRc::new(VecModel::from(
                         p.banners
                             .iter()
-                            .map(|(k, t)| Banner { kind: k.clone().into(), text: t.clone().into() })
+                            .map(|(k, t)| Banner {
+                                kind: k.clone().into(),
+                                text: t.clone().into(),
+                            })
                             .collect::<Vec<_>>(),
                     )),
                     devices: ModelRc::new(VecModel::from(
                         p.devices
                             .iter()
-                            .map(|(t, d)| Device { text: t.clone().into(), depth: *d })
+                            .map(|(t, d)| Device {
+                                text: t.clone().into(),
+                                depth: *d,
+                            })
                             .collect::<Vec<_>>(),
                     )),
-                    notes: ModelRc::new(VecModel::from(p.notes.iter().map(|n| SharedString::from(n.as_str())).collect::<Vec<_>>())),
-                    details: ModelRc::new(VecModel::from(p.details.iter().map(|n| SharedString::from(n.as_str())).collect::<Vec<_>>())),
+                    notes: ModelRc::new(VecModel::from(
+                        p.notes
+                            .iter()
+                            .map(|n| SharedString::from(n.as_str()))
+                            .collect::<Vec<_>>(),
+                    )),
+                    details: ModelRc::new(VecModel::from(
+                        p.details
+                            .iter()
+                            .map(|n| SharedString::from(n.as_str()))
+                            .collect::<Vec<_>>(),
+                    )),
                 })
                 .collect();
             s.set_ports(ModelRc::new(VecModel::from(ports)));

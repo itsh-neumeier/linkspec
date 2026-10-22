@@ -78,7 +78,9 @@ pub fn parse_connector_props(b: &[u8]) -> Option<ConnectorProps> {
     let actual = u32le(b, 4)? as usize;
     let name = if actual > 16 && b.len() >= actual {
         let words: Vec<u16> = b[16..actual]
-            .as_chunks::<2>().0.iter()
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|c| u16::from_le_bytes([c[0], c[1]]))
             .take_while(|w| *w != 0)
             .collect();
@@ -268,7 +270,9 @@ pub fn parse_string_descriptor(b: &[u8]) -> Option<String> {
     }
     let len = usize::from(b[0]).min(b.len());
     let words: Vec<u16> = b[2..len]
-        .as_chunks::<2>().0.iter()
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|c| u16::from_le_bytes([c[0], c[1]]))
         .collect();
     let s = String::from_utf16_lossy(&words).trim().to_string();

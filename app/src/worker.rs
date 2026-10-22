@@ -93,10 +93,7 @@ pub enum Update {
     Report(Option<String>),
 }
 
-pub fn spawn(
-    mut engine: Engine,
-    send: impl Fn(Update) + Send + 'static,
-) -> Sender<Command> {
+pub fn spawn(mut engine: Engine, send: impl Fn(Update) + Send + 'static) -> Sender<Command> {
     let (tx, rx) = channel();
     std::thread::Builder::new()
         .name("linkspec-worker".into())
@@ -151,9 +148,9 @@ fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
                 refresh(engine, &send, &mut last, false);
             }
             Ok(Command::Report) => {
-                let url = last.as_ref().and_then(|r| {
-                    report_url(&r.snapshot, &r.diagnosis)
-                });
+                let url = last
+                    .as_ref()
+                    .and_then(|r| report_url(&r.snapshot, &r.diagnosis));
                 send(Update::Report(url));
             }
             Err(RecvTimeoutError::Timeout) => {}
@@ -169,7 +166,7 @@ fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
         }
         if monitor && last_sample.elapsed() >= Duration::from_millis(1000) {
             last_sample = Instant::now();
-            let i18n = engine.i18n();
+            let none_text = engine.i18n().t("cli-monitor-none", &[]);
             match engine.source_mut().power_sample() {
                 Ok(Some(s)) => {
                     if let Some(w) = s.watts {
@@ -178,7 +175,10 @@ fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
                             samples.remove(0);
                         }
                     }
-                    let f = |v: Option<f64>| v.map(|x| i18n_num(engine.i18n(), x)).unwrap_or_else(|| "–".into());
+                    let f = |v: Option<f64>| {
+                        v.map(|x| i18n_num(engine.i18n(), x))
+                            .unwrap_or_else(|| "–".into())
+                    };
                     send(Update::Monitor {
                         now: format!("{} W · {} V · {} A", f(s.watts), f(s.volts), f(s.amps)),
                         path: graph_path(&samples),
@@ -188,7 +188,7 @@ fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
                 _ => send(Update::Monitor {
                     now: "–".into(),
                     path: String::new(),
-                    note: i18n.t("cli-monitor-none", &[]),
+                    note: none_text,
                 }),
             }
         }
@@ -210,7 +210,10 @@ pub fn graph_path(samples: &[f64]) -> String {
     for (i, w) in samples.iter().enumerate() {
         let x = i as f64 * step;
         let y = 100.0 - (w.abs() / max * 100.0);
-        s.push_str(&format!("{}{x:.1} {y:.1} ", if i == 0 { "M " } else { "L " }));
+        s.push_str(&format!(
+            "{}{x:.1} {y:.1} ",
+            if i == 0 { "M " } else { "L " }
+        ));
     }
     s
 }
@@ -246,12 +249,22 @@ fn report_url(snap: &linkspec_core::Snapshot, diag: &linkspec_core::Diagnosis) -
         .join(" ");
     Some(format!(
         "https://github.com/itsh-neumeier/linkspec/issues/new?template=kabel-melden.yml&labels=kabel&title={}&vid={}&pid={}&fingerprint={}&vdos={}&platform={}",
-        enc(&format!("Kabel: VID {} PID {}", c.vid.clone().unwrap_or_default(), c.pid.clone().unwrap_or_default())),
+        enc(&format!(
+            "Kabel: VID {} PID {}",
+            c.vid.clone().unwrap_or_default(),
+            c.pid.clone().unwrap_or_default()
+        )),
         enc(&c.vid.clone().unwrap_or_default()),
         enc(&c.pid.clone().unwrap_or_default()),
         linkspec_core::cable_fingerprint(identity),
         enc(&vdos),
-        enc(&format!("{} {} ({}), LinkSpec {}", diag.host.os, diag.host.os_version.clone().unwrap_or_default(), diag.host.arch, diag.host.app_version)),
+        enc(&format!(
+            "{} {} ({}), LinkSpec {}",
+            diag.host.os,
+            diag.host.os_version.clone().unwrap_or_default(),
+            diag.host.arch,
+            diag.host.app_version
+        )),
     ))
 }
 
@@ -331,7 +344,11 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
                 Status::Fault => 2,
             },
             empty: p.headline.as_str() == "empty",
-            cable: p.cable.as_ref().map(|c| c.summary.clone()).unwrap_or_default(),
+            cable: p
+                .cable
+                .as_ref()
+                .map(|c| c.summary.clone())
+                .unwrap_or_default(),
             power: p
                 .power
                 .as_ref()
@@ -344,7 +361,12 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
                 .map(|v| VerdictData {
                     domain: dom(v.domain),
                     text: v.summary.clone(),
-                    warn: matches!(v.limiter, linkspec_core::Limiter::Cable | linkspec_core::Limiter::Charger | linkspec_core::Limiter::Port),
+                    warn: matches!(
+                        v.limiter,
+                        linkspec_core::Limiter::Cable
+                            | linkspec_core::Limiter::Charger
+                            | linkspec_core::Limiter::Port
+                    ),
                 })
                 .collect(),
             banners: p
@@ -363,7 +385,13 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
                         (Some(v), None) => v.clone(),
                         _ => "USB".into(),
                     };
-                    (format!("{name} ({})", i18n.t("speed-gbps", &[("gbps", d.usb_gbps.into())])), i32::from(d.depth))
+                    (
+                        format!(
+                            "{name} ({})",
+                            i18n.t("speed-gbps", &[("gbps", d.usb_gbps.into())])
+                        ),
+                        i32::from(d.depth),
+                    )
                 })
                 .collect(),
             notes: p
@@ -397,8 +425,16 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
             displays.push(DisplayData {
                 port_label: p.label.clone(),
                 name: d.name.clone().unwrap_or_default(),
-                current: d.current.as_ref().map(mode).unwrap_or_else(|| i18n.t("unavailable-field", &[])),
-                max: d.max.as_ref().map(mode).unwrap_or_else(|| i18n.t("unavailable-field", &[])),
+                current: d
+                    .current
+                    .as_ref()
+                    .map(mode)
+                    .unwrap_or_else(|| i18n.t("unavailable-field", &[])),
+                max: d
+                    .max
+                    .as_ref()
+                    .map(mode)
+                    .unwrap_or_else(|| i18n.t("unavailable-field", &[])),
                 link: d
                     .link_gbps
                     .map(|g| i18n.t("speed-gbps", &[("gbps", g.into())]))
