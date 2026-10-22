@@ -516,6 +516,7 @@ fn main() {
         let tray = tray.clone();
         let i18n = i18n.clone();
         let keep_open = settings.keep_window_open;
+        let mw_fallback = main_window.as_weak();
         slint::Timer::single_shot(std::time::Duration::from_millis(0), move || {
             let menus = Menus::new(&i18n.borrow(), keep_open);
             let template = cfg!(target_os = "macos");
@@ -540,7 +541,15 @@ fn main() {
             }
             match b.build() {
                 Ok(t) => *tray.borrow_mut() = Some((t, menus)),
-                Err(e) => tracing::warn!("tray: {e}"),
+                Err(e) => {
+                    // No tray host (for example GNOME without extension):
+                    // fall back to the window.
+                    tracing::warn!("tray: {e}");
+                    platform::set_dock_icon(true);
+                    if let Some(mw) = mw_fallback.upgrade() {
+                        let _ = mw.show();
+                    }
+                }
             }
         });
         platform::set_dock_icon(false);
@@ -675,6 +684,11 @@ fn main() {
             }
             slint::CloseRequestResponse::HideWindow
         });
+    }
+
+    // Show the flyout directly (screenshots, accessibility tests).
+    if args.iter().any(|a| a == "--show-flyout") {
+        let _ = flyout.show();
     }
 
     // Start tab (screenshots, deep links): --tab N.
