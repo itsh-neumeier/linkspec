@@ -6,13 +6,19 @@
 use std::ffi::{CString, c_void};
 use std::sync::mpsc::{Receiver, Sender, channel};
 
-use core_foundation_sys::runloop::{CFRunLoopAddSource, CFRunLoopGetCurrent, CFRunLoopRunInMode, kCFRunLoopDefaultMode};
+use core_foundation_sys::runloop::{
+    CFRunLoopAddSource, CFRunLoopGetCurrent, CFRunLoopRunInMode, kCFRunLoopDefaultMode,
+};
 use io_kit_sys::keys::{kIOFirstMatchNotification, kIOTerminatedNotification};
 use io_kit_sys::types::io_iterator_t;
 use io_kit_sys::*;
 use linkspec_platform::{ChangeEvent, SourceError};
 
-const CLASSES: &[&str] = &["IOUSBHostDevice", "IOThunderboltSwitch", "AppleSmartBattery"];
+const CLASSES: &[&str] = &[
+    "IOUSBHostDevice",
+    "IOThunderboltSwitch",
+    "AppleSmartBattery",
+];
 
 struct Ctx {
     tx: Sender<ChangeEvent>,
@@ -61,7 +67,9 @@ fn run(tx: Sender<ChangeEvent>) {
         );
         for class in CLASSES {
             for kind in [kIOFirstMatchNotification, kIOTerminatedNotification] {
-                let Ok(c) = CString::new(*class) else { continue };
+                let Ok(c) = CString::new(*class) else {
+                    continue;
+                };
                 let matching = IOServiceMatching(c.as_ptr());
                 if matching.is_null() {
                     continue;

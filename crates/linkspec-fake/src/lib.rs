@@ -14,6 +14,8 @@
 #![forbid(unsafe_code)]
 
 use std::path::Path;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{Receiver, channel};
 use std::time::Duration;
 
@@ -26,7 +28,7 @@ use linkspec_platform::{
 
 pub struct FakeSource {
     steps: Vec<Snapshot>,
-    pos: usize,
+    pos: Arc<AtomicUsize>,
     active_queries: u64,
     tick: Option<Duration>,
     samples: u64,
@@ -36,7 +38,7 @@ impl FakeSource {
     pub fn new(steps: Vec<Snapshot>) -> Self {
         Self {
             steps,
-            pos: 0,
+            pos: Arc::new(AtomicUsize::new(0)),
             active_queries: 0,
             tick: None,
             samples: 0,
@@ -77,8 +79,9 @@ impl FakeSource {
 
     /// Move to the next snapshot of a sequence (stays on the last one).
     pub fn advance(&mut self) {
-        if self.pos + 1 < self.steps.len() {
-            self.pos += 1;
+        let p = self.pos.load(Ordering::SeqCst);
+        if p + 1 < self.steps.len() {
+            self.pos.store(p + 1, Ordering::SeqCst);
         }
     }
 
@@ -95,7 +98,7 @@ impl PortSource for FakeSource {
     }
 
     fn snapshot(&mut self, opts: ReadOptions) -> Result<Snapshot, SourceError> {
-        let mut s = self.steps[self.pos].clone();
+        let mut s = self.steps[self.pos.load(Ordering::SeqCst)].clone();
         s.usb_probe = opts.usb_probe;
         if opts.usb_probe {
             self.active_queries += s
@@ -113,9 +116,11 @@ impl PortSource for FakeSource {
         let (tx, rx) = channel();
         if let Some(tick) = self.tick {
             let n = self.steps.len();
+            let pos = Arc::clone(&self.pos);
             std::thread::spawn(move || {
-                for _ in 1..n {
+                for i in 1..n {
                     std::thread::sleep(tick);
+                    pos.store(i, Ordering::SeqCst);
                     if tx.send(ChangeEvent::Changed).is_err() {
                         return;
                     }
@@ -141,12 +146,10 @@ impl PortSource for FakeSource {
     fn power_sample(&mut self) -> Result<Option<PowerSample>, SourceError> {
         // Replays the measured power of the first port with power data.
         self.samples += 1;
-        let s = &self.steps[self.pos];
+        let s = &self.steps[self.pos.load(Ordering::SeqCst)];
         for p in &s.ports {
             if let linkspec_core::observation::PowerObservation::Available(pd) = &p.power {
-                let w = pd
-                    .measured_w
-                    .or(pd.contract.as_ref().map(|c| c.power_w));
+                let w = pd.measured_w.or(pd.contract.as_ref().map(|c| c.power_w));
                 if w.is_some() {
                     return Ok(Some(PowerSample {
                         t: self.samples as f64,

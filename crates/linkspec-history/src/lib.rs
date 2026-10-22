@@ -303,8 +303,7 @@ impl History {
         })? {
             out.push(r?);
         }
-        let mut st =
-            conn.prepare("SELECT at, kind, port_id FROM events WHERE fingerprint = ?1")?;
+        let mut st = conn.prepare("SELECT at, kind, port_id FROM events WHERE fingerprint = ?1")?;
         for r in st.query_map([fingerprint], |r| {
             Ok(TimelineEntry {
                 at: r.get(0)?,
@@ -413,11 +412,16 @@ mod tests {
     fn recognizes_cable_after_replug() {
         let h = History::open_in_memory().unwrap();
         let s = sighting("00112233aabbccdd");
-        h.observe_port("port-1", Some(&s), "2026-10-20T10:00:00Z").unwrap();
-        h.observe_port("port-1", Some(&s), "2026-10-20T10:00:05Z").unwrap();
-        h.rename("00112233aabbccdd", Some("Schreibtisch-Kabel")).unwrap();
-        h.observe_port("port-1", None, "2026-10-20T11:00:00Z").unwrap();
-        h.observe_port("port-2", Some(&s), "2026-10-21T09:00:00Z").unwrap();
+        h.observe_port("port-1", Some(&s), "2026-10-20T10:00:00Z")
+            .unwrap();
+        h.observe_port("port-1", Some(&s), "2026-10-20T10:00:05Z")
+            .unwrap();
+        h.rename("00112233aabbccdd", Some("Schreibtisch-Kabel"))
+            .unwrap();
+        h.observe_port("port-1", None, "2026-10-20T11:00:00Z")
+            .unwrap();
+        h.observe_port("port-2", Some(&s), "2026-10-21T09:00:00Z")
+            .unwrap();
         let rec = h.get("00112233aabbccdd").unwrap().unwrap();
         assert_eq!(rec.uses, 2);
         assert_eq!(rec.name.as_deref(), Some("Schreibtisch-Kabel"));
@@ -455,7 +459,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("sub/history.db");
         let h = History::open(&p).unwrap();
-        h.observe_port("p", Some(&sighting("bbbbbbbbbbbbbbbb")), "t").unwrap();
+        h.observe_port("p", Some(&sighting("bbbbbbbbbbbbbbbb")), "t")
+            .unwrap();
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;

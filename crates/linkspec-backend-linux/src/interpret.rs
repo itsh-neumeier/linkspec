@@ -28,7 +28,13 @@ impl<'a> D<'a> {
     fn children(&self, prefix: &str) -> BTreeSet<&'a str> {
         let p = format!("{prefix}/");
         let mut out = BTreeSet::new();
-        for k in self.0.files.keys().chain(self.0.links.keys()).chain(self.0.denied.iter()) {
+        for k in self
+            .0
+            .files
+            .keys()
+            .chain(self.0.links.keys())
+            .chain(self.0.denied.iter())
+        {
             if let Some(rest) = k.strip_prefix(&p)
                 && let Some(first) = rest.split('/').next()
             {
@@ -400,9 +406,16 @@ fn router_rate(d: &D<'_>, base: &str, dir: &str) -> Option<f64> {
     Some(speed * lanes)
 }
 
-fn fabric(d: &D<'_>, tb: &TbIndex, port: &str) -> Option<(FabricLinkObservation, Option<FabricGen>)> {
+fn fabric(
+    d: &D<'_>,
+    tb: &TbIndex,
+    port: &str,
+) -> Option<(FabricLinkObservation, Option<FabricGen>)> {
     let (host, adapter) = tb.by_port.get(port)?;
-    let host_gen = fabric_gen(d.num(&format!("bus/thunderbolt/devices/{host}/generation")), None);
+    let host_gen = fabric_gen(
+        d.num(&format!("bus/thunderbolt/devices/{host}/generation")),
+        None,
+    );
     let domain = host.trim_end_matches("-0");
     // Routers in this domain whose first hop is `adapter`.
     let mut switches = Vec::new();
@@ -472,18 +485,23 @@ fn port(
     let base = format!("class/typec/{name}");
     let partner_base = format!("{base}-partner");
     let cable_base = format!("{base}-cable");
-    let id = d
-        .0
-        .links
-        .get(&format!("{base}/firmware_node"))
-        .map(|f| {
-            let clean: String = f
-                .chars()
-                .map(|c| if c.is_ascii_alphanumeric() { c.to_ascii_lowercase() } else { '-' })
-                .collect();
-            format!("linux-{clean}")
-        })
-        .unwrap_or_else(|| format!("linux-typec-{name}"));
+    let id =
+        d.0.links
+            .get(&format!("{base}/firmware_node"))
+            .map(|f| {
+                let clean: String = f
+                    .chars()
+                    .map(|c| {
+                        if c.is_ascii_alphanumeric() {
+                            c.to_ascii_lowercase()
+                        } else {
+                            '-'
+                        }
+                    })
+                    .collect();
+                format!("linux-{clean}")
+            })
+            .unwrap_or_else(|| format!("linux-typec-{name}"));
     let mut p = PortObservation::new(id, num + 1);
 
     // Location (_PLD via physical_location, kernel 5.19+).
@@ -504,7 +522,10 @@ fn port(
     // Capabilities.
     let fab = fabric(d, tb, name);
     let host_router_gen = tb.by_port.get(name).and_then(|(h, _)| {
-        fabric_gen(d.num(&format!("bus/thunderbolt/devices/{h}/generation")), None)
+        fabric_gen(
+            d.num(&format!("bus/thunderbolt/devices/{h}/generation")),
+            None,
+        )
     });
     p.kind = match host_router_gen {
         Some(FabricGen::Tb3) => PortKind::Thunderbolt,
@@ -544,9 +565,16 @@ fn port(
         });
     }
 
-    for k in ["data_role", "power_role", "power_operation_mode", "usb_power_delivery_revision", "port_type"] {
+    for k in [
+        "data_role",
+        "power_role",
+        "power_operation_mode",
+        "usb_power_delivery_revision",
+        "port_type",
+    ] {
         if let Some(v) = d.f(&format!("{base}/{k}")) {
-            p.raw.insert(k.to_string(), serde_json::Value::String(v.to_string()));
+            p.raw
+                .insert(k.to_string(), serde_json::Value::String(v.to_string()));
         }
     }
 
@@ -586,7 +614,13 @@ fn port(
     let role = d
         .f(&format!("{base}/power_role"))
         .and_then(selected)
-        .map(|r| if r == "sink" { PowerRole::Sink } else { PowerRole::Source });
+        .map(|r| {
+            if r == "sink" {
+                PowerRole::Sink
+            } else {
+                PowerRole::Source
+            }
+        });
     let partner_pd = d.link_base(&format!("{partner_base}/usb_power_delivery"));
     let mut pd = PowerData {
         role,
@@ -649,16 +683,22 @@ fn port(
             }
         }
     }
-    p.link.usb_devices.sort_by(|a, b| b.speed_mbps.total_cmp(&a.speed_mbps));
+    p.link
+        .usb_devices
+        .sort_by(|a, b| b.speed_mbps.total_cmp(&a.speed_mbps));
     if (usb.any_usb && usb.port_speeds.contains_key(name)) || !p.link.usb_devices.is_empty() {
         p.link.source = Some(Source::Sysfs);
     } else {
         p.mark_unavailable("link.usb", Reason::FirmwareNotReported);
     }
     if let Some((f, _)) = fab {
-        let tbt = f.generation.is_some_and(|g| g == FabricGen::Tb3)
-            || altmode_active(d, name, "8087");
-        transports.push(if tbt { Transport::Thunderbolt } else { Transport::Usb4 });
+        let tbt =
+            f.generation.is_some_and(|g| g == FabricGen::Tb3) || altmode_active(d, name, "8087");
+        transports.push(if tbt {
+            Transport::Thunderbolt
+        } else {
+            Transport::Usb4
+        });
         p.link.fabric = Some(f);
     } else if altmode_active(d, name, "8087") {
         transports.push(Transport::Thunderbolt);
@@ -757,12 +797,19 @@ fn battery(d: &D<'_>) -> Option<BatteryObservation> {
             continue;
         }
         let status = d.f(&format!("{base}/status"));
-        let power = d.num(&format!("{base}/power_now")).map(|p| p / 1e6).or_else(|| {
-            let a = d.num(&format!("{base}/current_now"))?;
-            let v = d.num(&format!("{base}/voltage_now"))?;
-            Some(a * v / 1e12)
-        });
-        let sign = if status == Some("Discharging") { -1.0 } else { 1.0 };
+        let power = d
+            .num(&format!("{base}/power_now"))
+            .map(|p| p / 1e6)
+            .or_else(|| {
+                let a = d.num(&format!("{base}/current_now"))?;
+                let v = d.num(&format!("{base}/voltage_now"))?;
+                Some(a * v / 1e12)
+            });
+        let sign = if status == Some("Discharging") {
+            -1.0
+        } else {
+            1.0
+        };
         return Some(BatteryObservation {
             percent: d.num(&format!("{base}/capacity")),
             charging: status.map(|s| s == "Charging"),

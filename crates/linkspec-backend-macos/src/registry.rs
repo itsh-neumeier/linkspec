@@ -136,7 +136,8 @@ impl<'a> Reg<'a> {
 }
 
 fn num(props: &Map<String, Value>, keys: &[&str]) -> Option<f64> {
-    keys.iter().find_map(|k| props.get(*k).and_then(Value::as_f64))
+    keys.iter()
+        .find_map(|k| props.get(*k).and_then(Value::as_f64))
 }
 
 fn boolean(props: &Map<String, Value>, keys: &[&str]) -> Option<bool> {
@@ -148,14 +149,19 @@ fn boolean(props: &Map<String, Value>, keys: &[&str]) -> Option<bool> {
 }
 
 fn string<'a>(props: &'a Map<String, Value>, keys: &[&str]) -> Option<&'a str> {
-    keys.iter().find_map(|k| props.get(*k).and_then(Value::as_str))
+    keys.iter()
+        .find_map(|k| props.get(*k).and_then(Value::as_str))
 }
 
 fn strings(props: &Map<String, Value>, key: &str) -> Vec<String> {
     props
         .get(key)
         .and_then(Value::as_array)
-        .map(|a| a.iter().filter_map(|v| v.as_str().map(str::to_string)).collect())
+        .map(|a| {
+            a.iter()
+                .filter_map(|v| v.as_str().map(str::to_string))
+                .collect()
+        })
         .unwrap_or_default()
 }
 
@@ -163,7 +169,10 @@ fn strings(props: &Map<String, Value>, key: &str) -> Vec<String> {
 fn vdos(v: &Value) -> Option<Vec<u32>> {
     match v {
         Value::Array(a) => {
-            let out: Vec<u32> = a.iter().filter_map(|x| x.as_u64().map(|n| n as u32)).collect();
+            let out: Vec<u32> = a
+                .iter()
+                .filter_map(|x| x.as_u64().map(|n| n as u32))
+                .collect();
             (out.len() == a.len() && !out.is_empty()).then_some(out)
         }
         Value::String(s) if s.len() % 8 == 0 && s.chars().all(|c| c.is_ascii_hexdigit()) => {
@@ -474,7 +483,12 @@ fn port(
             ..Default::default()
         });
     }
-    for k in ["TransportsSupported", "TransportsActive", "PortType", "ConnectionActive"] {
+    for k in [
+        "TransportsSupported",
+        "TransportsActive",
+        "PortType",
+        "ConnectionActive",
+    ] {
         if let Some(v) = e.props.get(k) {
             p.raw.insert(k.to_string(), v.clone());
         }
@@ -610,7 +624,8 @@ fn adapter_power(props: &Map<String, Value>) -> PowerObservation {
         });
     }
     if let Some(tel) = props.get("PowerTelemetryData").and_then(Value::as_object) {
-        pd.measured_w = num(tel, &["SystemPowerIn"]).map(|mw| (mw / 1000.0 * 100.0).round() / 100.0);
+        pd.measured_w =
+            num(tel, &["SystemPowerIn"]).map(|mw| (mw / 1000.0 * 100.0).round() / 100.0);
         pd.measured_v = num(tel, &["SystemVoltageIn"]).map(|mv| mv / 1000.0);
         pd.measured_a = num(tel, &["SystemCurrentIn"]).map(|ma| ma / 1000.0);
     }
@@ -619,7 +634,10 @@ fn adapter_power(props: &Map<String, Value>) -> PowerObservation {
 
 /// Power sample for the monitor (H-M5).
 pub fn power_sample(dump: &RegistryDump) -> Option<(f64, Option<f64>, Option<f64>)> {
-    let b = dump.entries.iter().find(|e| e.class == "AppleSmartBattery")?;
+    let b = dump
+        .entries
+        .iter()
+        .find(|e| e.class == "AppleSmartBattery")?;
     let tel = b.props.get("PowerTelemetryData")?.as_object()?;
     let w = num(tel, &["SystemPowerIn"])? / 1000.0;
     Some((

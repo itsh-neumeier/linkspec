@@ -173,3 +173,14 @@ cli-limiter-unknown = unclear
 cli-fault-banner = Fault
 cli-history = History
 cli-history-seen = used { $uses }×, since { $since }, { $faults } faults
+
+## Dashboard and negotiation
+
+tui-tab-overview = Overview
+tui-tab-negotiation = Negotiation
+tui-tab-power = Power
+tui-help = Tab: switch view · ↑↓: scroll · r: refresh · q: quit
+neg-port = Port
+neg-cable = Cable
+neg-device = Device / charger
+neg-negotiated = Negotiated

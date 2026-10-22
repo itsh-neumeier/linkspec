@@ -60,10 +60,8 @@ pub fn norm(path: &str) -> String {
 pub fn collect_hubs(api: &mut dyn HubApi, usb_probe: bool) -> (Vec<HubDump>, u64) {
     let mut paths = api.hubs();
     // Deterministic keys: sort by location path, then by interface path.
-    let mut with_loc: Vec<(Option<String>, String)> = paths
-        .drain(..)
-        .map(|p| (api.hub_location(&p), p))
-        .collect();
+    let mut with_loc: Vec<(Option<String>, String)> =
+        paths.drain(..).map(|p| (api.hub_location(&p), p)).collect();
     with_loc.sort();
     let keys: BTreeMap<String, String> = with_loc
         .iter()

@@ -107,7 +107,12 @@ fn interfaces(guid: &GUID) -> Vec<(String, u32)> {
     // SAFETY: SetupAPI enumeration with correctly sized structures; the
     // device info list is destroyed at the end.
     unsafe {
-        let set = SetupDiGetClassDevsW(guid, std::ptr::null(), std::ptr::null_mut(), DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+        let set = SetupDiGetClassDevsW(
+            guid,
+            std::ptr::null(),
+            std::ptr::null_mut(),
+            DIGCF_PRESENT | DIGCF_DEVICEINTERFACE,
+        );
         if set == INVALID_HANDLE_VALUE as HDEVINFO {
             return out;
         }
@@ -120,7 +125,14 @@ fn interfaces(guid: &GUID) -> Vec<(String, u32)> {
             }
             i += 1;
             let mut needed = 0u32;
-            SetupDiGetDeviceInterfaceDetailW(set, &did, std::ptr::null_mut(), 0, &mut needed, std::ptr::null_mut());
+            SetupDiGetDeviceInterfaceDetailW(
+                set,
+                &did,
+                std::ptr::null_mut(),
+                0,
+                &mut needed,
+                std::ptr::null_mut(),
+            );
             if needed == 0 {
                 continue;
             }
@@ -129,7 +141,15 @@ fn interfaces(guid: &GUID) -> Vec<(String, u32)> {
             (*detail).cbSize = std::mem::size_of::<SP_DEVICE_INTERFACE_DETAIL_DATA_W>() as u32;
             let mut dev: SP_DEVINFO_DATA = std::mem::zeroed();
             dev.cbSize = std::mem::size_of::<SP_DEVINFO_DATA>() as u32;
-            if SetupDiGetDeviceInterfaceDetailW(set, &did, detail, needed, std::ptr::null_mut(), &mut dev) == 0 {
+            if SetupDiGetDeviceInterfaceDetailW(
+                set,
+                &did,
+                detail,
+                needed,
+                std::ptr::null_mut(),
+                &mut dev,
+            ) == 0
+            {
                 continue;
             }
             let path_ptr = std::ptr::addr_of!((*detail).DevicePath) as *const u16;
@@ -153,7 +173,9 @@ fn devnode_string(devinst: u32, key: &DEVPROPKEY) -> Option<String> {
             return None;
         }
         let mut buf = vec![0u16; (size as usize).div_ceil(2)];
-        if CM_Get_DevNode_PropertyW(devinst, key, &mut ty, buf.as_mut_ptr().cast(), &mut size, 0) != CR_SUCCESS {
+        if CM_Get_DevNode_PropertyW(devinst, key, &mut ty, buf.as_mut_ptr().cast(), &mut size, 0)
+            != CR_SUCCESS
+        {
             return None;
         }
         let s = from_wide(&buf);
@@ -253,17 +275,32 @@ impl HubApi for Win32Hubs {
                 let first = ioctl(h, IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES, &input, 16)?;
                 let actual = u32::from_le_bytes(first.get(4..8)?.try_into().ok()?) as usize;
                 if actual > 16 {
-                    ioctl(h, IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES, &vec_with_port(port, actual), actual)
+                    ioctl(
+                        h,
+                        IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES,
+                        &vec_with_port(port, actual),
+                        actual,
+                    )
                 } else {
                     Some(first)
                 }
             }
-            Req::ConnInfoEx => ioctl(h, IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX, &input, 35 + 32 * 7),
+            Req::ConnInfoEx => ioctl(
+                h,
+                IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX,
+                &input,
+                35 + 32 * 7,
+            ),
             Req::ConnInfoV2 => {
                 input[4..8].copy_from_slice(&16u32.to_le_bytes());
                 // Caller understands USB 1.1, 2.0 and 3.x.
                 input[8..12].copy_from_slice(&0b111u32.to_le_bytes());
-                ioctl(h, IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX_V2, &input, 16)
+                ioctl(
+                    h,
+                    IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX_V2,
+                    &input,
+                    16,
+                )
             }
             Req::SspInfo => {
                 input[4..8].copy_from_slice(&24u32.to_le_bytes());
@@ -283,14 +320,17 @@ impl HubApi for Win32Hubs {
     }
 
     fn device_text(&mut self, hub: &str, port: u32) -> (Option<String>, Option<String>) {
-        let Some(driver) = self.name_ioctl(hub, IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME, port) else {
+        let Some(driver) = self.name_ioctl(hub, IOCTL_USB_GET_NODE_CONNECTION_DRIVERKEY_NAME, port)
+        else {
             return (None, None);
         };
         let Some(hub_dev) = self.devinst.get(&norm(hub)).copied() else {
             return (None, None);
         };
         for child in children(hub_dev) {
-            if devnode_string(child, &DEVPKEY_Device_Driver).is_some_and(|d| d.eq_ignore_ascii_case(&driver)) {
+            if devnode_string(child, &DEVPKEY_Device_Driver)
+                .is_some_and(|d| d.eq_ignore_ascii_case(&driver))
+            {
                 return (
                     devnode_string(child, &DEVPKEY_Device_BusReportedDeviceDesc)
                         .or_else(|| devnode_string(child, &DEVPKEY_Device_DeviceDesc)),
@@ -336,7 +376,10 @@ pub fn batteries() -> Vec<BatteryDump> {
         };
         let wait = 0u32.to_le_bytes();
         let Some(tag) = ioctl(&h, IOCTL_BATTERY_QUERY_TAG, &wait, 4)
-            .and_then(|b| b.get(0..4).map(|s| u32::from_le_bytes(s.try_into().unwrap())))
+            .and_then(|b| {
+                b.get(0..4)
+                    .map(|s| u32::from_le_bytes(s.try_into().unwrap()))
+            })
             .filter(|t| *t != 0)
         else {
             continue;
@@ -344,15 +387,20 @@ pub fn batteries() -> Vec<BatteryDump> {
         // BATTERY_QUERY_INFORMATION { tag, level = BatteryInformation (0), AtRate }.
         let mut q = vec![0u8; 12];
         q[0..4].copy_from_slice(&tag.to_le_bytes());
-        let full = ioctl(&h, IOCTL_BATTERY_QUERY_INFORMATION, &q, 32)
-            .and_then(|b| b.get(16..20).map(|s| u32::from_le_bytes(s.try_into().unwrap())));
+        let full = ioctl(&h, IOCTL_BATTERY_QUERY_INFORMATION, &q, 32).and_then(|b| {
+            b.get(16..20)
+                .map(|s| u32::from_le_bytes(s.try_into().unwrap()))
+        });
         // BATTERY_WAIT_STATUS { tag, timeout, power state, low, high }.
         let mut w = vec![0u8; 20];
         w[0..4].copy_from_slice(&tag.to_le_bytes());
         let Some(st) = ioctl(&h, IOCTL_BATTERY_QUERY_STATUS, &w, 16) else {
             continue;
         };
-        let u = |o: usize| st.get(o..o + 4).map(|s| u32::from_le_bytes(s.try_into().unwrap()));
+        let u = |o: usize| {
+            st.get(o..o + 4)
+                .map(|s| u32::from_le_bytes(s.try_into().unwrap()))
+        };
         let unknown = 0xffff_ffffu32;
         out.push(BatteryDump {
             power_state: u(0).unwrap_or(0),
@@ -371,7 +419,12 @@ fn monitor_edid(device_path: &str) -> Option<Vec<u8>> {
     let target = norm(device_path);
     // SAFETY: SetupAPI enumeration of monitor interfaces; registry key closed.
     unsafe {
-        let set = SetupDiGetClassDevsW(&GUID_DEVINTERFACE_MONITOR, std::ptr::null(), std::ptr::null_mut(), DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+        let set = SetupDiGetClassDevsW(
+            &GUID_DEVINTERFACE_MONITOR,
+            std::ptr::null(),
+            std::ptr::null_mut(),
+            DIGCF_PRESENT | DIGCF_DEVICEINTERFACE,
+        );
         if set == INVALID_HANDLE_VALUE as HDEVINFO {
             return None;
         }
@@ -395,7 +448,15 @@ fn monitor_edid(device_path: &str) -> Option<Vec<u8>> {
                 let name = wide("EDID");
                 let mut buf = vec![0u8; 1024];
                 let mut size = buf.len() as u32;
-                if RegQueryValueExW(key, name.as_ptr(), std::ptr::null(), std::ptr::null_mut(), buf.as_mut_ptr(), &mut size) == 0 {
+                if RegQueryValueExW(
+                    key,
+                    name.as_ptr(),
+                    std::ptr::null(),
+                    std::ptr::null_mut(),
+                    buf.as_mut_ptr(),
+                    &mut size,
+                ) == 0
+                {
                     buf.truncate(size as usize);
                     result = Some(buf);
                 }
@@ -419,7 +480,15 @@ pub fn displays() -> Vec<DisplayDump> {
         }
         let mut paths: Vec<DISPLAYCONFIG_PATH_INFO> = vec![std::mem::zeroed(); np as usize];
         let mut modes: Vec<DISPLAYCONFIG_MODE_INFO> = vec![std::mem::zeroed(); nm as usize];
-        if QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &mut np, paths.as_mut_ptr(), &mut nm, modes.as_mut_ptr(), std::ptr::null_mut()) != 0 {
+        if QueryDisplayConfig(
+            QDC_ONLY_ACTIVE_PATHS,
+            &mut np,
+            paths.as_mut_ptr(),
+            &mut nm,
+            modes.as_mut_ptr(),
+            std::ptr::null_mut(),
+        ) != 0
+        {
             return out;
         }
         paths.truncate(np as usize);
@@ -433,22 +502,26 @@ pub fn displays() -> Vec<DisplayDump> {
             } else {
                 0.0
             };
-            let current = modes.get(src_idx).filter(|m| m.infoType == DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE).map(|m| {
-                let s = m.Anonymous.sourceMode;
-                DisplayMode {
-                    width: s.width,
-                    height: s.height,
-                    refresh_hz: hz,
-                    bits_per_color: None,
-                }
-            });
+            let current = modes
+                .get(src_idx)
+                .filter(|m| m.infoType == DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE)
+                .map(|m| {
+                    let s = m.Anonymous.sourceMode;
+                    DisplayMode {
+                        width: s.width,
+                        height: s.height,
+                        refresh_hz: hz,
+                        bits_per_color: None,
+                    }
+                });
             let mut name: DISPLAYCONFIG_TARGET_DEVICE_NAME = std::mem::zeroed();
             name.header.r#type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
             name.header.size = std::mem::size_of::<DISPLAYCONFIG_TARGET_DEVICE_NAME>() as u32;
             name.header.adapterId = t.adapterId;
             name.header.id = t.id;
             let edid = if DisplayConfigGetDeviceInfo(&mut name.header) == 0 {
-                monitor_edid(&from_wide(&name.monitorDevicePath)).and_then(|e| linkspec_core::edid::parse(&e))
+                monitor_edid(&from_wide(&name.monitorDevicePath))
+                    .and_then(|e| linkspec_core::edid::parse(&e))
             } else {
                 None
             };
@@ -470,11 +543,23 @@ pub fn usb4_routers() -> Vec<Usb4Router> {
     // SAFETY: size query, then the list; strings are parsed from the buffer.
     unsafe {
         let mut len = 0u32;
-        if CM_Get_Device_ID_List_SizeW(&mut len, filter.as_ptr(), CM_GETIDLIST_FILTER_ENUMERATOR | CM_GETIDLIST_FILTER_PRESENT) != CR_SUCCESS || len == 0 {
+        if CM_Get_Device_ID_List_SizeW(
+            &mut len,
+            filter.as_ptr(),
+            CM_GETIDLIST_FILTER_ENUMERATOR | CM_GETIDLIST_FILTER_PRESENT,
+        ) != CR_SUCCESS
+            || len == 0
+        {
             return out;
         }
         let mut buf = vec![0u16; len as usize];
-        if CM_Get_Device_ID_ListW(filter.as_ptr(), buf.as_mut_ptr(), len, CM_GETIDLIST_FILTER_ENUMERATOR | CM_GETIDLIST_FILTER_PRESENT) != CR_SUCCESS {
+        if CM_Get_Device_ID_ListW(
+            filter.as_ptr(),
+            buf.as_mut_ptr(),
+            len,
+            CM_GETIDLIST_FILTER_ENUMERATOR | CM_GETIDLIST_FILTER_PRESENT,
+        ) != CR_SUCCESS
+        {
             return out;
         }
         for id in buf.split(|c| *c == 0).filter(|s| !s.is_empty()) {
@@ -493,11 +578,14 @@ pub fn usb4_routers() -> Vec<Usb4Router> {
                 .and_then(|r| u16::from_str_radix(r.get(0..4)?, 16).ok());
             let mut devinst = 0u32;
             let wid: Vec<u16> = id.iter().copied().chain(std::iter::once(0)).collect();
-            let description = if CM_Locate_DevNodeW(&mut devinst, wid.as_ptr(), CM_LOCATE_DEVNODE_NORMAL) == CR_SUCCESS {
-                devnode_string(devinst, &DEVPKEY_Device_DeviceDesc)
-            } else {
-                None
-            };
+            let description =
+                if CM_Locate_DevNodeW(&mut devinst, wid.as_ptr(), CM_LOCATE_DEVNODE_NORMAL)
+                    == CR_SUCCESS
+                {
+                    devnode_string(devinst, &DEVPKEY_Device_DeviceDesc)
+                } else {
+                    None
+                };
             // The instance id is never stored (it can contain serials).
             out.push(Usb4Router {
                 kind: kind.to_string(),
@@ -518,7 +606,15 @@ fn reg_string(root: HKEY, sub: &str, value: &str) -> Option<String> {
     let mut size = (buf.len() * 2) as u32;
     // SAFETY: buffer size in bytes is passed.
     let rc = unsafe {
-        RegGetValueW(root, s.as_ptr(), v.as_ptr(), RRF_RT_REG_SZ, std::ptr::null_mut(), buf.as_mut_ptr().cast(), &mut size)
+        RegGetValueW(
+            root,
+            s.as_ptr(),
+            v.as_ptr(),
+            RRF_RT_REG_SZ,
+            std::ptr::null_mut(),
+            buf.as_mut_ptr().cast(),
+            &mut size,
+        )
     };
     (rc == 0).then(|| from_wide(&buf)).filter(|x| !x.is_empty())
 }
@@ -532,7 +628,11 @@ pub fn host() -> WinHost {
             Some(d) => format!("10.0.{b} ({d})"),
             None => format!("10.0.{b}"),
         }),
-        model: reg_string(HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\BIOS", "SystemProductName"),
+        model: reg_string(
+            HKEY_LOCAL_MACHINE,
+            r"HARDWARE\DESCRIPTION\System\BIOS",
+            "SystemProductName",
+        ),
         arch: std::env::consts::ARCH.to_string(),
     }
 }
@@ -618,7 +718,13 @@ pub fn watch() -> Result<Receiver<ChangeEvent>, SourceError> {
             f.FilterType = CM_NOTIFY_FILTER_TYPE_DEVICEINTERFACE;
             f.u.DeviceInterface.ClassGuid = g;
             let mut h: HCMNOTIFICATION = std::ptr::null_mut();
-            if CM_Register_Notification(&f, ctx as *const NotifyCtx as *const c_void, Some(on_notify), &mut h) == CR_SUCCESS {
+            if CM_Register_Notification(
+                &f,
+                ctx as *const NotifyCtx as *const c_void,
+                Some(on_notify),
+                &mut h,
+            ) == CR_SUCCESS
+            {
                 ok += 1;
             }
         }

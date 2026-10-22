@@ -172,7 +172,11 @@ mod tests {
         assert_eq!(s.name.as_deref(), Some("Example 27"));
         let m = s.max.unwrap();
         assert_eq!((m.width, m.height), (3840, 2160));
-        assert!((59_000..61_000).contains(&m.refresh_mhz), "{}", m.refresh_mhz);
+        assert!(
+            (59_000..61_000).contains(&m.refresh_mhz),
+            "{}",
+            m.refresh_mhz
+        );
         assert_eq!(s.bits_per_color, Some(10));
         assert!(!serde_json::to_string(&s).unwrap().contains("SECRET"));
     }

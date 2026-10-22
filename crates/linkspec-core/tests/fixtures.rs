@@ -127,7 +127,12 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
     let expect = &fixture["expect"];
     let outs = [("de", out_de), ("en", out_en)];
     if let Some(n) = expect.get("notices") {
-        let want: BTreeSet<_> = n.as_array().unwrap().iter().map(|x| x.as_str().unwrap()).collect();
+        let want: BTreeSet<_> = n
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap())
+            .collect();
         let have: BTreeSet<_> = out_de["notices"]
             .as_array()
             .map(|a| a.iter().map(|x| x["code"].as_str().unwrap()).collect())
@@ -149,7 +154,10 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
         }
         if let Some(texts) = pe.get("headline_text") {
             for (lang, p) in ports {
-                assert_eq!(&p["headline_text"], &texts[lang], "{name}: headline_text {lang}");
+                assert_eq!(
+                    &p["headline_text"], &texts[lang],
+                    "{name}: headline_text {lang}"
+                );
             }
         }
         if let Some(vs) = pe.get("verdicts") {
@@ -167,7 +175,10 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
             for (lang, p) in ports {
                 if let Some(want) = sc.get(lang).and_then(Value::as_str) {
                     let s = p["summary"].as_str().unwrap();
-                    assert!(s.contains(want), "{name}: summary {lang} = {s:?}, wanted {want:?}");
+                    assert!(
+                        s.contains(want),
+                        "{name}: summary {lang} = {s:?}, wanted {want:?}"
+                    );
                 }
             }
         }
@@ -194,11 +205,19 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
         }
         if let Some(cs) = pe.get("cable_summary") {
             for (lang, p) in ports {
-                assert_eq!(&p["cable"]["summary"], &cs[lang], "{name}: cable summary {lang}");
+                assert_eq!(
+                    &p["cable"]["summary"], &cs[lang],
+                    "{name}: cable summary {lang}"
+                );
             }
         }
         if let Some(t) = pe.get("transports") {
-            let want: BTreeSet<_> = t.as_array().unwrap().iter().map(|x| x.as_str().unwrap()).collect();
+            let want: BTreeSet<_> = t
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|x| x.as_str().unwrap())
+                .collect();
             let have: BTreeSet<_> = port_de["link"]["transports"]
                 .as_array()
                 .unwrap()
@@ -225,7 +244,10 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
                 .map(|x| x["field"].as_str().unwrap())
                 .collect();
             for f in u.as_array().unwrap() {
-                assert!(have.contains(f.as_str().unwrap()), "{name}: unavailable {f}");
+                assert!(
+                    have.contains(f.as_str().unwrap()),
+                    "{name}: unavailable {f}"
+                );
             }
         }
         if let Some(uc) = pe.get("unavailable_contains").and_then(Value::as_object) {
@@ -241,22 +263,38 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
                         .find(|x| x["field"] == field.as_str())
                         .unwrap();
                     let s = entry["summary"].as_str().unwrap();
-                    assert!(s.contains(want), "{name}: unavailable {field} {lang} = {s:?}");
+                    assert!(
+                        s.contains(want),
+                        "{name}: unavailable {field} {lang} = {s:?}"
+                    );
                 }
             }
         }
         let flags = |p: &Value| -> Vec<String> {
             p["cable"]["trust_flags"]
                 .as_array()
-                .map(|a| a.iter().map(|f| f["code"].as_str().unwrap().to_string()).collect())
+                .map(|a| {
+                    a.iter()
+                        .map(|f| f["code"].as_str().unwrap().to_string())
+                        .collect()
+                })
                 .unwrap_or_default()
         };
         if let Some(tf) = pe.get("trust_flags") {
-            let want: Vec<String> = tf.as_array().unwrap().iter().map(|x| x.as_str().unwrap().to_string()).collect();
+            let want: Vec<String> = tf
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|x| x.as_str().unwrap().to_string())
+                .collect();
             assert_eq!(flags(port_de), want, "{name}: trust_flags");
         }
         if pe.get("no_trust_flags").is_some() {
-            assert!(flags(port_de).is_empty(), "{name}: unexpected trust flags {:?}", flags(port_de));
+            assert!(
+                flags(port_de).is_empty(),
+                "{name}: unexpected trust flags {:?}",
+                flags(port_de)
+            );
         }
         if let Some(n) = pe.get("notes") {
             let have: BTreeSet<_> = port_de["notes"]
@@ -271,7 +309,10 @@ fn check(name: &str, fixture: &Value, out_de: &Value, out_en: &Value) {
             for (_, out) in outs {
                 let text = out.to_string();
                 for w in words.as_array().unwrap() {
-                    assert!(!text.contains(w.as_str().unwrap()), "{name}: forbidden text {w}");
+                    assert!(
+                        !text.contains(w.as_str().unwrap()),
+                        "{name}: forbidden text {w}"
+                    );
                 }
             }
         }
@@ -294,10 +335,21 @@ fn fixture_suite() {
                 .iter_errors(out)
                 .map(|e| format!("{} at {}", e, e.instance_path()))
                 .collect();
-            assert!(errors.is_empty(), "{name} ({lang}): schema errors {errors:#?}\n{out:#}");
+            assert!(
+                errors.is_empty(),
+                "{name} ({lang}): schema errors {errors:#?}\n{out:#}"
+            );
             // No unresolved message ids in any text.
             let text = out.to_string();
-            for prefix in ["verdict-", "headline-", "trust-", "fault-", "unavailable-", "reason-", "cable-kind-"] {
+            for prefix in [
+                "verdict-",
+                "headline-",
+                "trust-",
+                "fault-",
+                "unavailable-",
+                "reason-",
+                "cable-kind-",
+            ] {
                 assert!(
                     !text.contains(&format!("\"{prefix}")),
                     "{name} ({lang}): untranslated id with prefix {prefix}"
@@ -320,8 +372,14 @@ fn every_verdict_code_has_a_fixture() {
             }
         }
     }
-    let missing: Vec<_> = VERDICT_CODES.iter().filter(|c| !seen.contains(**c)).collect();
-    assert!(missing.is_empty(), "verdict codes without fixture: {missing:?}");
+    let missing: Vec<_> = VERDICT_CODES
+        .iter()
+        .filter(|c| !seen.contains(**c))
+        .collect();
+    assert!(
+        missing.is_empty(),
+        "verdict codes without fixture: {missing:?}"
+    );
 }
 
 #[test]
@@ -329,7 +387,10 @@ fn every_verdict_code_has_text_in_both_languages() {
     for lang in [Lang::De, Lang::En] {
         let i18n = I18n::new(lang);
         for code in VERDICT_CODES {
-            assert!(i18n.has(&format!("verdict-{code}")), "{lang:?}: verdict-{code}");
+            assert!(
+                i18n.has(&format!("verdict-{code}")),
+                "{lang:?}: verdict-{code}"
+            );
         }
     }
 }
@@ -365,9 +426,18 @@ fn texts_are_stable() {
                     ));
                 }
                 for u in p["unavailable"].as_array().unwrap() {
-                    lines.push(format!("  unavailable {}: {}", u["field"].as_str().unwrap(), u["summary"].as_str().unwrap()));
+                    lines.push(format!(
+                        "  unavailable {}: {}",
+                        u["field"].as_str().unwrap(),
+                        u["summary"].as_str().unwrap()
+                    ));
                 }
-                for n in p.get("notes").and_then(Value::as_array).into_iter().flatten() {
+                for n in p
+                    .get("notes")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                {
                     lines.push(format!("  note: {}", n["summary"].as_str().unwrap()));
                 }
             }

@@ -37,7 +37,11 @@ fn speed_mbps(p: &HubPortDump) -> Option<f64> {
     })
 }
 
-fn device(hubs: &BTreeMap<&str, &HubDump>, p: &HubPortDump, depth: u8) -> Option<UsbDeviceObservation> {
+fn device(
+    hubs: &BTreeMap<&str, &HubDump>,
+    p: &HubPortDump,
+    depth: u8,
+) -> Option<UsbDeviceObservation> {
     let speed = speed_mbps(p)?;
     let c = p.conn.as_ref()?;
     let max_capable = p.bos_max.or_else(|| {
@@ -100,11 +104,9 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
     }
     // A hub is internal when it hangs on a port that the user cannot reach.
     let internal = |hub: &str| -> bool {
-        parent.get(hub).is_some_and(|(_, p)| {
-            p.connector
-                .as_ref()
-                .is_some_and(|c| !c.user_connectable)
-        })
+        parent
+            .get(hub)
+            .is_some_and(|(_, p)| p.connector.as_ref().is_some_and(|c| !c.user_connectable))
     };
 
     // Candidate Type-C ports, merged with companions.
@@ -207,21 +209,30 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         };
         let mut overcurrent = false;
         for (_, m) in &members {
-            if m.conn.as_ref().is_some_and(|c| c.status == ConnStatus::Overcurrent) {
+            if m.conn
+                .as_ref()
+                .is_some_and(|c| c.status == ConnStatus::Overcurrent)
+            {
                 overcurrent = true;
             }
             if let Some(d) = device(&hubs, m, 0) {
                 p.link.usb_devices.push(d);
             }
         }
-        p.link.usb_devices.sort_by(|a, b| b.speed_mbps.total_cmp(&a.speed_mbps));
+        p.link
+            .usb_devices
+            .sort_by(|a, b| b.speed_mbps.total_cmp(&a.speed_mbps));
         p.link.source = Some(Source::UsbIoctl);
         p.health = Some(HealthObservation {
             overcurrent_count: Some(u32::from(overcurrent)),
             ..Default::default()
         });
         // Tier 1 sees only USB devices. No device does not mean "empty".
-        p.connected = if p.link.usb_devices.is_empty() { None } else { Some(true) };
+        p.connected = if p.link.usb_devices.is_empty() {
+            None
+        } else {
+            Some(true)
+        };
         if p.behind_internal_hub {
             p.cable = CableObservation::Unavailable {
                 reason: Reason::BehindInternalHub,
@@ -229,7 +240,9 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
             p.power = PowerObservation::Unavailable {
                 reason: Reason::BehindInternalHub,
             };
-        } else if let Some(sc) = service.and_then(|s| s.connectors.iter().find(|c| c.index == index)) {
+        } else if let Some(sc) =
+            service.and_then(|s| s.connectors.iter().find(|c| c.index == index))
+        {
             apply_service(&mut p, sc);
         } else {
             let reason = if service.is_some() {
@@ -252,7 +265,11 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
     }
 
     // USB4 (H-W3): only map when there is exactly one Type-C port.
-    let device_routers: Vec<_> = dump.usb4_routers.iter().filter(|r| r.kind == "device").collect();
+    let device_routers: Vec<_> = dump
+        .usb4_routers
+        .iter()
+        .filter(|r| r.kind == "device")
+        .collect();
     if !device_routers.is_empty() {
         if ports.len() == 1 {
             let p = &mut ports[0];
@@ -287,7 +304,11 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
 
     // Displays (H-W4): DisplayPort or USB tunnel outputs; assign only when
     // exactly one port can carry them.
-    let candidates: Vec<_> = dump.displays.iter().filter(|d| d.is_usb_c_candidate()).collect();
+    let candidates: Vec<_> = dump
+        .displays
+        .iter()
+        .filter(|d| d.is_usb_c_candidate())
+        .collect();
     if !candidates.is_empty() {
         let connected: Vec<usize> = ports
             .iter()
@@ -329,7 +350,9 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
 
     let battery = dump.batteries.first().map(|b| {
         let percent = match (b.capacity_mwh, b.full_mwh) {
-            (Some(c), Some(f)) if f > 0 => Some((f64::from(c) / f64::from(f) * 100.0).round().min(100.0)),
+            (Some(c), Some(f)) if f > 0 => {
+                Some((f64::from(c) / f64::from(f) * 100.0).round().min(100.0))
+            }
             _ => None,
         };
         BatteryObservation {
@@ -399,14 +422,24 @@ fn apply_service(p: &mut PortObservation, sc: &ServiceConnector) {
     };
     let mut pd = PowerData {
         role,
-        source_pdos: sc.source_pdos.iter().map(|r| Pdo::decode(*r, PdoRole::Source)).collect(),
-        sink_pdos: sc.sink_pdos.iter().map(|r| Pdo::decode(*r, PdoRole::Sink)).collect(),
+        source_pdos: sc
+            .source_pdos
+            .iter()
+            .map(|r| Pdo::decode(*r, PdoRole::Source))
+            .collect(),
+        sink_pdos: sc
+            .sink_pdos
+            .iter()
+            .map(|r| Pdo::decode(*r, PdoRole::Sink))
+            .collect(),
         source: Source::Service,
         ..Default::default()
     };
     if let Some(rdo) = sc.rdo.map(FixedRdo::decode) {
         let idx = usize::from(rdo.object_position);
-        if let Some(Pdo::Fixed { voltage_v, .. }) = idx.checked_sub(1).and_then(|i| pd.source_pdos.get(i)) {
+        if let Some(Pdo::Fixed { voltage_v, .. }) =
+            idx.checked_sub(1).and_then(|i| pd.source_pdos.get(i))
+        {
             pd.contract = Some(Contract {
                 pdo_index: Some(rdo.object_position),
                 voltage_v: *voltage_v,

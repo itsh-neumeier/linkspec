@@ -12,7 +12,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::{CStr, CString, c_char, c_void};
 
-use core_foundation_sys::array::{CFArrayGetCount, CFArrayGetTypeID, CFArrayGetValueAtIndex, CFArrayRef};
+use core_foundation_sys::array::{
+    CFArrayGetCount, CFArrayGetTypeID, CFArrayGetValueAtIndex, CFArrayRef,
+};
 use core_foundation_sys::base::{CFGetTypeID, CFRelease, CFTypeRef, kCFAllocatorDefault};
 use core_foundation_sys::data::{CFDataGetBytePtr, CFDataGetLength, CFDataGetTypeID, CFDataRef};
 use core_foundation_sys::dictionary::{
@@ -268,7 +270,11 @@ pub fn collect_registry(filter: &dyn Fn(&str) -> bool) -> Vec<RegEntry> {
         }
     }
     // Remap ids to sequential numbers (no registry ids in captures).
-    let map: BTreeMap<u64, u64> = keep.iter().enumerate().map(|(i, id)| (*id, i as u64 + 1)).collect();
+    let map: BTreeMap<u64, u64> = keep
+        .iter()
+        .enumerate()
+        .map(|(i, id)| (*id, i as u64 + 1))
+        .collect();
     keep.iter()
         .filter_map(|id| {
             let r = all.get(id)?;
@@ -293,7 +299,10 @@ unsafe extern "C" {
     fn CGGetOnlineDisplayList(max: u32, displays: *mut CGDirectDisplayID, count: *mut u32) -> i32;
     fn CGDisplayIsBuiltin(display: CGDirectDisplayID) -> u32;
     fn CGDisplayCopyDisplayMode(display: CGDirectDisplayID) -> CGDisplayModeRef;
-    fn CGDisplayCopyAllDisplayModes(display: CGDirectDisplayID, options: CFDictionaryRef) -> CFArrayRef;
+    fn CGDisplayCopyAllDisplayModes(
+        display: CGDirectDisplayID,
+        options: CFDictionaryRef,
+    ) -> CFArrayRef;
     fn CGDisplayModeGetPixelWidth(mode: CGDisplayModeRef) -> usize;
     fn CGDisplayModeGetPixelHeight(mode: CGDisplayModeRef) -> usize;
     fn CGDisplayModeGetRefreshRate(mode: CGDisplayModeRef) -> f64;
@@ -359,18 +368,36 @@ fn sysctl_string(name: &str) -> Option<String> {
     let cname = CString::new(name).ok()?;
     let mut len: libc::size_t = 0;
     // SAFETY: first call queries the size.
-    if unsafe { libc::sysctlbyname(cname.as_ptr(), std::ptr::null_mut(), &mut len, std::ptr::null_mut(), 0) } != 0 {
+    if unsafe {
+        libc::sysctlbyname(
+            cname.as_ptr(),
+            std::ptr::null_mut(),
+            &mut len,
+            std::ptr::null_mut(),
+            0,
+        )
+    } != 0
+    {
         return None;
     }
     let mut buf = vec![0u8; len];
     // SAFETY: buffer has `len` bytes.
     if unsafe {
-        libc::sysctlbyname(cname.as_ptr(), buf.as_mut_ptr().cast(), &mut len, std::ptr::null_mut(), 0)
+        libc::sysctlbyname(
+            cname.as_ptr(),
+            buf.as_mut_ptr().cast(),
+            &mut len,
+            std::ptr::null_mut(),
+            0,
+        )
     } != 0
     {
         return None;
     }
-    let s = String::from_utf8_lossy(&buf[..len]).trim_end_matches('\0').trim().to_string();
+    let s = String::from_utf8_lossy(&buf[..len])
+        .trim_end_matches('\0')
+        .trim()
+        .to_string();
     (!s.is_empty()).then_some(s)
 }
 

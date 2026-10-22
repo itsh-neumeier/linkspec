@@ -50,10 +50,8 @@ impl VendorDb {
 
     pub fn info(&self) -> DbInfo {
         let meta = |k: &str| {
-            self.with(|c| {
-                c.query_row("SELECT value FROM meta WHERE key = ?1", [k], |r| r.get(0))
-            })
-            .unwrap_or_else(|| "unknown".to_string())
+            self.with(|c| c.query_row("SELECT value FROM meta WHERE key = ?1", [k], |r| r.get(0)))
+                .unwrap_or_else(|| "unknown".to_string())
         };
         let count = |t: &str| {
             self.with(|c| c.query_row(&format!("SELECT COUNT(*) FROM {t}"), [], |r| r.get(0)))
@@ -77,8 +75,10 @@ impl VendorDb {
 impl Catalog for VendorDb {
     fn vendor_name(&self, vid: u16) -> Option<String> {
         self.with(|c| {
-            c.query_row("SELECT name FROM vendors WHERE vid = ?1", [vid], |r| r.get(0))
-                .optional()
+            c.query_row("SELECT name FROM vendors WHERE vid = ?1", [vid], |r| {
+                r.get(0)
+            })
+            .optional()
         })
         .flatten()
     }

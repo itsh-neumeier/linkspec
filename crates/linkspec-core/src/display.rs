@@ -17,7 +17,10 @@ const DSC_FACTOR: f64 = 2.5;
 /// Required link payload in Gbit/s for a mode.
 pub fn required_gbps(mode: &DisplayMode, dsc: bool) -> f64 {
     let bpc = f64::from(mode.bits_per_color.unwrap_or(8));
-    let bits = f64::from(mode.width) * f64::from(mode.height) * mode.refresh_hz * BLANKING_FACTOR
+    let bits = f64::from(mode.width)
+        * f64::from(mode.height)
+        * mode.refresh_hz
+        * BLANKING_FACTOR
         * bpc
         * 3.0;
     let gbps = bits / 1e9;
@@ -27,7 +30,11 @@ pub fn required_gbps(mode: &DisplayMode, dsc: bool) -> f64 {
 
 /// Usable payload of a DisplayPort link in Gbit/s.
 pub fn dp_payload_gbps(lanes: u8, lane_gbps: f64) -> f64 {
-    let efficiency = if lane_gbps >= 10.0 { 128.0 / 132.0 } else { 0.8 };
+    let efficiency = if lane_gbps >= 10.0 {
+        128.0 / 132.0
+    } else {
+        0.8
+    };
     ((f64::from(lanes) * lane_gbps * efficiency) * 100.0).round() / 100.0
 }
 

@@ -28,56 +28,106 @@ pub fn synthetic() -> RegistryDump {
         entries: vec![
             e(1, None, "IORegistryEntry", "Root", json!({})),
             // Port 1: Thunderbolt dock with USB 3 hub and DP.
-            e(2, Some(1), "AppleHPMInterfaceType10", "Port-USB-C@1", json!({
-                "PortNumber": 1,
-                "ConnectionActive": true,
-                "TransportsSupported": ["CC", "USB2", "USB3", "CIO", "DisplayPort"],
-                "TransportsActive": ["CC", "USB2", "USB3", "DisplayPort"],
-                "Plug Orientation": 2
-            })),
-            e(3, Some(2), "AppleHPMDevice", "pd", json!({
-                "SOP' Discover Identity": [0x1800_1234u32, 0, 0x5678_0001u32, 0x0000_2042u32]
-            })),
+            e(
+                2,
+                Some(1),
+                "AppleHPMInterfaceType10",
+                "Port-USB-C@1",
+                json!({
+                    "PortNumber": 1,
+                    "ConnectionActive": true,
+                    "TransportsSupported": ["CC", "USB2", "USB3", "CIO", "DisplayPort"],
+                    "TransportsActive": ["CC", "USB2", "USB3", "DisplayPort"],
+                    "Plug Orientation": 2
+                }),
+            ),
+            e(
+                3,
+                Some(2),
+                "AppleHPMDevice",
+                "pd",
+                json!({
+                    "SOP' Discover Identity": [0x1800_1234u32, 0, 0x5678_0001u32, 0x0000_2042u32]
+                }),
+            ),
             // Port 2: empty.
-            e(4, Some(1), "AppleHPMInterfaceType10", "Port-USB-C@2", json!({
-                "PortNumber": 2,
-                "ConnectionActive": false,
-                "TransportsSupported": ["CC", "USB2", "USB3", "CIO", "DisplayPort"],
-                "TransportsActive": []
-            })),
+            e(
+                4,
+                Some(1),
+                "AppleHPMInterfaceType10",
+                "Port-USB-C@2",
+                json!({
+                    "PortNumber": 2,
+                    "ConnectionActive": false,
+                    "TransportsSupported": ["CC", "USB2", "USB3", "CIO", "DisplayPort"],
+                    "TransportsActive": []
+                }),
+            ),
             // XHCI for port 1 with a USB 3 hub and a USB 2 disk behind it.
             e(10, Some(1), "AppleT8122USBXHCI", "usb-drd0", json!({})),
-            e(11, Some(10), "IOUSBHostDevice", "Hub", json!({
-                "idVendor": 0x0bda, "idProduct": 0x0411, "Device Speed": 3,
-                "bDeviceClass": 9, "USB Product Name": "USB3.0 Hub", "bcdUSB": 0x0320
-            })),
-            e(12, Some(11), "IOUSBHostDevice", "Disk", json!({
-                "idVendor": 0x0781, "idProduct": 0x5581, "Device Speed": 2,
-                "USB Product Name": "Flash Disk", "bcdUSB": 0x0200
-            })),
+            e(
+                11,
+                Some(10),
+                "IOUSBHostDevice",
+                "Hub",
+                json!({
+                    "idVendor": 0x0bda, "idProduct": 0x0411, "Device Speed": 3,
+                    "bDeviceClass": 9, "USB Product Name": "USB3.0 Hub", "bcdUSB": 0x0320
+                }),
+            ),
+            e(
+                12,
+                Some(11),
+                "IOUSBHostDevice",
+                "Disk",
+                json!({
+                    "idVendor": 0x0781, "idProduct": 0x5581, "Device Speed": 2,
+                    "USB Product Name": "Flash Disk", "bcdUSB": 0x0200
+                }),
+            ),
             // Battery with charger details and telemetry.
-            e(20, Some(1), "AppleSmartBattery", "AppleSmartBattery", json!({
-                "ExternalConnected": true, "IsCharging": true, "FullyCharged": false,
-                "CurrentCapacity": 64, "MaxCapacity": 100, "Voltage": 12900, "Amperage": 2100,
-                "AdapterDetails": {
-                    "Watts": 96,
-                    "UsbHvcMenu": [
-                        {"Index": 0, "MaxVoltage": 5000, "MaxCurrent": 3000},
-                        {"Index": 1, "MaxVoltage": 9000, "MaxCurrent": 3000},
-                        {"Index": 2, "MaxVoltage": 15000, "MaxCurrent": 3000},
-                        {"Index": 3, "MaxVoltage": 20000, "MaxCurrent": 4700}
-                    ],
-                    "UsbHvcHvcIndex": 3
-                },
-                "PowerTelemetryData": {"SystemPowerIn": 61000, "SystemVoltageIn": 20000, "SystemCurrentIn": 3050}
-            })),
+            e(
+                20,
+                Some(1),
+                "AppleSmartBattery",
+                "AppleSmartBattery",
+                json!({
+                    "ExternalConnected": true, "IsCharging": true, "FullyCharged": false,
+                    "CurrentCapacity": 64, "MaxCapacity": 100, "Voltage": 12900, "Amperage": 2100,
+                    "AdapterDetails": {
+                        "Watts": 96,
+                        "UsbHvcMenu": [
+                            {"Index": 0, "MaxVoltage": 5000, "MaxCurrent": 3000},
+                            {"Index": 1, "MaxVoltage": 9000, "MaxCurrent": 3000},
+                            {"Index": 2, "MaxVoltage": 15000, "MaxCurrent": 3000},
+                            {"Index": 3, "MaxVoltage": 20000, "MaxCurrent": 4700}
+                        ],
+                        "UsbHvcHvcIndex": 3
+                    },
+                    "PowerTelemetryData": {"SystemPowerIn": 61000, "SystemVoltageIn": 20000, "SystemCurrentIn": 3050}
+                }),
+            ),
         ],
         displays: vec![
-            CgDisplay { builtin: true, current: None, max: None },
+            CgDisplay {
+                builtin: true,
+                current: None,
+                max: None,
+            },
             CgDisplay {
                 builtin: false,
-                current: Some(DisplayMode { width: 2560, height: 1440, refresh_hz: 60.0, bits_per_color: None }),
-                max: Some(DisplayMode { width: 3840, height: 2160, refresh_hz: 60.0, bits_per_color: None }),
+                current: Some(DisplayMode {
+                    width: 2560,
+                    height: 1440,
+                    refresh_hz: 60.0,
+                    bits_per_color: None,
+                }),
+                max: Some(DisplayMode {
+                    width: 3840,
+                    height: 2160,
+                    refresh_hz: 60.0,
+                    bits_per_color: None,
+                }),
             },
         ],
         host: MacHost {
@@ -113,7 +163,8 @@ fn synthetic_registry() {
     assert_eq!(b.charging, Some(true));
 
     // Write the synthetic capture as a fixture (replayed below).
-    let out = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/macos/synthetic_tb_port_dock.json");
+    let out = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/macos/synthetic_tb_port_dock.json");
     if std::env::var_os("LINKSPEC_UPDATE_FIXTURES").is_some() || !out.exists() {
         let doc = json!({
             "schema": linkspec_platform::CAPTURE_SCHEMA,
@@ -130,7 +181,8 @@ fn synthetic_registry() {
 
 #[test]
 fn replay_macos_fixture() {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/macos/synthetic_tb_port_dock.json");
+    let p = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/macos/synthetic_tb_port_dock.json");
     let Ok(text) = std::fs::read_to_string(&p) else {
         return; // written by `synthetic_registry` on the first run
     };
@@ -149,6 +201,10 @@ fn two_connected_ports_do_not_guess_the_charger_port() {
     }
     let snap = interpret(&d);
     for p in &snap.ports {
-        assert!(matches!(p.power, PowerObservation::Unavailable { .. }), "{:?}", p.power);
+        assert!(
+            matches!(p.power, PowerObservation::Unavailable { .. }),
+            "{:?}",
+            p.power
+        );
     }
 }

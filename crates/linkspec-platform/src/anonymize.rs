@@ -60,7 +60,9 @@ fn value_forbidden(s: &str, secrets: &[String]) -> bool {
     {
         return true;
     }
-    secrets.iter().any(|sec| !sec.is_empty() && l.contains(&sec.to_ascii_lowercase()))
+    secrets
+        .iter()
+        .any(|sec| !sec.is_empty() && l.contains(&sec.to_ascii_lowercase()))
 }
 
 /// Host-specific secrets: user name and host name from the environment.

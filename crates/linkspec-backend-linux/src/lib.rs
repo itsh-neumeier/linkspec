@@ -80,7 +80,8 @@ impl PortSource for LinuxSource {
         // active queries here. The flag is still reported.
         s.usb_probe = opts.usb_probe;
         if !opts.usb_probe {
-            s.notices.push(linkspec_core::observation::Notice::UsbProbeOff);
+            s.notices
+                .push(linkspec_core::observation::Notice::UsbProbeOff);
         }
         Ok(s)
     }

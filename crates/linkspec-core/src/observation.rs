@@ -306,7 +306,9 @@ pub enum PowerRole {
 pub enum PowerObservation {
     #[default]
     Unknown,
-    Unavailable { reason: Reason },
+    Unavailable {
+        reason: Reason,
+    },
     Available(Box<PowerData>),
 }
 

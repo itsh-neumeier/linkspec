@@ -203,7 +203,11 @@ pub fn fmt_number(value: f64, decimal_comma: bool) -> String {
     } else {
         format!("{rounded:.2}")
     };
-    if decimal_comma { s.replace('.', ",") } else { s }
+    if decimal_comma {
+        s.replace('.', ",")
+    } else {
+        s
+    }
 }
 
 #[cfg(test)]

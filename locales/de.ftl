@@ -173,3 +173,14 @@ cli-limiter-unknown = unklar
 cli-fault-banner = Störung
 cli-history = Verlauf
 cli-history-seen = { $uses }× genutzt, seit { $since }, { $faults } Störungen
+
+## Dashboard und Negotiation
+
+tui-tab-overview = Übersicht
+tui-tab-negotiation = Negotiation
+tui-tab-power = Leistung
+tui-help = Tab: Ansicht wechseln · ↑↓: blättern · r: aktualisieren · q: beenden
+neg-port = Port
+neg-cable = Kabel
+neg-device = Gerät / Netzteil
+neg-negotiated = Ausgehandelt

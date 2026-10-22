@@ -58,7 +58,8 @@ fn build(data: &Path, out: &Path) {
             let b = line.as_bytes();
             if b.len() > 6 && b[..4].iter().all(u8::is_ascii_hexdigit) && &line[4..6] == "  " {
                 let vid = u16::from_str_radix(&line[..4], 16).unwrap();
-                ins.execute(rusqlite::params![vid, line[6..].trim()]).unwrap();
+                ins.execute(rusqlite::params![vid, line[6..].trim()])
+                    .unwrap();
             }
         }
         let mut ins = tx
@@ -70,13 +71,19 @@ fn build(data: &Path, out: &Path) {
             }
         }
         let mut ins = tx
-            .prepare("INSERT OR REPLACE INTO cables (fingerprint, name, source) VALUES (?1, ?2, ?3)")
+            .prepare(
+                "INSERT OR REPLACE INTO cables (fingerprint, name, source) VALUES (?1, ?2, ?3)",
+            )
             .unwrap();
         for line in read_lines(&data.join("cables.csv")) {
             let cols: Vec<&str> = line.splitn(3, ',').collect();
             if cols.len() == 3 {
-                ins.execute(rusqlite::params![cols[0].trim(), cols[1].trim(), cols[2].trim()])
-                    .unwrap();
+                ins.execute(rusqlite::params![
+                    cols[0].trim(),
+                    cols[1].trim(),
+                    cols[2].trim()
+                ])
+                .unwrap();
             }
         }
         let mut meta = tx

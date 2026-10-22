@@ -98,8 +98,8 @@ impl I18n {
         let langid: LanguageIdentifier = lang.code().parse().expect("valid language id");
         let mut bundle = FluentBundle::new_concurrent(vec![langid]);
         bundle.set_use_isolating(false);
-        let res = FluentResource::try_new(lang.ftl().to_string())
-            .unwrap_or_else(|(res, _errors)| res);
+        let res =
+            FluentResource::try_new(lang.ftl().to_string()).unwrap_or_else(|(res, _errors)| res);
         // Duplicate ids are a test failure (see tests below), never a panic.
         let _ = bundle.add_resource(res);
         Self { lang, bundle }
@@ -144,11 +144,7 @@ impl I18n {
 /// Message ids defined in an FTL source (top-level messages only).
 pub fn message_ids(ftl: &str) -> Vec<String> {
     ftl.lines()
-        .filter(|l| {
-            l.chars()
-                .next()
-                .is_some_and(|c| c.is_ascii_alphabetic())
-        })
+        .filter(|l| l.chars().next().is_some_and(|c| c.is_ascii_alphabetic()))
         .filter_map(|l| l.split_once('=').map(|(k, _)| k.trim().to_string()))
         .collect()
 }

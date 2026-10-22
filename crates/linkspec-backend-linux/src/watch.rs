@@ -134,16 +134,14 @@ mod socket {
                 }
             }
             // SAFETY: `buf` is valid for `buf.len()` bytes.
-            let n = unsafe {
-                libc::recv(self.fd.as_raw_fd(), buf.as_mut_ptr().cast(), buf.len(), 0)
-            };
+            let n =
+                unsafe { libc::recv(self.fd.as_raw_fd(), buf.as_mut_ptr().cast(), buf.len(), 0) };
             if n < 0 {
                 return Err(io::Error::last_os_error());
             }
             Ok(Some(n as usize))
         }
     }
-
 }
 
 #[cfg(test)]
@@ -152,9 +150,13 @@ mod tests {
 
     #[test]
     fn filters_events() {
-        assert!(relevant(b"add@/devices/x/typec/port0-partner\0ACTION=add\0SUBSYSTEM=typec\0"));
+        assert!(relevant(
+            b"add@/devices/x/typec/port0-partner\0ACTION=add\0SUBSYSTEM=typec\0"
+        ));
         assert!(!relevant(b"change@/devices/x/power_supply/BAT0\0SUBSYSTEM=power_supply\0DEVPATH=/devices/LNXSYSTM:00/BAT0\0"));
-        assert!(relevant(b"change@/x\0SUBSYSTEM=power_supply\0DEVPATH=/devices/x/ucsi-source-psy-USBC000:001\0"));
+        assert!(relevant(
+            b"change@/x\0SUBSYSTEM=power_supply\0DEVPATH=/devices/x/ucsi-source-psy-USBC000:001\0"
+        ));
         assert!(!relevant(b"add@/x\0SUBSYSTEM=net\0"));
     }
 }

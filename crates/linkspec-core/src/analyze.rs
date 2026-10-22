@@ -387,7 +387,11 @@ fn diagnose_port(port: &PortObservation, snap: &Snapshot, ctx: &Context<'_>) -> 
 
     let status = if !faults.is_empty() {
         Status::Fault
-    } else if trust_warn || verdicts.iter().any(|v| WARN_CODES.contains(&v.code.as_str())) {
+    } else if trust_warn
+        || verdicts
+            .iter()
+            .any(|v| WARN_CODES.contains(&v.code.as_str()))
+    {
         Status::Warn
     } else {
         Status::Ok
@@ -527,10 +531,7 @@ fn summary_sentence(
             Limiter::None => 3,
         }
     };
-    let best = verdicts
-        .iter()
-        .zip(drafts)
-        .min_by_key(|(v, _)| rank(v));
+    let best = verdicts.iter().zip(drafts).min_by_key(|(v, _)| rank(v));
     match best {
         Some((v, d)) => {
             let lead = format!("lead-{}", v.code);
@@ -571,7 +572,11 @@ fn headline(
     if !port.link.usb_devices.is_empty() {
         let slow = matches!(data_code, Some("cable_likely_usb2"))
             || (matches!(data_code, Some("cable_limits_data"))
-                && port.link.usb_devices.iter().all(|d| !d.link_gen().is_superspeed()));
+                && port
+                    .link
+                    .usb_devices
+                    .iter()
+                    .all(|d| !d.link_gen().is_superspeed()));
         return if slow {
             Headline::SlowOrChargeOnly
         } else {
@@ -690,7 +695,10 @@ fn power_verdict(
         });
     }
 
-    let known: Vec<f64> = [charger_max, cable_w, host_w].into_iter().flatten().collect();
+    let known: Vec<f64> = [charger_max, cable_w, host_w]
+        .into_iter()
+        .flatten()
+        .collect();
     let possible = known.iter().copied().fold(f64::INFINITY, f64::min);
     let offer = charger_max.unwrap_or(possible);
 
@@ -803,11 +811,7 @@ fn data_verdict(
     let cable_max = cable.speed();
     let mut evidence = Vec::new();
     if let Some(p) = port_max {
-        evidence.push(ev(
-            "port.usb",
-            port.capabilities.source,
-            json!(gen_str(p)),
-        ));
+        evidence.push(ev("port.usb", port.capabilities.source, json!(gen_str(p))));
     }
     if let Some(c) = cable_max {
         evidence.push(ev("cable.speed_gbps", cable.source, json!(c.cable_gbps())));
@@ -819,10 +823,7 @@ fn data_verdict(
     let Some(neg) = negotiated else {
         // No USB device on the port.
         let data_visible = port.link.source.is_some();
-        if partner.expects_data()
-            && data_visible
-            && !port.behind_internal_hub
-            && port_max.is_some()
+        if partner.expects_data() && data_visible && !port.behind_internal_hub && port_max.is_some()
         {
             evidence.push(ev("link.usb_gbps", link_src, json!(null)));
             return Some(Draft {
@@ -1016,7 +1017,10 @@ fn fabric_verdict(i18n: &I18n, port: &PortObservation, cable: &CableFacts) -> Op
             limiter: Limiter::Device,
             code: "device_at_its_max",
             args: vec![
-                ("speed", Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))]))),
+                (
+                    "speed",
+                    Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))])),
+                ),
                 (
                     "cable",
                     Arg::Str(if marker_gbps.is_some_and(|m| m >= d) {
@@ -1067,7 +1071,10 @@ fn fabric_verdict(i18n: &I18n, port: &PortObservation, cable: &CableFacts) -> Op
             domain: Domain::Data,
             limiter: Limiter::Cable,
             code: "cable_limits_data",
-            args: vec![("speed", Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(m))])))],
+            args: vec![(
+                "speed",
+                Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(m))])),
+            )],
             evidence,
         });
     }
@@ -1080,7 +1087,10 @@ fn fabric_verdict(i18n: &I18n, port: &PortObservation, cable: &CableFacts) -> Op
             domain: Domain::Data,
             limiter: Limiter::None,
             code: "data_ok",
-            args: vec![("speed", Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))])))],
+            args: vec![(
+                "speed",
+                Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))])),
+            )],
             evidence,
         });
     }
@@ -1088,7 +1098,10 @@ fn fabric_verdict(i18n: &I18n, port: &PortObservation, cable: &CableFacts) -> Op
         domain: Domain::Data,
         limiter: Limiter::Unknown,
         code: "data_unknown",
-        args: vec![("speed", Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))])))],
+        args: vec![(
+            "speed",
+            Arg::Str(i18n.t("speed-gbps", &[("gbps", Arg::Num(link))])),
+        )],
         evidence,
     })
 }
@@ -1147,7 +1160,11 @@ fn display_verdict(port: &PortObservation, transports: &[Transport]) -> Option<D
             continue;
         }
         let need = display::required_gbps(&max, d.dsc == Some(true));
-        evidence.push(ev("displays.required_gbps", Some(Source::Derived), json!(need)));
+        evidence.push(ev(
+            "displays.required_gbps",
+            Some(Source::Derived),
+            json!(need),
+        ));
         let draft = if let Some(cap) = link_gbps {
             evidence.push(ev(
                 "link.displayport_gbps",
@@ -1262,7 +1279,9 @@ fn cable_out(
             let mut flags = trust_flags(id, raw, port, negotiated, device_max, cable, i18n);
             flags.sort_by(|a, b| a.code.cmp(&b.code));
             let kind = cable.kind();
-            let speed = vdo.and_then(|c| c.usb_highest_speed).map(UsbGen::cable_gbps);
+            let speed = vdo
+                .and_then(|c| c.usb_highest_speed)
+                .map(UsbGen::cable_gbps);
             let current = vdo.and_then(|c| c.current_a);
             let watts = vdo.and_then(|c| c.power_class_w());
             let mut parts = vec![i18n.t(&format!("cable-kind-{}", kind.as_str()), &[])];
@@ -1463,7 +1482,9 @@ fn link_out(
         .usb_devices
         .iter()
         .map(|d| d.speed_mbps / 1000.0)
-        .fold(None, |acc: Option<f64>, v| Some(acc.map_or(v, |a| a.max(v))));
+        .fold(None, |acc: Option<f64>, v| {
+            Some(acc.map_or(v, |a| a.max(v)))
+        });
     let _ = negotiated;
     let fabric = port.link.fabric.as_ref();
     Some(LinkOut {
@@ -1498,12 +1519,7 @@ fn link_out(
 }
 
 fn devices_out(devs: &[UsbDeviceObservation], ctx: &Context<'_>) -> Vec<DeviceOut> {
-    fn walk(
-        d: &UsbDeviceObservation,
-        depth: u8,
-        ctx: &Context<'_>,
-        out: &mut Vec<DeviceOut>,
-    ) {
+    fn walk(d: &UsbDeviceObservation, depth: u8, ctx: &Context<'_>, out: &mut Vec<DeviceOut>) {
         let vendor = d
             .vendor
             .clone()
@@ -1549,7 +1565,11 @@ fn displays_out(port: &PortObservation) -> Vec<DisplayOut> {
         .collect()
 }
 
-fn raw_out(port: &PortObservation, cable: &CableFacts, partner: &PartnerFacts) -> serde_json::Value {
+fn raw_out(
+    port: &PortObservation,
+    cable: &CableFacts,
+    partner: &PartnerFacts,
+) -> serde_json::Value {
     let mut v = serde_json::Map::new();
     if let Some(raw) = &cable.raw {
         v.insert(

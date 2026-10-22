@@ -12,6 +12,7 @@ pub mod diagnosis;
 pub mod display;
 pub mod edid;
 pub mod i18n;
+pub mod negotiation;
 pub mod observation;
 pub mod pd;
 pub mod session;

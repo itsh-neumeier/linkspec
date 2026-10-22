@@ -5,9 +5,9 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use linkspec_backend_windows::collect::{HubApi, Req, collect_hubs};
+use linkspec_backend_windows::interpret;
 use linkspec_backend_windows::ioctl::build;
 use linkspec_backend_windows::model::*;
-use linkspec_backend_windows::interpret;
 use linkspec_core::observation::*;
 use linkspec_core::types::UsbGen;
 
@@ -59,7 +59,10 @@ impl HubApi for FakeHubs {
     }
     fn device_text(&mut self, hub: &str, port: u32) -> (Option<String>, Option<String>) {
         (
-            self.hubs.get(hub).and_then(|h| h.1.get(&port)).and_then(|p| p.desc.clone()),
+            self.hubs
+                .get(hub)
+                .and_then(|h| h.1.get(&port))
+                .and_then(|p| p.desc.clone()),
             None,
         )
     }
@@ -87,7 +90,9 @@ fn fake() -> FakeHubs {
         1,
         FakePort {
             connector: build::connector_props(1, true, true, 1, Some(HS)),
-            conn: Some(build::conn_info_ex(1, 1, 3, false, 0x0320, 0x0781, 0x55ae, 0)),
+            conn: Some(build::conn_info_ex(
+                1, 1, 3, false, 0x0320, 0x0781, 0x55ae, 0,
+            )),
             v2: Some(build::conn_info_v2(1, 0b100, 0b1101)),
             ssp: Some(build::ssp_info(1, 10, 1)),
             desc: Some("Extreme SSD".into()),
@@ -112,7 +117,9 @@ fn fake() -> FakeHubs {
         2,
         FakePort {
             connector: build::connector_props(2, true, true, 2, Some(SS)),
-            conn: Some(build::conn_info_ex(2, 1, 2, false, 0x0200, 0x090c, 0x1000, 0)),
+            conn: Some(build::conn_info_ex(
+                2, 1, 2, false, 0x0200, 0x090c, 0x1000, 0,
+            )),
             v2: Some(build::conn_info_v2(2, 0b010, 0)),
             desc: Some("USB Stick".into()),
             ..Default::default()
@@ -123,7 +130,9 @@ fn fake() -> FakeHubs {
         3,
         FakePort {
             connector: build::connector_props(3, false, false, 0, None),
-            conn: Some(build::conn_info_ex(3, 1, 2, true, 0x0210, 0x8087, 0x0029, 9)),
+            conn: Some(build::conn_info_ex(
+                3, 1, 2, true, 0x0210, 0x8087, 0x0029, 9,
+            )),
             v2: Some(build::conn_info_v2(3, 0b010, 0)),
             child: Some(INT.into()),
             desc: Some("Generic USB Hub".into()),
@@ -135,7 +144,9 @@ fn fake() -> FakeHubs {
         1,
         FakePort {
             connector: build::connector_props(1, true, true, 0, None),
-            conn: Some(build::conn_info_ex(1, 1, 2, false, 0x0210, 0x1234, 0x0001, 0)),
+            conn: Some(build::conn_info_ex(
+                1, 1, 2, false, 0x0210, 0x1234, 0x0001, 0,
+            )),
             v2: Some(build::conn_info_v2(1, 0b010, 0)),
             desc: Some("Front device".into()),
             ..Default::default()
@@ -144,9 +155,12 @@ fn fake() -> FakeHubs {
     f.hubs.insert(SS.into(), (1, ss));
     f.hubs.insert(HS.into(), (1, hs));
     f.hubs.insert(INT.into(), (2, int));
-    f.locations.insert(SS.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)".into());
-    f.locations.insert(HS.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)".into());
-    f.locations.insert(INT.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(3)".into());
+    f.locations
+        .insert(SS.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)".into());
+    f.locations
+        .insert(HS.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)".into());
+    f.locations
+        .insert(INT.into(), "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(3)".into());
     f
 }
 
@@ -189,23 +203,43 @@ fn laptop_hub_tree() {
     let s = interpret(&d);
     assert_eq!(s.tier, Tier::User);
     assert!(s.notices.contains(&Notice::ServiceNotInstalled));
-    assert_eq!(s.ports.len(), 3, "{:#?}", s.ports.iter().map(|p| &p.id).collect::<Vec<_>>());
+    assert_eq!(
+        s.ports.len(),
+        3,
+        "{:#?}",
+        s.ports.iter().map(|p| &p.id).collect::<Vec<_>>()
+    );
     let p1 = &s.ports[0];
     assert_eq!(p1.link.usb_devices.len(), 1);
     assert_eq!(p1.link.usb_devices[0].speed_mbps, 10000.0);
     assert_eq!(p1.link.usb_devices[0].max_capable, Some(UsbGen::Gen1));
     assert_eq!(p1.capabilities.usb, Some(UsbGen::Gen2));
     assert!(p1.capabilities.usb_is_lower_bound);
-    assert!(matches!(p1.cable, CableObservation::Unavailable { reason: Reason::NeedsService }));
+    assert!(matches!(
+        p1.cable,
+        CableObservation::Unavailable {
+            reason: Reason::NeedsService
+        }
+    ));
     let p2 = &s.ports[1];
     assert_eq!(p2.link.usb_devices[0].speed_mbps, 480.0);
-    let front = s.ports.iter().find(|p| p.behind_internal_hub).expect("front port");
-    assert!(matches!(front.cable, CableObservation::Unavailable { reason: Reason::BehindInternalHub }));
+    let front = s
+        .ports
+        .iter()
+        .find(|p| p.behind_internal_hub)
+        .expect("front port");
+    assert!(matches!(
+        front.cable,
+        CableObservation::Unavailable {
+            reason: Reason::BehindInternalHub
+        }
+    ));
     let b = s.battery.unwrap();
     assert_eq!(b.percent, Some(80.0));
     assert_eq!(b.charging, Some(true));
 
-    let out = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/windows/laptop_tier1.json");
+    let out =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/windows/laptop_tier1.json");
     if std::env::var_os("LINKSPEC_UPDATE_FIXTURES").is_some() || !out.exists() {
         let doc = serde_json::json!({
             "schema": linkspec_platform::CAPTURE_SCHEMA,
@@ -253,7 +287,9 @@ fn service_data_fills_power_and_cable() {
     assert_eq!(s.tier, Tier::Service);
     let p1 = &s.ports[0];
     assert!(matches!(p1.cable, CableObservation::Emarker { .. }));
-    let PowerObservation::Available(pd) = &p1.power else { panic!() };
+    let PowerObservation::Available(pd) = &p1.power else {
+        panic!()
+    };
     assert_eq!(pd.source_max_w(), Some(100.0));
     assert_eq!(pd.contract.as_ref().unwrap().power_w, 60.0);
 }
@@ -261,7 +297,9 @@ fn service_data_fills_power_and_cable() {
 #[test]
 fn replay_windows_fixture() {
     let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/windows/laptop_tier1.json");
-    let Ok(text) = std::fs::read_to_string(p) else { return };
+    let Ok(text) = std::fs::read_to_string(p) else {
+        return;
+    };
     let doc: serde_json::Value = serde_json::from_str(&text).unwrap();
     let s = linkspec_backend_windows::snapshot_from_capture(&doc).unwrap();
     assert_eq!(s.ports.len(), 3);

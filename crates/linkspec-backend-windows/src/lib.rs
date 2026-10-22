@@ -73,7 +73,8 @@ impl PortSource for WindowsSource {
         let mut s = interpret(&self.dump(opts));
         s.usb_probe = opts.usb_probe;
         if !opts.usb_probe {
-            s.notices.push(linkspec_core::observation::Notice::UsbProbeOff);
+            s.notices
+                .push(linkspec_core::observation::Notice::UsbProbeOff);
         }
         Ok(s)
     }
@@ -92,7 +93,10 @@ impl PortSource for WindowsSource {
     fn capture(&mut self, opts: ReadOptions) -> Result<serde_json::Value, SourceError> {
         let d = self.dump(opts);
         let mut data = serde_json::to_value(&d).map_err(|e| SourceError::Other(e.to_string()))?;
-        linkspec_platform::anonymize::scrub(&mut data, &linkspec_platform::anonymize::local_secrets());
+        linkspec_platform::anonymize::scrub(
+            &mut data,
+            &linkspec_platform::anonymize::local_secrets(),
+        );
         Ok(serde_json::json!({
             "schema": CAPTURE_SCHEMA,
             "backend": "windows",
@@ -115,7 +119,9 @@ impl PortSource for WindowsSource {
                     t: self.started.elapsed().as_secs_f64(),
                     watts: Some(w),
                     volts: v,
-                    amps: v.filter(|v| *v > 0.0).map(|v| ((w / v) * 1000.0).round() / 1000.0),
+                    amps: v
+                        .filter(|v| *v > 0.0)
+                        .map(|v| ((w / v) * 1000.0).round() / 1000.0),
                     port_index: None,
                 })
             }))

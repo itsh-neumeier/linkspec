@@ -379,7 +379,10 @@ mod tests {
     #[test]
     fn overcurrent_status() {
         let b = build::conn_info_ex(1, 4, 0, false, 0, 0, 0, 0);
-        assert_eq!(parse_conn_info_ex(&b).unwrap().status, ConnStatus::Overcurrent);
+        assert_eq!(
+            parse_conn_info_ex(&b).unwrap().status,
+            ConnStatus::Overcurrent
+        );
     }
 
     #[test]
