@@ -44,6 +44,9 @@ Dumps. Fixtures laufen so auf allen CI-Runnern durch den echten Interpreter.
 
 ## Befehle
 
+Toolchain wie in der CI: Rust 1.99.1 (`rustup toolchain install 1.99.1`,
+`cargo +1.99.1 …`). Ältere oder neuere Versionen melden andere Clippy-Lints.
+
 ```sh
 cargo fmt --all
 cargo clippy --workspace --all-targets -- -D warnings

@@ -61,7 +61,12 @@ ein Issue an und stoppst.
 
 ## Ablauf für ein Release `vX.Y.Z`
 
-1. **Vorprüfung**
+1. **Vorprüfung** mit derselben Toolchain wie die CI (**Rust 1.99.1**,
+   siehe `.github/workflows/ci.yml`). Andere Versionen melden andere
+   Clippy-Lints (Issue #2). Einmalig: `rustup toolchain install 1.99.1 -c
+   clippy -c rustfmt`; dann jeden Befehl mit `cargo +1.99.1 …` ausführen.
+   Lint-Fehler, die nur eine andere Version meldet, sind kein Abbruchgrund,
+   aber ein Hinweis im Übergabekommentar.
    ```sh
    git fetch origin && git switch main && git pull --ff-only
    cargo fmt --all --check

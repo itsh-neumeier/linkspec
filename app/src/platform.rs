@@ -164,7 +164,9 @@ pub fn tray_probably_available() -> bool {
             .to_ascii_lowercase();
         let has_display =
             std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_some();
-        has_display && !(desktop.contains("gnome") && !desktop.contains("unity"))
+        // Unity is GNOME-based but ships a tray host.
+        let gnome_without_tray = desktop.contains("gnome") && !desktop.contains("unity");
+        has_display && !gnome_without_tray
     } else {
         true
     }
