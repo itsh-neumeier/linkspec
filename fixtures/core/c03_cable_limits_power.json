@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      3
+    ],
+    "description": "100-W-Rechner, 100-W-Netzteil, Kabel 3 A / 60 W"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "emarker",
+          "identity": {
+            "id_header": 402657844,
+            "cert_stat": 0,
+            "product": 1450704897,
+            "product_type_vdos": [
+              8226
+            ]
+          },
+          "source": "fixture"
+        },
+        "power": {
+          "state": "available",
+          "role": "sink",
+          "source_pdos": [
+            {
+              "type": "fixed",
+              "voltage_v": 5,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 9,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 15,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 20,
+              "max_current_a": 5,
+              "usb_comm_capable": true
+            }
+          ],
+          "source": "fixture",
+          "contract": {
+            "voltage_v": 20,
+            "current_a": 3.0,
+            "power_w": 60,
+            "pdo_index": 4
+          }
+        }
+      }
+    ],
+    "battery": {
+      "percent": 40,
+      "charging": true,
+      "full": false,
+      "external_power": true,
+      "source": "fixture"
+    }
+  },
+  "expect": {
+    "ports": [
+      {
+        "headline": "charging_only",
+        "verdicts": [
+          {
+            "domain": "power",
+            "limiter": "cable",
+            "code": "cable_limits_power"
+          }
+        ],
+        "summary_contains": {
+          "de": "Das Kabel begrenzt die Leistung auf 60 W",
+          "en": "The cable limits power to 60 W"
+        },
+        "cable": {
+          "power_w_max": 60,
+          "current_a": 3
+        },
+        "status": "warn"
+      }
+    ]
+  }
+}

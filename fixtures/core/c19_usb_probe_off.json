@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      19
+    ],
+    "description": "Deep-Probe aus: Karte bleibt, Hinweis"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": false,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "Stick",
+              "speed_mbps": 480,
+              "source": "fixture"
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "notes": [
+          "usb_probe_off"
+        ],
+        "headline": "usb_device"
+      }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Port versorgt ein Gerät"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "source": "fixture"
+        },
+        "power": {
+          "state": "available",
+          "role": "source",
+          "contract": {
+            "voltage_v": 5,
+            "current_a": 1.5,
+            "power_w": 7.5
+          },
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "Phone",
+              "speed_mbps": 480,
+              "source": "fixture",
+              "bcd_usb": 512
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "power",
+            "limiter": "none",
+            "code": "power_supplying_device"
+          },
+          {
+            "domain": "data",
+            "limiter": "device",
+            "code": "device_at_its_max"
+          }
+        ]
+      }
+    ]
+  }
+}

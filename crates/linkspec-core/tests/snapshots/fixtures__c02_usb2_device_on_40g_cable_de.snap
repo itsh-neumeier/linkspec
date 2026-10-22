@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | USB-Gerät | Das Endgerät nutzt USB 2.0. Das Kabel kann mehr.
+  cable: Passiv, 40 Gbit/s, 5 A / 240 W
+  data/device: Das Endgerät ist mit USB 2.0 am Limit, das Kabel ist in Ordnung.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

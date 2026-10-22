@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "USB-3-Gerät, Fähigkeiten unbekannt"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "SSD",
+              "speed_mbps": 5000,
+              "source": "fixture",
+              "bcd_usb": 800
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "data",
+            "limiter": "unknown",
+            "code": "data_unknown"
+          }
+        ]
+      }
+    ]
+  }
+}

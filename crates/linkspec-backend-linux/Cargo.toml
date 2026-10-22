@@ -1,0 +1,21 @@
+[package]
+name = "linkspec-backend-linux"
+description = "LinkSpec Linux backend: sysfs (typec, usb_power_delivery, power_supply, thunderbolt, usb, drm) and udev netlink"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+linkspec-core.workspace = true
+linkspec-platform.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

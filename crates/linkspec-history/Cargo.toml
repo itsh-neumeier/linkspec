@@ -1,0 +1,18 @@
+[package]
+name = "linkspec-history"
+description = "LinkSpec cable history (local SQLite in the user profile)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+linkspec-core.workspace = true
+rusqlite.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

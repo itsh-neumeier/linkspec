@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB device | The cable limits data to USB 3 (5 Gbit/s). Port and device could do more.
+  cable: Passive, 5 Gbit/s, 3 A / 60 W
+  data/cable: The cable limits data to USB 3 (5 Gbit/s). Port and device could do more.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

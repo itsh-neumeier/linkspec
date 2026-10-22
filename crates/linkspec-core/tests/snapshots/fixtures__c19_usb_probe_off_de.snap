@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB-Gerät | Daten laufen mit USB 2.0. Was die Verbindung begrenzt, lässt sich nicht sicher sagen.
+  data/unknown: Daten laufen mit USB 2.0. Was die Verbindung begrenzt, lässt sich nicht sicher sagen.
+  note: USB-Tiefenabfrage aus

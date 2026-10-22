@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB-Gerät | Das Endgerät nutzt USB 2.0 und ist damit am Limit.
+  power/none: Dieser Port versorgt das Gerät mit 7,5 W.
+  data/device: Das Endgerät ist mit USB 2.0 am Limit.

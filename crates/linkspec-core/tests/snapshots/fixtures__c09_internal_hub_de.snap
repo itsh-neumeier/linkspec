@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB-Gerät | Daten laufen mit USB 2.0 über einen internen Hub. Kabeldaten sind an diesem Port nicht verfügbar.
+  data/unknown: Daten laufen mit USB 2.0 über einen internen Hub. Kabeldaten sind an diesem Port nicht verfügbar.
+  unavailable cable: Kabeldaten an diesem Port nicht verfügbar (der Port hängt an einem internen Hub)
+  unavailable power: Lade-Angaben an diesem Port nicht verfügbar (der Port hängt an einem internen Hub)

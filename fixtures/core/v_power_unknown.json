@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Leistungsdaten ohne PDOs und Vertrag"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "power": {
+          "state": "available",
+          "role": "sink",
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "power",
+            "limiter": "unknown",
+            "code": "power_unknown"
+          }
+        ],
+        "headline": "charging_only"
+      }
+    ]
+  }
+}

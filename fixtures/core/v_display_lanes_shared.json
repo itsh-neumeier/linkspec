@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Dock teilt Leitungen: 2 DP-Lanes plus USB 3"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "displayport": true,
+          "source": "fixture"
+        },
+        "link": {
+          "transports": [
+            "displayport"
+          ],
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "Hub",
+              "speed_mbps": 5000,
+              "source": "fixture",
+              "bcd_usb": 800,
+              "max_capable": "gen1",
+              "is_hub": true
+            }
+          ],
+          "displayport": {
+            "lanes": 2,
+            "lane_gbps": 5.4,
+            "pin_assignment": "D",
+            "source": "fixture"
+          },
+          "source": "fixture"
+        },
+        "displays": [
+          {
+            "name": "Monitor",
+            "current": {
+              "width": 3840,
+              "height": 2160,
+              "refresh_hz": 30,
+              "bits_per_color": 8
+            },
+            "max": {
+              "width": 3840,
+              "height": 2160,
+              "refresh_hz": 60,
+              "bits_per_color": 8
+            },
+            "source": "fixture"
+          }
+        ]
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "data",
+            "limiter": "device",
+            "code": "device_at_its_max"
+          },
+          {
+            "domain": "display",
+            "limiter": "device",
+            "code": "display_lanes_shared"
+          }
+        ],
+        "transports": [
+          "usb3",
+          "displayport"
+        ]
+      }
+    ]
+  }
+}

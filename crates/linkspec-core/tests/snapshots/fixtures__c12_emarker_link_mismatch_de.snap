@@ -1,0 +1,9 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB-Gerät | Angabe und Verbindung passen nicht zusammen: Das Kabel meldet USB4 (40 Gbit/s), die Verbindung läuft mit USB 3 (5 Gbit/s).
+  cable: Passiv, 40 Gbit/s, 5 A / 100 W
+  trust: Das Kabel meldet mehr Tempo, als die Verbindung erreicht, obwohl Port und Gerät mehr könnten.
+  data/unknown: Angabe und Verbindung passen nicht zusammen: Das Kabel meldet USB4 (40 Gbit/s), die Verbindung läuft mit USB 3 (5 Gbit/s).
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

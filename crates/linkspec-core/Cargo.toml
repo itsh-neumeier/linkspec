@@ -1,0 +1,22 @@
+[package]
+name = "linkspec-core"
+description = "LinkSpec core: models, USB PD decoders, verdict engine and schema mapping (no OS APIs)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+fluent-bundle.workspace = true
+unic-langid.workspace = true
+time.workspace = true
+sha2.workspace = true
+
+[dev-dependencies]
+jsonschema.workspace = true
+insta.workspace = true

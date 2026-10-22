@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB-Gerät | Daten laufen mit USB 3 (10 Gbit/s), so schnell wie möglich.
+  cable: Passiv, 20 Gbit/s, 3 A / 60 W
+  data/none: Daten laufen mit USB 3 (10 Gbit/s), so schnell wie möglich.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

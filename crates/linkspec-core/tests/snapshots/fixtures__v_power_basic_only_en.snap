@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Charging only | Only the basic level is visible: USB-C with up to 15 W. The system does not report charger details.
+  power/unknown: Only the basic level is visible: USB-C with up to 15 W. The system does not report charger details.

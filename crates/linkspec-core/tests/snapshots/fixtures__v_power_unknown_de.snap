@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Nur Laden | Die Lade-Angaben reichen für ein Urteil nicht aus.
+  power/unknown: Die Lade-Angaben reichen für ein Urteil nicht aus.

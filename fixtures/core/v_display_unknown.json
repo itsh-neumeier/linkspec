@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Display ohne Modusdaten"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "link": {
+          "transports": [
+            "displayport"
+          ],
+          "source": "fixture"
+        },
+        "displays": [
+          {
+            "name": "Monitor",
+            "source": "fixture"
+          }
+        ]
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "display",
+            "limiter": "unknown",
+            "code": "display_unknown"
+          }
+        ]
+      }
+    ]
+  }
+}

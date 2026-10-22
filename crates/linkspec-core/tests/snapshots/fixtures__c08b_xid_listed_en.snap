@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Charging only | This port only charges.
+  cable: Passive, 40 Gbit/s, 5 A / 100 W
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

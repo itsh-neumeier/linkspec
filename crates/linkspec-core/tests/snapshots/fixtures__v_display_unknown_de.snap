@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display verbunden | Für das Display fehlen Angaben, um den Modus zu beurteilen.
+  display/unknown: Für das Display fehlen Angaben, um den Modus zu beurteilen.

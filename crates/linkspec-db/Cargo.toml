@@ -1,0 +1,18 @@
+[package]
+name = "linkspec-db"
+description = "LinkSpec reference data: bundled vendors.db (USB vendor names, certification list, cable fingerprints)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+build = "../../data/build_vendors.rs"
+
+[dependencies]
+linkspec-core.workspace = true
+rusqlite = { workspace = true, features = ["serialize"] }
+thiserror.workspace = true
+
+[build-dependencies]
+rusqlite.workspace = true
