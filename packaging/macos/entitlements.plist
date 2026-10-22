@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Hardened Runtime, no sandbox (docs/sandbox.md), no exceptions.
+     The app group lets the WidgetKit extension read widget.json. -->
+<plist version="1.0">
+<dict>
+  <key>com.apple.security.application-groups</key>
+  <array><string>group.io.github.itsh-neumeier.linkspec</string></array>
+</dict>
+</plist>

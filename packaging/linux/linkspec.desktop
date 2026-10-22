@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=LinkSpec
+GenericName=USB-C Diagnostics
+GenericName[de]=USB-C-Diagnose
+Comment=What can this USB-C cable do, and which link limits the connection?
+Comment[de]=Was kann dieses USB-C-Kabel, und welches Glied begrenzt die Verbindung?
+Exec=linkspec-app --window
+Icon=linkspec
+Terminal=false
+Categories=System;HardwareSettings;Utility;
+Keywords=USB;USB-C;Thunderbolt;USB4;Cable;Kabel;

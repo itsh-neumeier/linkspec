@@ -1,0 +1,23 @@
+# winget manifest (singleton). Maintainer: fill InstallerUrl/InstallerSha256
+# from the release, then submit with `wingetcreate submit`.
+PackageIdentifier: LinkSpec.LinkSpec
+PackageVersion: 0.9.0
+PackageLocale: de-DE
+Publisher: LinkSpec contributors
+PackageName: LinkSpec
+License: MIT
+LicenseUrl: https://github.com/itsh-neumeier/linkspec/blob/main/LICENSE
+ShortDescription: USB-C-, Thunderbolt- und USB4-Diagnose – welches Glied begrenzt die Verbindung?
+Moniker: linkspec
+Tags: [usb-c, thunderbolt, usb4, cable, diagnostics]
+Installers:
+  - Architecture: x64
+    InstallerType: wix
+    InstallerUrl: https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.0/LinkSpec-0.9.0-x64.msi
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+  - Architecture: arm64
+    InstallerType: wix
+    InstallerUrl: https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.0/LinkSpec-0.9.0-arm64.msi
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: singleton
+ManifestVersion: 1.6.0
