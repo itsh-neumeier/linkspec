@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      7
+    ],
+    "description": "Kein E-Marker, USB-2-Verbindung, Port und Gerät können USB 3"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "no_emarker",
+          "source": "fixture"
+        },
+        "partner": {
+          "identity": {
+            "id_header": 1342180314,
+            "cert_stat": 0,
+            "product": 68223232,
+            "product_type_vdos": [
+              83886082
+            ]
+          },
+          "supports_pd": true,
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "SSD",
+              "speed_mbps": 480,
+              "source": "fixture",
+              "bcd_usb": 528
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "headline": "slow_or_charge_only",
+        "verdicts": [
+          {
+            "domain": "data",
+            "limiter": "cable",
+            "code": "cable_likely_usb2"
+          }
+        ],
+        "status": "warn"
+      }
+    ]
+  }
+}

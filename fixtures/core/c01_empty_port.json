@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      1
+    ],
+    "description": "Leerer Port"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "thunderbolt",
+        "connected": false,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "id": "port-1",
+        "headline": "empty",
+        "headline_text": {
+          "de": "Nichts verbunden",
+          "en": "Nothing connected"
+        },
+        "verdicts": [],
+        "absent": [
+          "cable",
+          "power",
+          "link"
+        ]
+      }
+    ]
+  }
+}

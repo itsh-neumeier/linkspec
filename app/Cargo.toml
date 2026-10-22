@@ -1,0 +1,71 @@
+[package]
+name = "linkspec-app"
+description = "LinkSpec desktop app: tray/menu bar flyout and window (Slint)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+build = "build.rs"
+
+[[bin]]
+name = "linkspec-app"
+path = "src/main.rs"
+
+[dependencies]
+linkspec-core.workspace = true
+linkspec-platform.workspace = true
+linkspec-engine.workspace = true
+linkspec-history.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
+slint = { version = "1.18", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-software", "accessibility"] }
+tray-icon = { version = "0.26", default-features = false, features = ["ksni"] }
+png = "0.18"
+notify-rust = "4"
+ureq = { version = "3", default-features = false, features = ["rustls", "json"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Registry"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = "0.3"
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSApplication", "NSRunningApplication", "NSResponder"] }
+objc2-service-management = "0.3"
+
+[build-dependencies]
+slint-build = "1.18"
+
+[package.metadata.deb]
+name = "linkspec"
+maintainer = "LinkSpec contributors"
+extended-description = "LinkSpec tells you for every USB-C, Thunderbolt and USB4 port which link limits the connection: port, cable, charger or device. Not a cable tester."
+section = "utils"
+priority = "optional"
+depends = "libxkbcommon0, libxkbcommon-x11-0, libfontconfig1, dbus"
+assets = [
+    ["target/release/linkspec-app", "usr/bin/", "755"],
+    ["target/release/linkspec", "usr/bin/", "755"],
+    ["../packaging/linux/linkspec-packaged", "usr/bin/", "644"],
+    ["../packaging/linux/linkspec.desktop", "usr/share/applications/", "644"],
+    ["../packaging/icons/linkspec-256.png", "usr/share/icons/hicolor/256x256/apps/linkspec.png", "644"],
+    ["../packaging/linux/60-linkspec.rules", "usr/share/linkspec/", "644"],
+    ["../THIRD_PARTY_LICENSES", "usr/share/doc/linkspec/", "644"],
+]
+
+[package.metadata.generate-rpm]
+name = "linkspec"
+assets = [
+    { source = "target/release/linkspec-app", dest = "/usr/bin/linkspec-app", mode = "755" },
+    { source = "target/release/linkspec", dest = "/usr/bin/linkspec", mode = "755" },
+    { source = "../packaging/linux/linkspec-packaged", dest = "/usr/bin/linkspec-packaged", mode = "644" },
+    { source = "../packaging/linux/linkspec.desktop", dest = "/usr/share/applications/linkspec.desktop", mode = "644" },
+    { source = "../packaging/icons/linkspec-256.png", dest = "/usr/share/icons/hicolor/256x256/apps/linkspec.png", mode = "644" },
+    { source = "../packaging/linux/60-linkspec.rules", dest = "/usr/share/linkspec/60-linkspec.rules", mode = "644" },
+]

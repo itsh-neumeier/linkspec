@@ -1,0 +1,244 @@
+{
+  "schema": "linkspec.capture.v1",
+  "backend": "windows",
+  "anonymized": true,
+  "synthetic": true,
+  "host": {
+    "os": "windows",
+    "os_version": "10.0.26100",
+    "model": null,
+    "arch": "x86_64"
+  },
+  "data": {
+    "hubs": [
+      {
+        "key": "hub-1",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)",
+        "info": {
+          "hub_type": "root",
+          "highest_port": 3
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": true,
+              "companion_index": 1,
+              "companion_port": 1
+            },
+            "companion_hub": "hub-2",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 2
+            }
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": true,
+              "companion_index": 1,
+              "companion_port": 2
+            },
+            "companion_hub": "hub-2",
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": false,
+              "bcd_usb": 512,
+              "device_class": 0,
+              "vendor_id": 2316,
+              "product_id": 4096,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": false,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB Stick"
+          },
+          {
+            "port": 3,
+            "connector": {
+              "user_connectable": false,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": true,
+              "bcd_usb": 528,
+              "device_class": 9,
+              "vendor_id": 32903,
+              "product_id": 41,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": false,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "Generic USB Hub",
+            "bos_max": "gen1",
+            "child_hub": "hub-3"
+          }
+        ]
+      },
+      {
+        "key": "hub-2",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)",
+        "info": {
+          "hub_type": "root",
+          "highest_port": 2
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": true,
+              "companion_index": 1,
+              "companion_port": 1
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "connected",
+              "speed": 3,
+              "is_hub": false,
+              "bcd_usb": 800,
+              "device_class": 0,
+              "vendor_id": 1921,
+              "product_id": 21934,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": false,
+              "usb200": false,
+              "usb300": true,
+              "operating_at_ss": true,
+              "ss_capable": false,
+              "operating_at_ssp": true,
+              "ssp_capable": true
+            },
+            "ssp": {
+              "rx_gbps": 10.0,
+              "rx_lanes": 1,
+              "tx_gbps": 10.0,
+              "tx_lanes": 1
+            },
+            "description": "Extreme SSD",
+            "bos_max": "gen1"
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": true,
+              "companion_index": 1,
+              "companion_port": 2
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 2
+            }
+          }
+        ]
+      },
+      {
+        "key": "hub-3",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(3)",
+        "info": {
+          "hub_type": "usb20",
+          "highest_port": 1
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": true,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": false,
+              "bcd_usb": 528,
+              "device_class": 0,
+              "vendor_id": 4660,
+              "product_id": 1,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": false,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "Front device",
+            "bos_max": "gen1"
+          }
+        ]
+      }
+    ],
+    "batteries": [
+      {
+        "power_state": 5,
+        "capacity_mwh": 40000,
+        "full_mwh": 50000,
+        "voltage_mv": 12000,
+        "rate_mw": 25000
+      }
+    ],
+    "displays": [],
+    "usb4_routers": [],
+    "service": {
+      "state": "not_installed"
+    },
+    "host": {
+      "os_version": "10.0.26100",
+      "arch": "x86_64"
+    }
+  }
+}

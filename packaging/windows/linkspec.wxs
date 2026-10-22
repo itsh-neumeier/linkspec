@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WiX Toolset v4 source. Build:
+     wix build packaging/windows/linkspec.wxs -arch x64 -d Version=0.9.0 -d BinDir=target\release -o dist\LinkSpec.msi
+     The service feature is optional (Level 2 = not selected by default in "typical"). -->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="LinkSpec" Manufacturer="LinkSpec contributors" Version="$(var.Version)"
+           UpgradeCode="6d0c5a4e-3f0b-4a3a-9f6e-8a9f2a6c1b11" Scope="perMachine" Language="1031">
+    <MajorUpgrade DowngradeErrorMessage="Eine neuere Version von LinkSpec ist bereits installiert." />
+    <MediaTemplate EmbedCab="yes" />
+    <Icon Id="LinkSpecIcon" SourceFile="packaging\icons\linkspec.ico" />
+    <Property Id="ARPPRODUCTICON" Value="LinkSpecIcon" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="LinkSpec" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <Feature Id="App" Title="LinkSpec" Level="1" AllowAbsent="no">
+      <Component Directory="INSTALLFOLDER">
+        <File Source="$(var.BinDir)\linkspec-app.exe" KeyPath="yes">
+          <Shortcut Name="LinkSpec" Directory="ProgramMenuFolder" Icon="LinkSpecIcon" Advertise="yes" />
+        </File>
+      </Component>
+      <Component Directory="INSTALLFOLDER">
+        <File Source="$(var.BinDir)\linkspec.exe" KeyPath="yes" />
+        <Environment Id="PathEnv" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="yes" />
+      </Component>
+      <Component Directory="INSTALLFOLDER">
+        <File Source="LICENSE" Name="LICENSE.txt" KeyPath="yes" />
+        <File Source="THIRD_PARTY_LICENSES" Name="THIRD_PARTY_LICENSES.txt" />
+        <File Source="packaging\linux\linkspec-packaged" Name="linkspec-packaged" />
+      </Component>
+    </Feature>
+
+    <Feature Id="Service" Title="LinkSpec-Dienst (erweiterte Kabel- und Ladedaten)"
+             Description="Optionaler Windows-Dienst. Liest PD- und E-Marker-Daten über ETW. Läuft als LocalSystem." Level="2">
+      <Component Directory="INSTALLFOLDER">
+        <File Source="$(var.BinDir)\linkspec-service.exe" KeyPath="yes" />
+        <ServiceInstall Name="LinkSpecService" DisplayName="LinkSpec Service"
+                        Description="Liest USB-Type-C-Daten (ETW) für die LinkSpec-App."
+                        Start="auto" Type="ownProcess" ErrorControl="normal" Account="LocalSystem"
+                        Arguments="run" />
+        <ServiceControl Id="LinkSpecServiceControl" Name="LinkSpecService" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+      </Component>
+    </Feature>
+  </Package>
+</Wix>

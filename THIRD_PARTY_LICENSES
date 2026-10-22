@@ -1,0 +1,22 @@
+LinkSpec – Third-party licenses
+================================
+
+LinkSpec itself is licensed under the MIT License (see LICENSE).
+
+Bundled data
+------------
+* usb.ids (http://www.linux-usb.org/usb.ids) – used under the 3-clause BSD
+  License. Full text: data/LICENSE.usb-ids.
+
+GUI toolkit
+-----------
+* Slint (https://slint.dev) – used under the Slint Royalty-free Desktop,
+  Mobile, and Web Applications License v2.0. The app shows the required
+  attribution ("Made with Slint") in the About view.
+
+Rust crates
+-----------
+The release workflow generates a complete list of all Rust dependencies and
+their licenses with `cargo about` (packaging/about.hbs) and ships it as
+THIRD_PARTY_LICENSES.html next to every binary. `cargo deny check licenses`
+(deny.toml) enforces the allowed license set in CI.

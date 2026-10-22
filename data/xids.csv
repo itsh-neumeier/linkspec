@@ -1,0 +1,4 @@
+# USB-IF certification list (XID in hex, product name).
+# Empty on purpose: no source is known whose license allows bundling.
+# See docs/data-sources.md and docs/MAINTAINER_TODO.md.
+xid,name

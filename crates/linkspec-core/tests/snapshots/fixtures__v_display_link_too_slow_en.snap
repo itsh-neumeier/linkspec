@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display connected | The display runs below its highest mode: that mode needs 31 Gbit/s, the DisplayPort link carries 17.3 Gbit/s.
+  display/unknown: The display runs below its highest mode: that mode needs 31 Gbit/s, the DisplayPort link carries 17.3 Gbit/s.

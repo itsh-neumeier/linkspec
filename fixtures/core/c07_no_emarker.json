@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      7
+    ],
+    "description": "Kabel ohne E-Marker"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "sink_max_w": 65,
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "no_emarker",
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "SSD",
+              "speed_mbps": 5000,
+              "source": "fixture",
+              "bcd_usb": 800,
+              "max_capable": "gen1"
+            }
+          ],
+          "source": "fixture"
+        },
+        "power": {
+          "state": "available",
+          "role": "sink",
+          "source_pdos": [
+            {
+              "type": "fixed",
+              "voltage_v": 5,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 9,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 15,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 20,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            }
+          ],
+          "source": "fixture",
+          "contract": {
+            "voltage_v": 20,
+            "current_a": 3.0,
+            "power_w": 60,
+            "pdo_index": 4
+          }
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "cable": {
+          "has_emarker": false
+        },
+        "absent": [
+          "cable.speed_gbps",
+          "cable.power_w_max",
+          "cable.current_a",
+          "cable.type"
+        ],
+        "cable_summary": {
+          "de": "Dieses Kabel meldet keine Kennung",
+          "en": "This cable reports no identity"
+        },
+        "verdicts": [
+          {
+            "domain": "power",
+            "limiter": "charger",
+            "code": "charger_limits_power"
+          },
+          {
+            "domain": "data",
+            "limiter": "device",
+            "code": "device_at_its_max"
+          }
+        ]
+      }
+    ]
+  }
+}

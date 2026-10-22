@@ -1,0 +1,9 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Nur Laden | An diesem Port wird nur geladen.
+  cable: Passiv, 40 Gbit/s, 3 A / 60 W
+  trust: Angabe unplausibel: 240-W-Betrieb (EPR) gemeldet, aber keine 5 A.
+  trust: Angabe unplausibel: Die Hersteller-ID ist 0.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

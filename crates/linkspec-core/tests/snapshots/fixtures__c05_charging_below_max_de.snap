@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Nur Laden | Lädt mit 20 W (Netzteil kann bis 100 W).
+  cable: Passiv, 20 Gbit/s, 5 A / 100 W
+  power/none: Lädt mit 20 W (Netzteil kann bis 100 W).
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

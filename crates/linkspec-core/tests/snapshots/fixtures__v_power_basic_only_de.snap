@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Nur Laden | Nur die Basisangabe ist sichtbar: USB-C mit bis zu 15 W. Details zum Netzteil liefert das System nicht.
+  power/unknown: Nur die Basisangabe ist sichtbar: USB-C mit bis zu 15 W. Details zum Netzteil liefert das System nicht.

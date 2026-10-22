@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Slow USB or charge-only cable | No data connection: the cable may have no data wires, or the device does not transfer data.
+  cable: This cable reports no identity
+  power/none: Charging at 15 W (charger can deliver up to 30 W).
+  data/unknown: No data connection: the cable may have no data wires, or the device does not transfer data.

@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Charging only | Charging at 20 W (charger can deliver up to 100 W).
+  cable: Passive, 20 Gbit/s, 5 A / 100 W
+  power/none: Charging at 20 W (charger can deliver up to 100 W).
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

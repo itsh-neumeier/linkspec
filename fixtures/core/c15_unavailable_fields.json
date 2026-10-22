@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      15
+    ],
+    "description": "Felder, die die Plattform nicht liefert (Windows ohne Dienst)"
+  },
+  "snapshot": {
+    "host": {
+      "os": "windows",
+      "os_version": "10.0.26100",
+      "model": null,
+      "arch": "x86_64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "unavailable",
+          "reason": "needs_service"
+        },
+        "power": {
+          "state": "unavailable",
+          "reason": "platform_not_exposed"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "SSD",
+              "speed_mbps": 10000,
+              "source": "fixture",
+              "bcd_usb": 800
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ],
+    "notices": [
+      "service_not_installed"
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "unavailable": [
+          "cable",
+          "power"
+        ],
+        "power": {
+          "available": false
+        },
+        "unavailable_contains": {
+          "cable": {
+            "de": "Erweiterte Kabeldaten benötigen den LinkSpec-Dienst"
+          },
+          "power": {
+            "de": "Lade-Angaben an diesem Port nicht verfügbar"
+          }
+        }
+      }
+    ],
+    "notices": [
+      "service_not_installed"
+    ]
+  }
+}

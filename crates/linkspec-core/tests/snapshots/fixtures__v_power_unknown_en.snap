@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Charging only | The charging data is not sufficient for a verdict.
+  power/unknown: The charging data is not sufficient for a verdict.

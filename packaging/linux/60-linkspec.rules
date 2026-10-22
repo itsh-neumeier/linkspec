@@ -1,0 +1,9 @@
+# Optional udev rule for LinkSpec.
+# LinkSpec reads sysfs without root. Some kernels or vendor drivers create
+# Type-C attributes with mode 0400. This rule makes them readable for the
+# group "linkspec". Install only if `linkspec --raw` lists permission_denied.
+#   sudo groupadd -f linkspec && sudo usermod -aG linkspec "$USER"
+#   sudo install -m 644 60-linkspec.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload && sudo udevadm trigger
+SUBSYSTEM=="typec", RUN+="/bin/sh -c 'chgrp -R linkspec /sys%p 2>/dev/null; chmod -R g+r /sys%p 2>/dev/null'"
+SUBSYSTEM=="usb_power_delivery", RUN+="/bin/sh -c 'chgrp -R linkspec /sys%p 2>/dev/null; chmod -R g+r /sys%p 2>/dev/null'"

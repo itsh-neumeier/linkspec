@@ -1,0 +1,3 @@
+# Community cable fingerprints (see docs/kabel-melden.md).
+# Columns: fingerprint (16 hex), name, source (issue URL or "own measurement").
+fingerprint,name,source

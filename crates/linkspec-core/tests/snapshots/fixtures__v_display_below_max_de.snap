@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display verbunden | Das Display läuft unter seinem Höchstmodus, obwohl die Verbindung mehr tragen würde. Bitte die Anzeige-Einstellungen prüfen.
+  display/none: Das Display läuft unter seinem Höchstmodus, obwohl die Verbindung mehr tragen würde. Bitte die Anzeige-Einstellungen prüfen.

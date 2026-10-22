@@ -1,0 +1,179 @@
+{
+  "schema": "linkspec.capture.v1",
+  "backend": "macos",
+  "anonymized": true,
+  "synthetic": true,
+  "host": {
+    "os": "macos",
+    "os_version": "15.1",
+    "model": "Mac15,6",
+    "arch": "aarch64"
+  },
+  "data": {
+    "entries": [
+      {
+        "id": 1,
+        "class": "IORegistryEntry",
+        "name": "Root"
+      },
+      {
+        "id": 2,
+        "parent": 1,
+        "class": "AppleHPMInterfaceType10",
+        "name": "Port-USB-C@1",
+        "props": {
+          "PortNumber": 1,
+          "ConnectionActive": true,
+          "TransportsSupported": [
+            "CC",
+            "USB2",
+            "USB3",
+            "CIO",
+            "DisplayPort"
+          ],
+          "TransportsActive": [
+            "CC",
+            "USB2",
+            "USB3",
+            "DisplayPort"
+          ],
+          "Plug Orientation": 2
+        }
+      },
+      {
+        "id": 3,
+        "parent": 2,
+        "class": "AppleHPMDevice",
+        "name": "pd",
+        "props": {
+          "SOP' Discover Identity": [
+            402657844,
+            0,
+            1450704897,
+            8258
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "parent": 1,
+        "class": "AppleHPMInterfaceType10",
+        "name": "Port-USB-C@2",
+        "props": {
+          "PortNumber": 2,
+          "ConnectionActive": false,
+          "TransportsSupported": [
+            "CC",
+            "USB2",
+            "USB3",
+            "CIO",
+            "DisplayPort"
+          ],
+          "TransportsActive": []
+        }
+      },
+      {
+        "id": 10,
+        "parent": 1,
+        "class": "AppleT8122USBXHCI",
+        "name": "usb-drd0"
+      },
+      {
+        "id": 11,
+        "parent": 10,
+        "class": "IOUSBHostDevice",
+        "name": "Hub",
+        "props": {
+          "idVendor": 3034,
+          "idProduct": 1041,
+          "Device Speed": 3,
+          "bDeviceClass": 9,
+          "USB Product Name": "USB3.0 Hub",
+          "bcdUSB": 800
+        }
+      },
+      {
+        "id": 12,
+        "parent": 11,
+        "class": "IOUSBHostDevice",
+        "name": "Disk",
+        "props": {
+          "idVendor": 1921,
+          "idProduct": 21889,
+          "Device Speed": 2,
+          "USB Product Name": "Flash Disk",
+          "bcdUSB": 512
+        }
+      },
+      {
+        "id": 20,
+        "parent": 1,
+        "class": "AppleSmartBattery",
+        "name": "AppleSmartBattery",
+        "props": {
+          "ExternalConnected": true,
+          "IsCharging": true,
+          "FullyCharged": false,
+          "CurrentCapacity": 64,
+          "MaxCapacity": 100,
+          "Voltage": 12900,
+          "Amperage": 2100,
+          "AdapterDetails": {
+            "Watts": 96,
+            "UsbHvcMenu": [
+              {
+                "Index": 0,
+                "MaxVoltage": 5000,
+                "MaxCurrent": 3000
+              },
+              {
+                "Index": 1,
+                "MaxVoltage": 9000,
+                "MaxCurrent": 3000
+              },
+              {
+                "Index": 2,
+                "MaxVoltage": 15000,
+                "MaxCurrent": 3000
+              },
+              {
+                "Index": 3,
+                "MaxVoltage": 20000,
+                "MaxCurrent": 4700
+              }
+            ],
+            "UsbHvcHvcIndex": 3
+          },
+          "PowerTelemetryData": {
+            "SystemPowerIn": 61000,
+            "SystemVoltageIn": 20000,
+            "SystemCurrentIn": 3050
+          }
+        }
+      }
+    ],
+    "displays": [
+      {
+        "builtin": true
+      },
+      {
+        "builtin": false,
+        "current": {
+          "width": 2560,
+          "height": 1440,
+          "refresh_hz": 60.0
+        },
+        "max": {
+          "width": 3840,
+          "height": 2160,
+          "refresh_hz": 60.0
+        }
+      }
+    ],
+    "host": {
+      "model": "Mac15,6",
+      "os_version": "15.1",
+      "arch": "aarch64"
+    }
+  }
+}

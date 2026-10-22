@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Langsames USB oder Nur-Lade-Kabel | Keine Datenverbindung: Das Kabel hat vielleicht keine Datenleitungen, oder das Gerät überträgt keine Daten.
+  cable: Dieses Kabel meldet keine Kennung
+  power/none: Lädt mit 15 W (Netzteil kann bis 30 W).
+  data/unknown: Keine Datenverbindung: Das Kabel hat vielleicht keine Datenleitungen, oder das Gerät überträgt keine Daten.

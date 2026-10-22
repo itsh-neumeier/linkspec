@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Thunderbolt / USB4 | The connection runs at 10 Gbit/s, the cable reports 40 Gbit/s. Without a controller measurement the cause is unclear.
+  cable: Passive, 40 Gbit/s, 5 A / 100 W
+  data/unknown: The connection runs at 10 Gbit/s, the cable reports 40 Gbit/s. Without a controller measurement the cause is unclear.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

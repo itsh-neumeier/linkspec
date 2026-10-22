@@ -1,0 +1,9 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display verbunden | Daten laufen mit USB 3 (5 Gbit/s). Was die Verbindung begrenzt, lässt sich nicht sicher sagen.
+  cable: Passiv, 20 Gbit/s, 5 A / 100 W
+  data/unknown: Daten laufen mit USB 3 (5 Gbit/s). Was die Verbindung begrenzt, lässt sich nicht sicher sagen.
+  display/none: Das Display läuft mit seinem Höchstmodus.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

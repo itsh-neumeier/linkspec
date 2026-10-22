@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Langsames USB oder Nur-Lade-Kabel | Wahrscheinlich ein USB-2.0- oder Nur-Lade-Kabel: Port und Gerät könnten schneller.
+  cable: Dieses Kabel meldet keine Kennung
+  data/cable: Wahrscheinlich ein USB-2.0- oder Nur-Lade-Kabel: Port und Gerät könnten schneller.

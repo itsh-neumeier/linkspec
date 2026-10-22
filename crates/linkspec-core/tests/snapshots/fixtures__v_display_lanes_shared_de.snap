@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display verbunden | Das Endgerät nutzt USB 3 (5 Gbit/s) und ist damit am Limit.
+  data/device: Das Endgerät ist mit USB 3 (5 Gbit/s) am Limit.
+  display/device: Das Display läuft unter seinem Höchstmodus: Das Dock teilt die Leitungen zwischen USB 3 und DisplayPort.

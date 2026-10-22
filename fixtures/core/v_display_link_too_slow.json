@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Monitor braucht mehr als die DP-Verbindung trägt"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "displayport": true,
+          "source": "fixture"
+        },
+        "link": {
+          "transports": [
+            "displayport"
+          ],
+          "displayport": {
+            "lanes": 4,
+            "lane_gbps": 5.4,
+            "source": "fixture"
+          },
+          "source": "fixture"
+        },
+        "displays": [
+          {
+            "name": "Monitor",
+            "current": {
+              "width": 3840,
+              "height": 2160,
+              "refresh_hz": 60,
+              "bits_per_color": 8
+            },
+            "max": {
+              "width": 3840,
+              "height": 2160,
+              "refresh_hz": 144,
+              "bits_per_color": 8
+            },
+            "source": "fixture"
+          }
+        ]
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "display",
+            "limiter": "unknown",
+            "code": "display_link_too_slow"
+          }
+        ]
+      }
+    ]
+  }
+}

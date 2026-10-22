@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Charging only | The computer takes at most 65 W on this port. Cable and charger could deliver more.
+  cable: Passive, 20 Gbit/s, 5 A / 100 W
+  power/port: The computer takes at most 65 W on this port. Cable and charger could deliver more.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

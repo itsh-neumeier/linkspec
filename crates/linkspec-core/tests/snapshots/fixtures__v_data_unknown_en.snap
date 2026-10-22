@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | USB device | Data runs at USB 3 (5 Gbit/s). It is not certain what limits the connection.
+  data/unknown: Data runs at USB 3 (5 Gbit/s). It is not certain what limits the connection.

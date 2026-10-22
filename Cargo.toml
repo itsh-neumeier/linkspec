@@ -1,0 +1,80 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/linkspec-core",
+    "crates/linkspec-platform",
+    "crates/linkspec-engine",
+    "crates/linkspec-backend-macos",
+    "crates/linkspec-backend-linux",
+    "crates/linkspec-backend-windows",
+    "crates/linkspec-service",
+    "crates/linkspec-db",
+    "crates/linkspec-history",
+    "crates/linkspec-cli",
+    "crates/linkspec-fake",
+    "app",
+]
+default-members = [
+    "crates/linkspec-core",
+    "crates/linkspec-platform",
+    "crates/linkspec-engine",
+    "crates/linkspec-backend-macos",
+    "crates/linkspec-backend-linux",
+    "crates/linkspec-backend-windows",
+    "crates/linkspec-service",
+    "crates/linkspec-db",
+    "crates/linkspec-history",
+    "crates/linkspec-cli",
+    "crates/linkspec-fake",
+]
+
+[workspace.package]
+version = "0.9.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+repository = "https://github.com/itsh-neumeier/linkspec"
+authors = ["LinkSpec contributors"]
+
+[workspace.dependencies]
+linkspec-core = { path = "crates/linkspec-core", version = "0.9.0" }
+linkspec-platform = { path = "crates/linkspec-platform", version = "0.9.0" }
+linkspec-engine = { path = "crates/linkspec-engine", version = "0.9.0" }
+linkspec-backend-macos = { path = "crates/linkspec-backend-macos", version = "0.9.0" }
+linkspec-backend-linux = { path = "crates/linkspec-backend-linux", version = "0.9.0" }
+linkspec-backend-windows = { path = "crates/linkspec-backend-windows", version = "0.9.0" }
+linkspec-db = { path = "crates/linkspec-db", version = "0.9.0" }
+linkspec-history = { path = "crates/linkspec-history", version = "0.9.0" }
+linkspec-fake = { path = "crates/linkspec-fake", version = "0.9.0" }
+linkspec-cli = { path = "crates/linkspec-cli", version = "0.9.0" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt", "env-filter", "ansi"] }
+tracing-appender = "0.2"
+fluent-bundle = "0.16"
+unic-langid = { version = "0.9", features = ["macros"] }
+sys-locale = "0.3"
+clap = { version = "4", features = ["derive", "wrap_help"] }
+ratatui = { version = "0.30", default-features = false, features = ["crossterm"] }
+crossterm = "0.29"
+rusqlite = { version = "0.40", features = ["bundled"] }
+sha2 = "0.11"
+time = { version = "0.3", features = ["formatting", "parsing", "macros"] }
+libc = "0.2"
+jsonschema = { version = "0.59", default-features = false }
+insta = { version = "1", features = ["json"] }
+tempfile = "3"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+opt-level = 3
+
+[profile.dev.package."*"]
+opt-level = 1

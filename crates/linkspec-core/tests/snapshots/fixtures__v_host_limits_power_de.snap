@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Nur Laden | Der Rechner nimmt an diesem Port höchstens 65 W auf. Kabel und Netzteil könnten mehr.
+  cable: Passiv, 20 Gbit/s, 5 A / 100 W
+  power/port: Der Rechner nimmt an diesem Port höchstens 65 W auf. Kabel und Netzteil könnten mehr.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

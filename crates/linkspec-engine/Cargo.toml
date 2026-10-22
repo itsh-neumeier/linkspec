@@ -1,0 +1,33 @@
+[package]
+name = "linkspec-engine"
+description = "LinkSpec engine: backend selection, diagnosis pipeline, session tracking, history and settings (shared by CLI and app)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+linkspec-core.workspace = true
+linkspec-platform.workspace = true
+linkspec-fake.workspace = true
+linkspec-db.workspace = true
+linkspec-history.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sys-locale.workspace = true
+tracing.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+linkspec-backend-linux.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+linkspec-backend-macos.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+linkspec-backend-windows.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+jsonschema.workspace = true

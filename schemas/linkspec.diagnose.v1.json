@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/itsh-neumeier/linkspec/schemas/linkspec.diagnose.v1.json",
+  "title": "LinkSpec diagnosis v1",
+  "description": "Output of `linkspec --json`. Changes are additive only. Unknown values are left out; null appears only where the column exists but the value is missing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "generated_at", "host", "sources", "ports"],
+  "properties": {
+    "schema": { "const": "linkspec.diagnose.v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "os_version", "model", "arch", "app_version"],
+      "properties": {
+        "os": { "enum": ["macos", "linux", "windows"] },
+        "os_version": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "arch": { "type": "string" },
+        "app_version": { "type": "string" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier", "usb_probe"],
+      "properties": {
+        "tier": { "enum": ["user", "service", "driver"] },
+        "usb_probe": { "type": "boolean" }
+      }
+    },
+    "notices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coded_text" }
+    },
+    "ports": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/port" }
+    }
+  },
+  "$defs": {
+    "coded_text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "summary"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "summary": { "type": "string" }
+      }
+    },
+    "source": {
+      "enum": ["iokit", "coregraphics", "sysfs", "setupapi", "usb_ioctl", "battery_ioctl", "emi", "displayconfig", "service", "fixture", "derived"]
+    },
+    "transport": { "enum": ["usb2", "usb3", "usb4", "thunderbolt", "displayport"] },
+    "display_mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "refresh_hz"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "refresh_hz": { "type": "number" },
+        "bits_per_color": { "type": "integer" }
+      }
+    },
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "headline", "headline_text", "summary", "status", "verdicts", "faults", "unavailable"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "location": { "type": "string" },
+        "headline": { "enum": ["thunderbolt_usb4", "usb_device", "display", "charging_only", "slow_or_charge_only", "empty"] },
+        "headline_text": { "type": "string" },
+        "summary": { "type": "string" },
+        "status": { "enum": ["ok", "warn", "fault"] },
+        "cable": { "$ref": "#/$defs/cable" },
+        "power": { "$ref": "#/$defs/power" },
+        "link": { "$ref": "#/$defs/link" },
+        "devices": { "type": "array", "items": { "$ref": "#/$defs/device" } },
+        "displays": { "type": "array", "items": { "$ref": "#/$defs/display" } },
+        "verdicts": { "type": "array", "items": { "$ref": "#/$defs/verdict" } },
+        "faults": { "type": "array", "items": { "$ref": "#/$defs/fault" } },
+        "unavailable": { "type": "array", "items": { "$ref": "#/$defs/unavailable" } },
+        "notes": { "type": "array", "items": { "$ref": "#/$defs/coded_text" } },
+        "health": { "$ref": "#/$defs/health" },
+        "raw": { "type": "object" }
+      }
+    },
+    "cable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["has_emarker", "summary"],
+      "properties": {
+        "has_emarker": { "type": "boolean" },
+        "type": { "enum": ["passive", "active", "optical", "unknown"] },
+        "speed_gbps": { "enum": [0.48, 5, 20, 40, 80] },
+        "current_a": { "enum": [3, 5] },
+        "power_w_max": { "enum": [60, 100, 240] },
+        "vid": { "type": "string", "pattern": "^[0-9a-f]{4}$" },
+        "pid": { "type": "string", "pattern": "^[0-9a-f]{4}$" },
+        "vendor_name": { "type": ["string", "null"] },
+        "xid": { "type": ["string", "null"], "pattern": "^[0-9a-f]{8}$" },
+        "certification": { "enum": ["listed", "unlisted", null] },
+        "certified_name": { "type": "string" },
+        "trust_flags": { "type": "array", "items": { "$ref": "#/$defs/coded_text" } },
+        "summary": { "type": "string" },
+        "known_as": { "type": "string" },
+        "history": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fingerprint", "first_seen", "uses", "faults"],
+          "properties": {
+            "fingerprint": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+            "name": { "type": "string" },
+            "first_seen": { "type": "string" },
+            "uses": { "type": "integer", "minimum": 0 },
+            "faults": { "type": "integer", "minimum": 0 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "has_emarker": { "const": false } } },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["speed_gbps"] },
+                { "required": ["power_w_max"] },
+                { "required": ["current_a"] }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "power": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "role": { "enum": ["sink", "source"] },
+        "pdos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "selected"],
+            "properties": {
+              "type": { "enum": ["fixed", "battery", "variable", "pps", "spr_avs", "epr_avs", "unknown"] },
+              "voltage_v": { "type": "number" },
+              "min_voltage_v": { "type": "number" },
+              "current_a": { "type": "number" },
+              "max_w": { "type": "number" },
+              "selected": { "type": "boolean" }
+            }
+          }
+        },
+        "contract_w": { "type": ["number", "null"] },
+        "contract_v": { "type": "number" },
+        "contract_a": { "type": "number" },
+        "measured_w": { "type": "number" },
+        "basic_only": { "type": "boolean" },
+        "typec_current": { "enum": ["default", "1.5a", "3a"] },
+        "summary": { "type": "string" }
+      }
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transports", "usb_gbps", "thunderbolt_gen", "lanes"],
+      "properties": {
+        "transports": { "type": "array", "items": { "$ref": "#/$defs/transport" }, "uniqueItems": true },
+        "usb_gbps": { "type": ["number", "null"] },
+        "thunderbolt_gen": { "enum": ["tb3", "usb4_v1", "tb4", "usb4_v2", "tb5", null] },
+        "lanes": { "type": ["integer", "null"] },
+        "fabric_gbps": { "type": "number" },
+        "fabric_measured": { "type": "boolean" },
+        "displayport_lanes": { "enum": [1, 2, 4] },
+        "topology": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["depth"],
+            "properties": {
+              "depth": { "type": "integer", "minimum": 1 },
+              "name": { "type": "string" },
+              "generation": { "type": "string" },
+              "link_gbps": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vendor", "product", "via", "usb_gbps"],
+      "properties": {
+        "vendor": { "type": ["string", "null"] },
+        "product": { "type": ["string", "null"] },
+        "via": { "enum": ["direct", "hub"] },
+        "usb_gbps": { "type": "number" },
+        "depth": { "type": "integer", "minimum": 0 },
+        "is_hub": { "type": "boolean" }
+      }
+    },
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "current": { "$ref": "#/$defs/display_mode" },
+        "max": { "$ref": "#/$defs/display_mode" },
+        "dsc": { "type": "boolean" },
+        "adapter": { "type": "string" },
+        "link_gbps": { "type": "number" },
+        "required_gbps": { "type": "number" }
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "limiter", "code", "summary", "evidence"],
+      "properties": {
+        "domain": { "enum": ["power", "data", "display"] },
+        "limiter": { "enum": ["port", "cable", "charger", "device", "none", "unknown"] },
+        "code": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "summary": { "type": "string" },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "source"],
+            "properties": {
+              "field": { "type": "string" },
+              "source": { "$ref": "#/$defs/source" },
+              "value": {}
+            }
+          }
+        }
+      }
+    },
+    "fault": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "count", "banner", "summary"],
+      "properties": {
+        "kind": { "enum": ["overcurrent", "drop_reconnect"] },
+        "count": { "type": "integer", "minimum": 0 },
+        "last_at": { "type": "string" },
+        "banner": { "type": "boolean" },
+        "summary": { "type": "string" }
+      }
+    },
+    "unavailable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "reason", "summary"],
+      "properties": {
+        "field": { "type": "string" },
+        "reason": { "enum": ["platform_not_exposed", "needs_service", "firmware_not_reported", "behind_internal_hub", "usb_probe_off", "permission_denied"] },
+        "summary": { "type": "string" }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "overcurrent_count": { "type": "integer", "minimum": 0 },
+        "reset_count": { "type": "integer", "minimum": 0 },
+        "reconnect_count": { "type": "integer", "minimum": 0 },
+        "orientation": { "enum": ["normal", "reverse"] },
+        "liquid_detected": { "type": "boolean" },
+        "cable_resistance_mohm": { "type": "number" }
+      }
+    }
+  }
+}

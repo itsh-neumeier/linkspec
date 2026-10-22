@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      8
+    ],
+    "description": "XID vorhanden, nicht gelistet"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "thunderbolt",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "emarker",
+          "identity": {
+            "id_header": 402657844,
+            "cert_stat": 4660,
+            "product": 1450704897,
+            "product_type_vdos": [
+              8259
+            ]
+          },
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "cable": {
+          "certification": "unlisted",
+          "xid": "00001234"
+        },
+        "status": "ok",
+        "no_trust_flags": true
+      }
+    ]
+  },
+  "catalog": {
+    "xids": {
+      "0000abcd": "Example Certified Cable"
+    },
+    "vendors": {
+      "1234": "Example Vendor"
+    }
+  }
+}

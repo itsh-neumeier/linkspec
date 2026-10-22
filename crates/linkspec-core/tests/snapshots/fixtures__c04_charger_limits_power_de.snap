@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Nur Laden | Das Netzteil liefert höchstens 30 W. Kabel und Rechner könnten mehr.
+  cable: Passiv, 20 Gbit/s, 5 A / 100 W
+  power/charger: Das Netzteil liefert höchstens 30 W. Kabel und Rechner könnten mehr.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      9
+    ],
+    "description": "Port hinter internem Hub ohne Kabeldaten"
+  },
+  "snapshot": {
+    "host": {
+      "os": "windows",
+      "os_version": "10.0.26100",
+      "model": null,
+      "arch": "x86_64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": null,
+        "capabilities": {
+          "usb": "gen1",
+          "source": "fixture"
+        },
+        "behind_internal_hub": true,
+        "cable": {
+          "state": "unavailable",
+          "reason": "behind_internal_hub"
+        },
+        "power": {
+          "state": "unavailable",
+          "reason": "behind_internal_hub"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "Stick",
+              "speed_mbps": 480,
+              "source": "fixture",
+              "bcd_usb": 528
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "headline": "usb_device",
+        "verdicts": [
+          {
+            "domain": "data",
+            "limiter": "unknown",
+            "code": "data_via_internal_hub"
+          }
+        ],
+        "unavailable": [
+          "cable",
+          "power"
+        ],
+        "absent": [
+          "cable"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Slow USB or charge-only cable | Probably a USB 2.0 or charge-only cable: port and device could go faster.
+  cable: This cable reports no identity
+  data/cable: Probably a USB 2.0 or charge-only cable: port and device could go faster.

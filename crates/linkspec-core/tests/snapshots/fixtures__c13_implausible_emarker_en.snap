@@ -1,0 +1,9 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Charging only | This port only charges.
+  cable: Passive, 40 Gbit/s, 3 A / 60 W
+  trust: Implausible: 240 W operation (EPR) reported, but not 5 A.
+  trust: Implausible: the vendor ID is 0.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

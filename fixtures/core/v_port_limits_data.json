@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Port nur USB 2.0, Gerät und Kabel mehr"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "usb2",
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "emarker",
+          "identity": {
+            "id_header": 402657844,
+            "cert_stat": 0,
+            "product": 1450704897,
+            "product_type_vdos": [
+              8226
+            ]
+          },
+          "source": "fixture"
+        },
+        "partner": {
+          "identity": {
+            "id_header": 1342180314,
+            "cert_stat": 0,
+            "product": 68223232,
+            "product_type_vdos": [
+              83886082
+            ]
+          },
+          "source": "fixture"
+        },
+        "link": {
+          "usb_devices": [
+            {
+              "vendor": "Example",
+              "product": "SSD",
+              "speed_mbps": 480,
+              "source": "fixture",
+              "bcd_usb": 528
+            }
+          ],
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "data",
+            "limiter": "port",
+            "code": "port_limits_data"
+          }
+        ]
+      }
+    ]
+  }
+}

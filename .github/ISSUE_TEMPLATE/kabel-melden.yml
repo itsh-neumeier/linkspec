@@ -1,0 +1,53 @@
+name: Kabel melden
+description: Ein E-Marker-Kabel für die gemeinsame Kabelliste melden (am besten mit `linkspec --report` vorausfüllen).
+title: "Kabel: "
+labels: ["kabel"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke! Die Felder unten füllt `linkspec --report` bzw. „Kabel melden“ in der App vor.
+        Bitte keine Seriennummern eintragen. Beiträge zur Kabelliste stehen unter der MIT-Lizenz des Projekts.
+  - type: input
+    id: vid
+    attributes: { label: Vendor-ID (VID), placeholder: "05ac" }
+    validations: { required: true }
+  - type: input
+    id: pid
+    attributes: { label: Product-ID (PID), placeholder: "1234" }
+    validations: { required: true }
+  - type: input
+    id: cable_type
+    attributes: { label: Typ laut E-Marker (passive/active/optical) }
+  - type: input
+    id: speed
+    attributes: { label: Datentempo laut E-Marker }
+  - type: input
+    id: power
+    attributes: { label: Strom / Watt laut E-Marker }
+  - type: input
+    id: xid
+    attributes: { label: USB-IF-XID (falls gemeldet) }
+  - type: input
+    id: fingerprint
+    attributes: { label: LinkSpec-Fingerabdruck }
+    validations: { required: true }
+  - type: textarea
+    id: vdos
+    attributes: { label: Rohe VDOs (ID Header, Cert Stat, Product, Cable VDOs) }
+  - type: input
+    id: platform
+    attributes: { label: Plattform und LinkSpec-Version }
+  - type: input
+    id: observed
+    attributes: { label: Beobachtete Verbindung }
+  - type: input
+    id: brand
+    attributes: { label: Marke und Modell (Aufdruck, Verpackung) }
+    validations: { required: true }
+  - type: input
+    id: length
+    attributes: { label: Länge }
+  - type: textarea
+    id: notes
+    attributes: { label: Eigene Messung / Bemerkungen }

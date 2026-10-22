@@ -1,0 +1,6 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+USB-C 1 | Display connected | Display data is missing; the mode cannot be judged.
+  display/unknown: Display data is missing; the mode cannot be judged.

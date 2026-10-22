@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [
+      13
+    ],
+    "description": "Unplausible E-Marker-Kombination (VID 0, EPR ohne 5 A)"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "thunderbolt",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "fabric": "tb4",
+          "displayport": true,
+          "sink_max_w": 100,
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "emarker",
+          "identity": {
+            "id_header": 402653184,
+            "cert_stat": 0,
+            "product": 1450704897,
+            "product_type_vdos": [
+              140835
+            ]
+          },
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "trust_flags": [
+          "epr_without_5a",
+          "vid_zero"
+        ],
+        "status": "warn",
+        "no_text": [
+          "Fälschung",
+          "fake",
+          "Fake",
+          "gefälscht"
+        ]
+      }
+    ]
+  }
+}

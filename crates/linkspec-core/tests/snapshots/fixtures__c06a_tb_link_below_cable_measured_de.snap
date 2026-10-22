@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Thunderbolt / USB4 | Die Verbindung läuft nur mit 10 Gbit/s, obwohl das Kabel 40 Gbit/s meldet und Port und Gerät mehr können. Das Kabel bremst.
+  cable: Passiv, 40 Gbit/s, 5 A / 100 W
+  data/cable: Die Verbindung läuft nur mit 10 Gbit/s, obwohl das Kabel 40 Gbit/s meldet und Port und Gerät mehr können. Das Kabel bremst.
+  note: Die Kabelangaben stammen aus dem E-Marker des Kabels. LinkSpec ist kein Kabeltester.

@@ -1,0 +1,537 @@
+// LinkSpec app UI. All visible text comes from Fluent (locales/*.ftl)
+// through the Tr global; nothing is hard-coded here except symbols.
+
+import { Button, CheckBox, Switch, ComboBox, ScrollView, LineEdit, Palette, TabWidget, VerticalBox, HorizontalBox, GroupBox, Slider, AboutSlint } from "std-widgets.slint";
+
+export struct Verdict {
+    domain: string,
+    text: string,
+    warn: bool,
+}
+
+export struct Banner {
+    kind: string,
+    text: string,
+}
+
+export struct Device {
+    text: string,
+    depth: int,
+}
+
+export struct Port {
+    id: string,
+    label: string,
+    location: string,
+    headline: string,
+    summary: string,
+    // 0 ok, 1 warn, 2 fault
+    status: int,
+    empty: bool,
+    cable: string,
+    power: string,
+    verdicts: [Verdict],
+    banners: [Banner],
+    devices: [Device],
+    notes: [string],
+    details: [string],
+}
+
+export struct NegRow {
+    port-label: string,
+    domain: string,
+    port: string,
+    cable: string,
+    device: string,
+    negotiated: string,
+    // 0 none, 1 port, 2 cable, 3 device
+    weakest: int,
+}
+
+export struct CableRow {
+    fingerprint: string,
+    name: string,
+    summary: string,
+    vidpid: string,
+    uses: int,
+    faults: int,
+    first-seen: string,
+    last-seen: string,
+    ok: bool,
+}
+
+export struct DisplayRow {
+    port-label: string,
+    name: string,
+    current: string,
+    max: string,
+    link: string,
+    verdict: string,
+}
+
+export global Tr {
+    in property <int> rev;
+    pure callback t(string, int) -> string;
+}
+
+export global State {
+    in property <[Port]> ports;
+    in property <[NegRow]> negotiation;
+    in property <[CableRow]> cables;
+    in property <[DisplayRow]> displays;
+    in property <string> monitor-path;
+    in property <string> monitor-now;
+    in property <string> monitor-note;
+    in property <string> version;
+    in property <string> vendor-db;
+    in property <string> service-status;
+    in property <string> update-text;
+    in property <string> no-ports-text;
+    in-out property <bool> tech-details;
+    in-out property <bool> hide-empty;
+    in-out property <bool> start-at-login;
+    in-out property <bool> window-mode;
+    in-out property <bool> usb-probe;
+    in-out property <bool> notifications;
+    in-out property <bool> update-check;
+    in-out property <bool> keep-open;
+    in-out property <float> font-scale: 1.0;
+    // 0 system, 1 de, 2 en
+    in-out property <int> language;
+    in-out property <int> current-tab;
+    callback refresh();
+    callback dismiss(string, string);
+    callback open-window(int);
+    callback rename-cable(string, string);
+    callback forget-cable(string);
+    callback report();
+    callback setting-changed(string);
+    callback open-url(string);
+    callback check-updates();
+    callback monitor-visible(bool);
+    callback quit();
+}
+
+component StatusIcon inherits Text {
+    in property <int> status;
+    text: status == 0 ? "✓" : status == 1 ? "!" : "✗";
+    font-weight: 700;
+    color: status == 0 ? #2e9d4a : status == 1 ? #c98a00 : #d03b30;
+    accessible-role: none;
+}
+
+component PortCard inherits Rectangle {
+    in property <Port> port;
+    in property <bool> compact;
+    border-radius: 8px;
+    background: Palette.alternate-background;
+    border-width: 1px;
+    border-color: port.status == 0 ? Palette.border : port.status == 1 ? #c98a00 : #d03b30;
+    VerticalLayout {
+        padding: 10px;
+        spacing: 4px;
+        alignment: start;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            StatusIcon {
+                vertical-alignment: center;
+                status: port.status;
+                font-size: 1.2rem;
+            }
+            Text {
+                text: port.label + (port.location != "" ? " · " + port.location : "");
+                color: Palette.foreground;
+                opacity: 0.7;
+                vertical-alignment: center;
+                horizontal-stretch: 0;
+            }
+            Text {
+                text: port.headline;
+                font-weight: 700;
+                color: Palette.foreground;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+                accessible-role: text;
+                accessible-label: port.label + ": " + port.headline;
+            }
+        }
+        for b in port.banners: Rectangle {
+            background: #d03b3030;
+            border-radius: 6px;
+            HorizontalLayout {
+                padding: 6px;
+                spacing: 6px;
+                Text {
+                    text: "✗ " + b.text;
+                    color: Palette.foreground;
+                    wrap: word-wrap;
+                    horizontal-stretch: 1;
+                    accessible-role: text;
+                    accessible-label: Tr.t("app-fault", Tr.rev) + ": " + b.text;
+                }
+                Button {
+                    text: Tr.t("app-dismiss", Tr.rev);
+                    clicked => { State.dismiss(port.id, b.kind); }
+                }
+            }
+        }
+        if port.summary != "": Text {
+            text: port.summary;
+            wrap: word-wrap;
+            color: Palette.foreground;
+            accessible-role: text;
+            accessible-label: port.summary;
+        }
+        if !compact && port.cable != "": Text {
+            text: Tr.t("cli-cable", Tr.rev) + ": " + port.cable;
+            wrap: word-wrap;
+            color: Palette.foreground;
+            opacity: 0.85;
+        }
+        if !compact && port.power != "": Text {
+            text: Tr.t("cli-power", Tr.rev) + ": " + port.power;
+            wrap: word-wrap;
+            color: Palette.foreground;
+            opacity: 0.85;
+        }
+        if !compact: VerticalLayout {
+            for d in port.devices: Text {
+                x: d.depth * 14px;
+                text: "• " + d.text;
+                color: Palette.foreground;
+                opacity: 0.85;
+                wrap: word-wrap;
+            }
+        }
+        if !compact: VerticalLayout {
+            spacing: 2px;
+            for v in port.verdicts: Text {
+                text: (v.warn ? "! " : "") + v.domain + ": " + v.text;
+                wrap: word-wrap;
+                color: Palette.foreground;
+                accessible-role: text;
+                accessible-label: v.domain + ": " + v.text;
+            }
+        }
+        for n in port.notes: Text {
+            text: n;
+            wrap: word-wrap;
+            font-size: 0.85rem;
+            color: Palette.foreground;
+            opacity: 0.6;
+        }
+        if State.tech-details: VerticalLayout {
+            for line in port.details: Text {
+                text: line;
+                font-family: "monospace";
+                font-size: 0.8rem;
+                wrap: word-wrap;
+                color: Palette.foreground;
+                opacity: 0.75;
+            }
+        }
+    }
+}
+
+component PortList inherits ScrollView {
+    in property <bool> compact;
+    VerticalLayout {
+        padding: 8px;
+        spacing: 8px;
+        alignment: start;
+        width: root.visible-width;
+        if State.ports.length == 0: Text {
+            text: State.no-ports-text;
+            wrap: word-wrap;
+            color: Palette.foreground;
+        }
+        for p in State.ports: PortCard {
+            port: p;
+            compact: compact;
+        }
+    }
+}
+
+export component Flyout inherits Window {
+    title: "LinkSpec";
+    no-frame: true;
+    always-on-top: true;
+    width: 380px;
+    min-height: 200px;
+    preferred-height: 520px;
+    default-font-size: 13px * State.font-scale;
+    background: Palette.background;
+    forward-focus: fs;
+    fs := FocusScope {
+        key-pressed(e) => {
+            if (e.text == Key.Escape) {
+                root.hide();
+                return accept;
+            }
+            reject
+        }
+        VerticalLayout {
+            HorizontalLayout {
+                padding: 8px;
+                spacing: 6px;
+                Text {
+                    text: "LinkSpec";
+                    font-weight: 700;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    color: Palette.foreground;
+                }
+                Switch {
+                    text: Tr.t("app-tech-details", Tr.rev);
+                    checked <=> State.tech-details;
+                }
+            }
+            PortList {
+                compact: !State.tech-details;
+                vertical-stretch: 1;
+            }
+            HorizontalLayout {
+                padding: 8px;
+                spacing: 6px;
+                Button {
+                    text: Tr.t("app-refresh", Tr.rev);
+                    clicked => { State.refresh(); }
+                }
+                Button {
+                    text: Tr.t("app-open-window", Tr.rev);
+                    clicked => { State.open-window(0); }
+                }
+                Button {
+                    text: Tr.t("app-settings", Tr.rev);
+                    clicked => { State.open-window(5); }
+                }
+            }
+        }
+    }
+}
+
+component MonitorView inherits VerticalBox {
+    Text {
+        text: State.monitor-now;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: Palette.foreground;
+        accessible-role: text;
+        accessible-label: State.monitor-now;
+    }
+    Rectangle {
+        min-height: 200px;
+        vertical-stretch: 1;
+        border-width: 1px;
+        border-color: Palette.border;
+        border-radius: 6px;
+        Path {
+            commands: State.monitor-path;
+            stroke: Palette.accent-background;
+            stroke-width: 2px;
+            viewbox-width: 300;
+            viewbox-height: 100;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    Text {
+        text: State.monitor-note;
+        wrap: word-wrap;
+        color: Palette.foreground;
+        opacity: 0.7;
+    }
+}
+
+component NegotiationView inherits ScrollView {
+    VerticalLayout {
+        alignment: start;
+        width: root.visible-width;
+        padding: 8px;
+        spacing: 2px;
+        HorizontalLayout {
+            spacing: 6px;
+            Text { text: ""; width: 22%; }
+            Text { text: Tr.t("neg-port", Tr.rev); width: 18%; font-weight: 700; color: Palette.foreground; }
+            Text { text: Tr.t("neg-cable", Tr.rev); width: 18%; font-weight: 700; color: Palette.foreground; }
+            Text { text: Tr.t("neg-device", Tr.rev); width: 20%; font-weight: 700; color: Palette.foreground; }
+            Text { text: Tr.t("neg-negotiated", Tr.rev); width: 18%; font-weight: 700; color: Palette.foreground; }
+        }
+        for r in State.negotiation: HorizontalLayout {
+            spacing: 6px;
+            Text { text: r.port-label + " · " + r.domain; width: 22%; wrap: word-wrap; color: Palette.foreground; }
+            Text { text: (r.weakest == 1 ? "▶ " : "") + r.port; width: 18%; font-weight: r.weakest == 1 ? 700 : 400; color: Palette.foreground; }
+            Text { text: (r.weakest == 2 ? "▶ " : "") + r.cable; width: 18%; font-weight: r.weakest == 2 ? 700 : 400; color: Palette.foreground; }
+            Text { text: (r.weakest == 3 ? "▶ " : "") + r.device; width: 20%; font-weight: r.weakest == 3 ? 700 : 400; color: Palette.foreground; }
+            Text { text: r.negotiated; width: 18%; color: Palette.foreground; }
+        }
+    }
+}
+
+component DisplayView inherits ScrollView {
+    VerticalLayout {
+        alignment: start;
+        width: root.visible-width;
+        padding: 8px;
+        spacing: 8px;
+        if State.displays.length == 0: Text {
+            text: Tr.t("app-no-displays", Tr.rev);
+            color: Palette.foreground;
+            wrap: word-wrap;
+        }
+        for d in State.displays: GroupBox {
+            title: d.port-label + (d.name != "" ? " · " + d.name : "");
+            VerticalLayout {
+                spacing: 2px;
+                Text { text: Tr.t("app-display-current", Tr.rev) + ": " + d.current; color: Palette.foreground; }
+                Text { text: Tr.t("app-display-max", Tr.rev) + ": " + d.max; color: Palette.foreground; }
+                Text { text: Tr.t("app-display-link", Tr.rev) + ": " + d.link; color: Palette.foreground; }
+                Text { text: d.verdict; wrap: word-wrap; color: Palette.foreground; }
+            }
+        }
+    }
+}
+
+component CableView inherits ScrollView {
+    VerticalLayout {
+        alignment: start;
+        width: root.visible-width;
+        padding: 8px;
+        spacing: 8px;
+        Text {
+            text: Tr.t("app-cables-hint", Tr.rev);
+            wrap: word-wrap;
+            color: Palette.foreground;
+            opacity: 0.7;
+        }
+        if State.cables.length == 0: Text {
+            text: Tr.t("app-no-cables", Tr.rev);
+            color: Palette.foreground;
+        }
+        for c in State.cables: GroupBox {
+            title: (c.name != "" ? c.name : c.vidpid) + (c.ok ? "  ✓" : "  !");
+            VerticalLayout {
+                spacing: 4px;
+                Text { text: c.summary; color: Palette.foreground; wrap: word-wrap; }
+                Text {
+                    text: Tr.t("app-cable-stats", Tr.rev) + ": " + c.uses + " / " + c.faults + " · " + c.first-seen + " – " + c.last-seen;
+                    color: Palette.foreground;
+                    opacity: 0.75;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    spacing: 6px;
+                    name := LineEdit {
+                        placeholder-text: Tr.t("app-cable-name", Tr.rev);
+                        text: c.name;
+                        accepted(t) => { State.rename-cable(c.fingerprint, t); }
+                    }
+                    Button {
+                        text: Tr.t("app-save", Tr.rev);
+                        clicked => { State.rename-cable(c.fingerprint, name.text); }
+                    }
+                    Button {
+                        text: Tr.t("app-forget", Tr.rev);
+                        clicked => { State.forget-cable(c.fingerprint); }
+                    }
+                }
+            }
+        }
+    }
+}
+
+component SettingsView inherits ScrollView {
+    VerticalLayout {
+        alignment: start;
+        width: root.visible-width;
+        padding: 12px;
+        spacing: 8px;
+        CheckBox { text: Tr.t("set-hide-empty", Tr.rev); checked <=> State.hide-empty; toggled => { State.setting-changed("hide_empty"); } }
+        CheckBox { text: Tr.t("set-start-at-login", Tr.rev); checked <=> State.start-at-login; toggled => { State.setting-changed("start_at_login"); } }
+        CheckBox { text: Tr.t("set-window-mode", Tr.rev); checked <=> State.window-mode; toggled => { State.setting-changed("window_mode"); } }
+        CheckBox { text: Tr.t("set-tech-details", Tr.rev); checked <=> State.tech-details; toggled => { State.setting-changed("tech_details"); } }
+        CheckBox { text: Tr.t("set-usb-probe", Tr.rev); checked <=> State.usb-probe; toggled => { State.setting-changed("usb_probe"); } }
+        CheckBox { text: Tr.t("set-notifications", Tr.rev); checked <=> State.notifications; toggled => { State.setting-changed("notifications"); } }
+        CheckBox { text: Tr.t("set-update-check", Tr.rev); checked <=> State.update-check; toggled => { State.setting-changed("update_check"); } }
+        HorizontalLayout {
+            spacing: 8px;
+            Text { text: Tr.t("set-language", Tr.rev); vertical-alignment: center; color: Palette.foreground; }
+            ComboBox {
+                model: [Tr.t("set-language-system", Tr.rev), "Deutsch", "English"];
+                current-index <=> State.language;
+                selected => { State.setting-changed("language"); }
+            }
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            Text { text: Tr.t("set-font-size", Tr.rev); vertical-alignment: center; color: Palette.foreground; }
+            Slider {
+                minimum: 0.8;
+                maximum: 1.6;
+                value <=> State.font-scale;
+                released => { State.setting-changed("font_scale"); }
+            }
+        }
+        Text { text: State.service-status; wrap: word-wrap; color: Palette.foreground; }
+        Text { text: State.vendor-db; wrap: word-wrap; color: Palette.foreground; opacity: 0.7; }
+    }
+}
+
+component AboutView inherits ScrollView {
+    VerticalLayout {
+        alignment: start;
+        width: root.visible-width;
+        padding: 12px;
+        spacing: 8px;
+        Text { text: "LinkSpec " + State.version; font-size: 1.4rem; font-weight: 700; color: Palette.foreground; }
+        Text { text: Tr.t("app-about-text", Tr.rev); wrap: word-wrap; color: Palette.foreground; }
+        Text { text: Tr.t("app-not-a-tester", Tr.rev); wrap: word-wrap; font-weight: 700; color: Palette.foreground; }
+        Text { text: Tr.t("app-privacy", Tr.rev); wrap: word-wrap; color: Palette.foreground; }
+        Text { text: State.update-text; wrap: word-wrap; color: Palette.foreground; }
+        HorizontalLayout {
+            spacing: 6px;
+            Button { text: Tr.t("menu-check-updates", Tr.rev); clicked => { State.check-updates(); } }
+            Button { text: "GitHub"; clicked => { State.open-url("https://github.com/itsh-neumeier/linkspec"); } }
+            Button { text: Tr.t("menu-report", Tr.rev); clicked => { State.report(); } }
+        }
+        AboutSlint { }
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "LinkSpec";
+    icon: @image-url("../../packaging/icons/linkspec-256.png");
+    preferred-width: 720px;
+    preferred-height: 640px;
+    min-width: 420px;
+    min-height: 360px;
+    default-font-size: 13px * State.font-scale;
+    background: Palette.background;
+    VerticalLayout {
+        TabWidget {
+            current-index <=> State.current-tab;
+            changed current-index => {
+                State.monitor-visible(self.current-index == 1);
+            }
+            Tab {
+                title: Tr.t("tab-ports", Tr.rev);
+                VerticalLayout {
+                    PortList { compact: false; }
+                    HorizontalLayout {
+                        padding: 8px;
+                        spacing: 6px;
+                        Button { text: Tr.t("app-refresh", Tr.rev); clicked => { State.refresh(); } }
+                        Switch { text: Tr.t("app-tech-details", Tr.rev); checked <=> State.tech-details; }
+                    }
+                }
+            }
+            Tab { title: Tr.t("tab-power", Tr.rev); MonitorView { } }
+            Tab { title: Tr.t("tab-negotiation", Tr.rev); NegotiationView { } }
+            Tab { title: Tr.t("tab-display", Tr.rev); DisplayView { } }
+            Tab { title: Tr.t("tab-cables", Tr.rev); CableView { } }
+            Tab { title: Tr.t("tab-settings", Tr.rev); SettingsView { } }
+            Tab { title: Tr.t("tab-about", Tr.rev); AboutView { } }
+        }
+    }
+}

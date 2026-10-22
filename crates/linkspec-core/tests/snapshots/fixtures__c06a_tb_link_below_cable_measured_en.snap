@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Thunderbolt / USB4 | The connection runs at only 10 Gbit/s although the cable reports 40 Gbit/s and port and device can do more. The cable is the bottleneck.
+  cable: Passive, 40 Gbit/s, 5 A / 100 W
+  data/cable: The connection runs at only 10 Gbit/s although the cable reports 40 Gbit/s and port and device can do more. The cable is the bottleneck.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

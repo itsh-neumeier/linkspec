@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | USB device | The device uses USB 2.0. The cable can do more.
+  cable: Passive, 40 Gbit/s, 5 A / 240 W
+  data/device: The device is at its limit with USB 2.0; the cable is fine.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.

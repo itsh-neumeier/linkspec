@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "synthetic": true,
+    "criterion": [],
+    "description": "Gerät erwartet Daten, keine USB-Verbindung"
+  },
+  "snapshot": {
+    "host": {
+      "os": "macos",
+      "os_version": "15.1",
+      "model": "Mac15,6",
+      "arch": "arm64"
+    },
+    "tier": "user",
+    "usb_probe": true,
+    "ports": [
+      {
+        "id": "port-1",
+        "index": 1,
+        "kind": "usb_c",
+        "connected": true,
+        "capabilities": {
+          "usb": "gen2",
+          "source": "fixture"
+        },
+        "cable": {
+          "state": "no_emarker",
+          "source": "fixture"
+        },
+        "partner": {
+          "identity": {
+            "id_header": 1342180314,
+            "cert_stat": 0,
+            "product": 68223232,
+            "product_type_vdos": [
+              83886082
+            ]
+          },
+          "source": "fixture"
+        },
+        "power": {
+          "state": "available",
+          "role": "sink",
+          "source_pdos": [
+            {
+              "type": "fixed",
+              "voltage_v": 5,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 9,
+              "max_current_a": 3,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 15,
+              "max_current_a": 2,
+              "usb_comm_capable": true
+            },
+            {
+              "type": "fixed",
+              "voltage_v": 20,
+              "max_current_a": 1.5,
+              "usb_comm_capable": true
+            }
+          ],
+          "source": "fixture",
+          "contract": {
+            "voltage_v": 5,
+            "current_a": 3.0,
+            "power_w": 15,
+            "pdo_index": 1
+          }
+        },
+        "link": {
+          "source": "fixture"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "ports": [
+      {
+        "verdicts": [
+          {
+            "domain": "power",
+            "limiter": "none",
+            "code": "charging_below_max"
+          },
+          {
+            "domain": "data",
+            "limiter": "unknown",
+            "code": "no_data_link"
+          }
+        ],
+        "headline": "slow_or_charge_only"
+      }
+    ]
+  }
+}

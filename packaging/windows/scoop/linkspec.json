@@ -1,0 +1,26 @@
+{
+    "version": "0.9.0",
+    "description": "USB-C / Thunderbolt / USB4 diagnosis: which link limits the connection",
+    "homepage": "https://github.com/itsh-neumeier/linkspec",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.0/linkspec-0.9.0-windows-x86_64.zip",
+            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "arm64": {
+            "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.0/linkspec-0.9.0-windows-aarch64.zip",
+            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+    },
+    "bin": ["linkspec.exe"],
+    "shortcuts": [["linkspec-app.exe", "LinkSpec"]],
+    "post_install": "New-Item -ItemType File -Force \"$dir\\linkspec-packaged\" | Out-Null",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": { "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v$version/linkspec-$version-windows-x86_64.zip" },
+            "arm64": { "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v$version/linkspec-$version-windows-aarch64.zip" }
+        }
+    }
+}

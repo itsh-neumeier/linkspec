@@ -1,0 +1,8 @@
+---
+source: crates/linkspec-core/tests/fixtures.rs
+expression: "lines.join(\"\\n\")"
+---
+Thunderbolt 1 | Thunderbolt / USB4 | Data runs at 40 Gbit/s, as fast as possible.
+  cable: Passive, 40 Gbit/s, 5 A / 100 W
+  data/none: Data runs at 40 Gbit/s, as fast as possible.
+  note: Cable data comes from the cable's E-Marker. LinkSpec is not a cable tester.
