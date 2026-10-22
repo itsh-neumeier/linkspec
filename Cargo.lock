@@ -964,6 +964,13 @@ dependencies = [
 [[package]]
 name = "linkspec-service"
 version = "0.9.0"
+dependencies = [
+ "linkspec-backend-windows",
+ "linkspec-core",
+ "serde",
+ "serde_json",
+ "windows-sys",
+]
 
 [[package]]
 name = "linux-raw-sys"

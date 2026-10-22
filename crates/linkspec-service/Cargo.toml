@@ -1,8 +1,33 @@
 [package]
 name = "linkspec-service"
+description = "LinkSpec optional Windows service (tier 2): ETW consumer for the USB Type-C stack, named pipe server"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
-publish = false
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "linkspec-service"
+path = "src/main.rs"
 
 [dependencies]
+linkspec-backend-windows.workspace = true
+linkspec-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Diagnostics_Etw",
+    "Win32_System_IO",
+    "Win32_System_Pipes",
+    "Win32_System_Services",
+    "Win32_System_Threading",
+    "Win32_System_Time",
+] }
