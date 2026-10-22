@@ -36,3 +36,9 @@ System, Barrierefreiheit.
 - Shift-/⌥-Klick auf das Tray-Icon wird von tray-icon nicht mit Modifikatoren
   gemeldet; die technische Detailansicht hat deshalb einen Schalter im Flyout
   (die Vorgabe erlaubt „oder Schalter“).
+
+## Nachtrag (Phase 8): Renderer
+
+Die App nutzt den **Software-Renderer** von Slint (`renderer-software`) statt
+OpenGL/femtovg. Gemessen: RSS ~32 MB statt ~160 MB, erster Frame 75–104 ms
+statt 290–520 ms (`docs/PERFORMANCE.md`).
