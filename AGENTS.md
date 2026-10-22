@@ -90,6 +90,12 @@ StatusNotifierItem/D-Bus, kein GTK nötig). Cross-Checks ohne Hardware:
 - **Sprachen**: Code, JSON-Keys, Logs Englisch; UI Deutsch/Englisch; Doku
   Deutsch; README zweisprachig.
 
+## Rollen
+
+- **Release-Agent**: wird vom Maintainer ausdrücklich vergeben. Regeln und
+  Ablauf in [`docs/release-agent.md`](docs/release-agent.md); in Codex
+  über den Prompt `.codex/prompts/release.md` (`/release X.Y.Z`).
+
 ## Phasen-Abschluss
 
 `cargo fmt --check`, Clippy und alle Tests grün auf allen drei CI-Runnern,
