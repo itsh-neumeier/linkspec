@@ -21,9 +21,34 @@ danach Version 1.0.0.
 | 7 | TUI-Dashboard, macOS-Widget (Swift), `--report`, `--capture`, Issue-Template „Kabel melden“ | erledigt (Windows-Widget: `spaeter.md`) |
 | 8 | Paketierung aller Plattformen, Release-Workflow, Signierschritte, Update-Hinweis, README, Datenschutz, Grenzen, `manuell.md` | erledigt bis auf Maintainer-Aufgaben |
 
+## Tags
+
+Die Tags sind lokal angelegt; das Pushen von Tags ist in der Arbeitssitzung
+nicht erlaubt (nur der Arbeits-Branch). Der Maintainer setzt sie nach dem
+Merge (`docs/MAINTAINER_TODO.md`, Abschnitt 1):
+
+| Tag | Commit | Inhalt |
+|---|---|---|
+| `phase-0` | `3ce0e59` | Grundgerüst, Schema, Fixtures, Capture-Format |
+| `phase-1`, `phase-2` | `1ff604f` | Core, CLI, Backends Linux/macOS |
+| `phase-3` | `9f38a13` | Windows Stufe 1 und Dienst |
+| `phase-4` … `phase-7` | `51d29ec` | App, Dashboard, Monitor, Historie, Widgets |
+| `phase-8` | letzter Commit des Branches | Paketierung, Doku, Leistung |
+
+## CI-Stand
+
+Letzter Lauf: `fmt`, `test (ubuntu-latest)`, `test (windows-latest)`,
+`test (macos-latest)`, `deny`, Cross-Builds (Windows ARM64, Linux aarch64,
+macOS Intel-CLI mit Exit 3) grün. Lokal getestet: `.deb`, `.rpm` und Tarball
+bauen (`packaging/linux/build-packages.sh`); AppImage, MSI und `.dmg` laufen
+erst im Release-Workflow (noch nie ausgeführt).
+
 ## Verlauf
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
-- 2026-10-22 – 0–8 – Grundgerüst bis Paketierung auf dem Branch
-  `claude/confident-babbage-i1gttl` (siehe `git log`).
+- 2026-10-22 – 8 – Software-Renderer, ereignisgesteuerter Leerlauf,
+  Leistung gemessen (`docs/PERFORMANCE.md`), Linux-Pakete lokal gebaut.
+- 2026-10-22 – 4 – App lauffähig unter X11 (Screenshots in
+  `docs/screenshots/`).
+- 2026-10-22 – 0–3 – Grundgerüst, Core, CLI, alle Backends, Dienst, CI.
