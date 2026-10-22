@@ -1,0 +1,52 @@
+# cargo-deny configuration: licenses, advisories, bans, sources.
+
+[graph]
+all-features = false
+
+[advisories]
+version = 2
+yanked = "deny"
+
+[licenses]
+version = 2
+confidence-threshold = 0.9
+allow = [
+    "MIT",
+    "MIT-0",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSL-1.0",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "CC0-1.0",
+    "MPL-2.0",
+    "OFL-1.1",
+    "Ubuntu-font-1.0",
+    "CDLA-Permissive-2.0",
+    # Slint: royalty-free license option for desktop applications
+    # (see docs/adr/0001-gui-und-tray.md and THIRD_PARTY_LICENSES).
+    "LicenseRef-Slint-Royalty-free-2.0",
+    "LicenseRef-Slint-Software-3.0",
+    "GPL-3.0-only",
+]
+# GPL-3.0-only is listed only because Slint is triple licensed
+# (GPL-3.0-only OR royalty-free OR commercial); LinkSpec uses the
+# royalty-free option. No crate is used under the GPL.
+
+[bans]
+multiple-versions = "allow"
+wildcards = "allow"
+deny = [
+    # No HTTP/telemetry stack in the diagnosis tree (see docs/datenschutz.md).
+    { crate = "reqwest", wrappers = [] },
+    { crate = "sentry" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all --check
+
+  test:
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libxdo-dev libayatana-appindicator3-dev libxkbcommon-dev libfontconfig1-dev
+      - name: clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: test
+        run: cargo test --workspace
+      - name: CLI smoke test against the platform (no crash, ports is an array or exit 3)
+        shell: bash
+        run: |
+          set +e
+          cargo run -q -p linkspec-cli -- --json --no-history > out.json
+          code=$?
+          set -e
+          if [ "$code" = "0" ]; then python3 -c "import json;d=json.load(open('out.json'));assert isinstance(d['ports'],list)"; else test "$code" = "3"; fi
+      - name: Schema check of the fixture output
+        shell: bash
+        run: cargo run -q -p linkspec-cli -- --json --fake fixtures/core/c10_dock_usb3_and_dp.json > fixture.json && python3 -c "import json;json.load(open('fixture.json'))"
+
+  cross:
+    name: build (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libxdo-dev libayatana-appindicator3-dev libxkbcommon-dev libfontconfig1-dev
+      - name: build CLI
+        run: cargo build --release -p linkspec-cli --target ${{ matrix.target }}
+      - name: build app
+        if: matrix.target != 'x86_64-apple-darwin'
+        run: cargo build --release -p linkspec-app --target ${{ matrix.target }}
+      - name: Intel slice prints the unsupported message (exit 3)
+        if: matrix.target == 'x86_64-apple-darwin'
+        shell: bash
+        run: |
+          set +e
+          arch -x86_64 target/x86_64-apple-darwin/release/linkspec
+          code=$?
+          echo "exit=$code"
+          test "$code" = "3"
+
+  deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check licenses advisories bans sources
