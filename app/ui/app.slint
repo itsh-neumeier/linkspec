@@ -240,6 +240,7 @@ component PortList inherits ScrollView {
         padding: 8px;
         spacing: 8px;
         alignment: start;
+        width: root.visible-width;
         if State.ports.length == 0: Text {
             text: State.no-ports-text;
             wrap: word-wrap;
@@ -346,6 +347,7 @@ component MonitorView inherits VerticalBox {
 component NegotiationView inherits ScrollView {
     VerticalLayout {
         alignment: start;
+        width: root.visible-width;
         padding: 8px;
         spacing: 2px;
         HorizontalLayout {
@@ -370,6 +372,7 @@ component NegotiationView inherits ScrollView {
 component DisplayView inherits ScrollView {
     VerticalLayout {
         alignment: start;
+        width: root.visible-width;
         padding: 8px;
         spacing: 8px;
         if State.displays.length == 0: Text {
@@ -393,6 +396,7 @@ component DisplayView inherits ScrollView {
 component CableView inherits ScrollView {
     VerticalLayout {
         alignment: start;
+        width: root.visible-width;
         padding: 8px;
         spacing: 8px;
         Text {
@@ -440,6 +444,7 @@ component CableView inherits ScrollView {
 component SettingsView inherits ScrollView {
     VerticalLayout {
         alignment: start;
+        width: root.visible-width;
         padding: 12px;
         spacing: 8px;
         CheckBox { text: Tr.t("set-hide-empty", Tr.rev); checked <=> State.hide-empty; toggled => { State.setting-changed("hide_empty"); } }
@@ -476,6 +481,7 @@ component SettingsView inherits ScrollView {
 component AboutView inherits ScrollView {
     VerticalLayout {
         alignment: start;
+        width: root.visible-width;
         padding: 12px;
         spacing: 8px;
         Text { text: "LinkSpec " + State.version; font-size: 1.4rem; font-weight: 700; color: Palette.foreground; }
@@ -505,6 +511,9 @@ export component MainWindow inherits Window {
     VerticalLayout {
         TabWidget {
             current-index <=> State.current-tab;
+            changed current-index => {
+                State.monitor-visible(self.current-index == 1);
+            }
             Tab {
                 title: Tr.t("tab-ports", Tr.rev);
                 VerticalLayout {

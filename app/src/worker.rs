@@ -95,27 +95,41 @@ pub enum Update {
 
 pub fn spawn(mut engine: Engine, send: impl Fn(Update) + Send + 'static) -> Sender<Command> {
     let (tx, rx) = channel();
+    let self_tx = tx.clone();
     std::thread::Builder::new()
         .name("linkspec-worker".into())
-        .spawn(move || run(&mut engine, rx, send))
+        .spawn(move || run(&mut engine, rx, self_tx, send))
         .expect("worker thread");
     tx
 }
 
-fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
-    let watch = engine.source_mut().watch().ok();
+fn run(engine: &mut Engine, rx: Receiver<Command>, tx: Sender<Command>, send: impl Fn(Update)) {
+    // Platform change events become refresh commands, so the worker sleeps
+    // in `recv` while nothing happens (no polling in idle).
+    if let Ok(watch) = engine.source_mut().watch() {
+        std::thread::Builder::new()
+            .name("linkspec-watch".into())
+            .spawn(move || {
+                while let Ok(ev) = watch.recv() {
+                    if ev == ChangeEvent::Changed && tx.send(Command::Refresh).is_err() {
+                        return;
+                    }
+                }
+            })
+            .ok();
+    }
     let mut monitor = false;
     let mut samples: Vec<f64> = Vec::new();
     let mut last_sample = Instant::now();
     let mut last: Option<RunResult> = None;
     refresh(engine, &send, &mut last, true);
     loop {
-        let timeout = if monitor {
-            Duration::from_millis(1000).saturating_sub(last_sample.elapsed())
+        let msg = if monitor {
+            rx.recv_timeout(Duration::from_millis(1000).saturating_sub(last_sample.elapsed()))
         } else {
-            Duration::from_millis(500)
+            rx.recv().map_err(|_| RecvTimeoutError::Disconnected)
         };
-        match rx.recv_timeout(timeout) {
+        match msg {
             Ok(Command::Quit) | Err(RecvTimeoutError::Disconnected) => return,
             Ok(Command::Refresh) => refresh(engine, &send, &mut last, false),
             Ok(Command::Dismiss(id, kind)) => {
@@ -154,15 +168,6 @@ fn run(engine: &mut Engine, rx: Receiver<Command>, send: impl Fn(Update)) {
                 send(Update::Report(url));
             }
             Err(RecvTimeoutError::Timeout) => {}
-        }
-        if let Some(w) = &watch {
-            let mut changed = false;
-            while let Ok(ev) = w.try_recv() {
-                changed |= ev == ChangeEvent::Changed;
-            }
-            if changed {
-                refresh(engine, &send, &mut last, false);
-            }
         }
         if monitor && last_sample.elapsed() >= Duration::from_millis(1000) {
             last_sample = Instant::now();

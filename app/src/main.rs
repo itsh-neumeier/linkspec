@@ -23,6 +23,20 @@ use worker::{Command, Update};
 
 slint::include_modules!();
 
+thread_local! {
+    /// UI-thread handler for tray, menu and status events.
+    static PUMP: RefCell<Option<Box<dyn Fn()>>> = const { RefCell::new(None) };
+}
+
+/// Process pending tray/menu/status events on the UI thread.
+fn pump() {
+    PUMP.with(|p| {
+        if let Some(f) = p.borrow().as_ref() {
+            f();
+        }
+    });
+}
+
 fn init_logging() -> Option<tracing_appender::non_blocking::WorkerGuard> {
     let dir = linkspec_history::data_dir()?.join("logs");
     std::fs::create_dir_all(&dir).ok()?;
@@ -272,6 +286,7 @@ fn main() {
             if let Update::Data { worst, widget, .. } = &u {
                 let _ = status_tx.send(*worst);
                 platform::write_widget_snapshot(widget);
+                pump();
             }
         });
     });
@@ -338,32 +353,8 @@ fn main() {
         let o = open_tab.clone();
         main_window.global::<State>().on_open_window(move |t| o(t));
     }
-    // Monitor only while the power tab is visible.
-    {
-        let c = cmd.clone();
-        let mw = main_window.as_weak();
-        let last_tab = Rc::new(RefCell::new(-1));
-        let timer = slint::Timer::default();
-        timer.start(
-            slint::TimerMode::Repeated,
-            std::time::Duration::from_millis(300),
-            move || {
-                if let Some(mw) = mw.upgrade() {
-                    let visible = mw.window().is_visible();
-                    let tab = if visible {
-                        mw.global::<State>().get_current_tab()
-                    } else {
-                        -1
-                    };
-                    if *last_tab.borrow() != tab {
-                        *last_tab.borrow_mut() = tab;
-                        let _ = c.send(Command::Monitor(tab == TAB_POWER));
-                    }
-                }
-            },
-        );
-        std::mem::forget(timer);
-    }
+    // The power monitor runs only while its tab is visible: see
+    // `changed current-index` in app.slint and the close handler below.
 
     // Settings.
     let settings_rc = Rc::new(RefCell::new(settings.clone()));
@@ -435,6 +426,7 @@ fn main() {
                         t.set_rev(t.get_rev() + 1);
                     }
                     let _ = c.send(Command::SetLang(l));
+                    pump();
                 }
                 _ => {}
             }
@@ -557,7 +549,7 @@ fn main() {
         let _ = main_window.show();
     }
 
-    // Tray and menu events (polled on the UI thread).
+    // Tray and menu events: handlers wake the UI thread (no polling).
     {
         let tray = tray.clone();
         let fo = flyout.as_weak();
@@ -568,100 +560,105 @@ fn main() {
         let st = settings_rc.clone();
         let update_text = update_text.clone();
         let last_lang = RefCell::new(lang);
-        let timer = slint::Timer::default();
-        timer.start(
-            slint::TimerMode::Repeated,
-            std::time::Duration::from_millis(100),
-            move || {
-                // Tray icon tooltip follows the worst status.
-                while let Ok(worst) = status_rx.try_recv() {
-                    if let Some((t, _)) = tray.borrow().as_ref() {
-                        let tip = match worst {
-                            Status::Ok => "LinkSpec ✓",
-                            Status::Warn => "LinkSpec !",
-                            Status::Fault => "LinkSpec ✗",
-                        };
-                        let _ = t.set_tooltip(Some(tip));
-                    }
-                }
-                let cur = st.borrow().lang();
-                if *last_lang.borrow() != cur {
-                    *last_lang.borrow_mut() = cur;
-                    if let Some((_, m)) = tray.borrow().as_ref() {
-                        m.relabel(&i18n.borrow());
-                    }
-                }
-                while let Ok(ev) = TrayIconEvent::receiver().try_recv() {
-                    if let TrayIconEvent::Click {
-                        button: MouseButton::Left,
-                        button_state: MouseButtonState::Up,
-                        rect,
-                        ..
-                    } = ev
-                        && let Some(fo) = fo.upgrade()
-                    {
-                        if fo.window().is_visible() {
-                            let _ = fo.hide();
-                        } else {
-                            let size = fo.window().size();
-                            let x = rect.position.x as i32 + (rect.size.width as i32 / 2)
-                                - (size.width as i32 / 2);
-                            let y = if cfg!(windows) {
-                                rect.position.y as i32 - size.height as i32 - 8
-                            } else {
-                                rect.position.y as i32 + rect.size.height as i32 + 4
-                            };
-                            fo.window()
-                                .set_position(slint::PhysicalPosition::new(x.max(0), y.max(0)));
-                            let _ = fo.show();
-                        }
-                    }
-                }
-                while let Ok(ev) = MenuEvent::receiver().try_recv() {
-                    let tb = tray.borrow();
-                    let Some((_, menus)) = tb.as_ref() else {
-                        continue;
+        let (tray_tx, tray_rx) = std::sync::mpsc::channel::<TrayIconEvent>();
+        let (menu_tx, menu_rx) = std::sync::mpsc::channel::<MenuEvent>();
+        TrayIconEvent::set_event_handler(Some(move |e| {
+            let _ = tray_tx.send(e);
+            let _ = slint::invoke_from_event_loop(pump);
+        }));
+        MenuEvent::set_event_handler(Some(move |e| {
+            let _ = menu_tx.send(e);
+            let _ = slint::invoke_from_event_loop(pump);
+        }));
+        let body = move || {
+            // Tray icon tooltip follows the worst status.
+            while let Ok(worst) = status_rx.try_recv() {
+                if let Some((t, _)) = tray.borrow().as_ref() {
+                    let tip = match worst {
+                        Status::Ok => "LinkSpec ✓",
+                        Status::Warn => "LinkSpec !",
+                        Status::Fault => "LinkSpec ✗",
                     };
-                    let id = ev.id;
-                    if id == *menus.refresh.id() {
-                        let _ = c.send(Command::Refresh);
-                    } else if id == *menus.keep_open.id() {
-                        let on = menus.keep_open.is_checked();
-                        if let Some(fo) = fo.upgrade() {
-                            fo.global::<State>().set_keep_open(on);
-                        }
-                        if let Some(mw) = mw.upgrade() {
-                            mw.global::<State>().set_keep_open(on);
-                        }
-                        st.borrow_mut().keep_window_open = on;
-                        let _ = st.borrow().save();
-                    } else if id == *menus.settings.id() {
-                        open_tab(5);
-                    } else if id == *menus.power.id() {
-                        open_tab(1);
-                    } else if id == *menus.negotiation.id() {
-                        open_tab(2);
-                    } else if id == *menus.display.id() {
-                        open_tab(3);
-                    } else if id == *menus.cables.id() {
-                        open_tab(4);
-                    } else if id == *menus.about.id() {
-                        open_tab(6);
-                    } else if id == *menus.updates.id() {
-                        open_tab(6);
-                        update_text(true);
-                    } else if id == *menus.report.id() {
-                        let _ = c.send(Command::Report);
-                    } else if id == *menus.github.id() {
-                        platform::open_url("https://github.com/itsh-neumeier/linkspec");
-                    } else if id == *menus.quit.id() {
-                        let _ = c.send(Command::Quit);
-                        let _ = slint::quit_event_loop();
+                    let _ = t.set_tooltip(Some(tip));
+                }
+            }
+            let cur = st.borrow().lang();
+            if *last_lang.borrow() != cur {
+                *last_lang.borrow_mut() = cur;
+                if let Some((_, m)) = tray.borrow().as_ref() {
+                    m.relabel(&i18n.borrow());
+                }
+            }
+            while let Ok(ev) = tray_rx.try_recv() {
+                if let TrayIconEvent::Click {
+                    button: MouseButton::Left,
+                    button_state: MouseButtonState::Up,
+                    rect,
+                    ..
+                } = ev
+                    && let Some(fo) = fo.upgrade()
+                {
+                    if fo.window().is_visible() {
+                        let _ = fo.hide();
+                    } else {
+                        let size = fo.window().size();
+                        let x = rect.position.x as i32 + (rect.size.width as i32 / 2)
+                            - (size.width as i32 / 2);
+                        let y = if cfg!(windows) {
+                            rect.position.y as i32 - size.height as i32 - 8
+                        } else {
+                            rect.position.y as i32 + rect.size.height as i32 + 4
+                        };
+                        fo.window()
+                            .set_position(slint::PhysicalPosition::new(x.max(0), y.max(0)));
+                        let _ = fo.show();
                     }
                 }
-            },
-        );
-        std::mem::forget(timer);
+            }
+            while let Ok(ev) = menu_rx.try_recv() {
+                let tb = tray.borrow();
+                let Some((_, menus)) = tb.as_ref() else {
+                    continue;
+                };
+                let id = ev.id;
+                if id == *menus.refresh.id() {
+                    let _ = c.send(Command::Refresh);
+                } else if id == *menus.keep_open.id() {
+                    let on = menus.keep_open.is_checked();
+                    if let Some(fo) = fo.upgrade() {
+                        fo.global::<State>().set_keep_open(on);
+                    }
+                    if let Some(mw) = mw.upgrade() {
+                        mw.global::<State>().set_keep_open(on);
+                    }
+                    st.borrow_mut().keep_window_open = on;
+                    let _ = st.borrow().save();
+                } else if id == *menus.settings.id() {
+                    open_tab(5);
+                } else if id == *menus.power.id() {
+                    open_tab(1);
+                } else if id == *menus.negotiation.id() {
+                    open_tab(2);
+                } else if id == *menus.display.id() {
+                    open_tab(3);
+                } else if id == *menus.cables.id() {
+                    open_tab(4);
+                } else if id == *menus.about.id() {
+                    open_tab(6);
+                } else if id == *menus.updates.id() {
+                    open_tab(6);
+                    update_text(true);
+                } else if id == *menus.report.id() {
+                    let _ = c.send(Command::Report);
+                } else if id == *menus.github.id() {
+                    platform::open_url("https://github.com/itsh-neumeier/linkspec");
+                } else if id == *menus.quit.id() {
+                    let _ = c.send(Command::Quit);
+                    let _ = slint::quit_event_loop();
+                }
+            }
+        };
+        PUMP.with(|p| *p.borrow_mut() = Some(Box::new(body)));
     }
 
     // Hide the flyout when it loses focus (unless "keep open").
@@ -676,7 +673,9 @@ fn main() {
     }
     {
         let tray_mode = tray_wanted;
+        let c = cmd.clone();
         main_window.window().on_close_requested(move || {
+            let _ = c.send(Command::Monitor(false));
             if !tray_mode {
                 let _ = slint::quit_event_loop();
             } else {
@@ -704,11 +703,18 @@ fn main() {
     // Performance measurement: quit after the first rendered frame.
     if std::env::var_os("LINKSPEC_PERF_EXIT_AFTER_FIRST_FRAME").is_some() {
         let _ = main_window.show();
-        let _ = main_window.window().set_rendering_notifier(|state, _| {
+        let notifier = main_window.window().set_rendering_notifier(|state, _| {
             if matches!(state, slint::RenderingState::AfterRendering) {
                 let _ = slint::quit_event_loop();
             }
         });
+        if notifier.is_err() {
+            // Software renderer: no notifier; the first timer tick runs after
+            // the first frame was presented.
+            slint::Timer::single_shot(std::time::Duration::from_millis(0), || {
+                let _ = slint::quit_event_loop();
+            });
+        }
     }
 
     let _ = slint::run_event_loop_until_quit();
