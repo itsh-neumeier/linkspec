@@ -3056,7 +3056,7 @@ checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
 
 [[package]]
 name = "linkspec-app"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "linkspec-engine",
@@ -3082,7 +3082,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-backend-linux"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "libc",
  "linkspec-core",
@@ -3094,7 +3094,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-backend-macos"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "core-foundation-sys",
  "io-kit-sys",
@@ -3107,7 +3107,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-backend-windows"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "linkspec-platform",
@@ -3118,7 +3118,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-cli"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "clap",
  "insta",
@@ -3137,7 +3137,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-core"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "fluent-bundle",
  "insta",
@@ -3152,7 +3152,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-db"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "rusqlite",
@@ -3161,7 +3161,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-engine"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "jsonschema",
  "linkspec-backend-linux",
@@ -3181,7 +3181,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-fake"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "linkspec-platform",
@@ -3190,7 +3190,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-history"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "rusqlite",
@@ -3201,7 +3201,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-platform"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-core",
  "serde",
@@ -3211,7 +3211,7 @@ dependencies = [
 
 [[package]]
 name = "linkspec-service"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
  "linkspec-backend-windows",
  "linkspec-core",

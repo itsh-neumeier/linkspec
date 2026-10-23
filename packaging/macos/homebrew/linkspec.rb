@@ -1,6 +1,6 @@
 # Homebrew cask (tap itsh-neumeier/homebrew-linkspec). Maintainer: fill sha256.
 cask "linkspec" do
-  version "0.9.0"
+  version "0.9.1"
   sha256 "0000000000000000000000000000000000000000000000000000000000000000"
   url "https://github.com/itsh-neumeier/linkspec/releases/download/v#{version}/LinkSpec-#{version}.dmg"
   name "LinkSpec"

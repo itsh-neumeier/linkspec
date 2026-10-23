@@ -3,9 +3,12 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Hardware-Prüfläufe nach `docs/manuell.md`, Captures als
-Fixtures ablegen, Hypothesen in `docs/capability-matrix.md` bestätigen,
-danach Version 1.0.0.
+**Nächster Schritt:** Vollständige grüne CI für Release-PR #4 nach dem
+Merge von `main` abwarten. Die Maintainer-Freigabe zum Merge von PR #4
+liegt seit 2026-10-23 unter dieser Bedingung vor. Danach Tags und
+Release-Entwurf, Prüfsummen-PR und Übergabe.
+Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
+ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
 ## Phasen
 
@@ -47,6 +50,27 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1 fortgesetzt: `main` bei
+  `338bfc7a2b4dbca895e11224d1522cb2ee92c3e5` (PR #6) per Merge in
+  `release/v0.9.1` übernommen. `clipboard-win 5.4.3` ersetzt die
+  zurückgezogene Version 5.4.1; Issue #5 damit behoben. Status:
+  vollständige CI von PR #4 ausstehend; Merge bei grüner CI freigegeben.
+- 2026-10-23 – 8 – Release v0.9.1, PR #4, Commit
+  `e2f64e52d673c28ec75599982dbc1b4147ec3607`: PR-CI meldet im Job `deny`
+  `error[yanked]` für `clipboard-win 5.4.1` in `Cargo.lock`
+  (Lauf `39927926652`, Job `120328788465`). Issue #5 mit Fehlerlog
+  angelegt. Status: Release-Ablauf gestoppt; Abhängigkeits-Fix liegt
+  außerhalb des Release-Agent-Auftrags. Kein Merge, Tag oder
+  Release-Workflow gestartet.
+- 2026-10-23 – 8 – Release v0.9.1 vorbereitet auf `release/v0.9.1`:
+  Versionen, Changelog und Paket-URLs aktualisiert. Vorprüfung auf
+  `main` bei `e8dbe151b88194a5a2fe596f79d59b3359abd2e7` mit Rust 1.99.1
+  (Windows MSVC): Formatierung, Clippy, 73 Tests (0 ignoriert) und
+  `cargo deny check` grün. Deny meldet fünf nicht benötigte
+  Lizenzfreigaben; beim Testbuild ein nicht fataler Hinweis zum
+  inkrementellen Cache auf dem Netzlaufwerk. Status: Release-PR/CI und
+  Merge-Freigabe ausstehend; Release-Entwurf und Prüfsummen folgen nach
+  dem Merge.
 - 2026-10-23 – 8 – CI: Zeitlimits je Job und apt-Schritt, apt mit Wiederholungen,
   GTK/AppIndicator/xdo aus den Abhängigkeiten entfernt (Tray über ksni).
   Anlass: `test (ubuntu-latest)` hing 6 h in `apt-get`.
