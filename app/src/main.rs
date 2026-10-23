@@ -511,11 +511,15 @@ fn main() {
         let mw_fallback = main_window.as_weak();
         slint::Timer::single_shot(std::time::Duration::from_millis(0), move || {
             let menus = Menus::new(&i18n.borrow(), keep_open);
+            // macOS: white template glyph for the menu bar. Windows and
+            // Linux: the coloured app icon, because a white glyph is
+            // invisible on a light taskbar.
             let template = cfg!(target_os = "macos");
-            let icon = load_icon(
-                include_bytes!("../../packaging/icons/tray-32.png"),
-                template,
-            );
+            let icon = if template {
+                load_icon(include_bytes!("../../packaging/icons/tray-32.png"), true)
+            } else {
+                load_icon(include_bytes!("../../packaging/icons/linkspec-32.png"), false)
+            };
             let mut b = TrayIconBuilder::new()
                 .with_menu(Box::new(menus.menu()))
                 .with_tooltip("LinkSpec")
