@@ -4,6 +4,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      windows_x64_only:
+        description: "Test build: only Windows x64 (MSI + ZIP as workflow artifact, no release)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -13,6 +18,7 @@ env:
 
 jobs:
   linux:
+    if: ${{ !inputs.windows_x64_only }}
     strategy:
       matrix:
         include:
@@ -45,6 +51,7 @@ jobs:
           path: dist/*.*
 
   macos:
+    if: ${{ !inputs.windows_x64_only }}
     runs-on: macos-latest
     timeout-minutes: 90
     steps:
@@ -82,13 +89,7 @@ jobs:
   windows:
     strategy:
       matrix:
-        include:
-          - target: x86_64-pc-windows-msvc
-            arch: x64
-            short: x86_64
-          - target: aarch64-pc-windows-msvc
-            arch: arm64
-            short: aarch64
+        include: ${{ fromJSON(inputs.windows_x64_only && '[{"target":"x86_64-pc-windows-msvc","arch":"x64","short":"x86_64"}]' || '[{"target":"x86_64-pc-windows-msvc","arch":"x64","short":"x86_64"},{"target":"aarch64-pc-windows-msvc","arch":"arm64","short":"aarch64"}]') }}
     runs-on: windows-latest
     timeout-minutes: 90
     steps:
@@ -129,6 +130,9 @@ jobs:
           path: dist/*
 
   publish:
+    # Only tag pushes create the release draft; a manual run only keeps the
+    # workflow artifacts.
+    if: startsWith(github.ref, 'refs/tags/')
     needs: [linux, macos, windows]
     runs-on: ubuntu-latest
     timeout-minutes: 90
