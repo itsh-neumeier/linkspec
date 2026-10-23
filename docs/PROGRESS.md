@@ -47,6 +47,9 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – CI: Zeitlimits je Job und apt-Schritt, apt mit Wiederholungen,
+  GTK/AppIndicator/xdo aus den Abhängigkeiten entfernt (Tray über ksni).
+  Anlass: `test (ubuntu-latest)` hing 6 h in `apt-get`.
 - 2026-10-22 – 8 – Software-Renderer, ereignisgesteuerter Leerlauf,
   Leistung gemessen (`docs/PERFORMANCE.md`), Linux-Pakete lokal gebaut.
 - 2026-10-22 – 4 – App lauffähig unter X11 (Screenshots in
