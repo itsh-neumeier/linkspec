@@ -3,10 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Release v0.9.2 aus dem auf Windows getesteten Stand
-vorbereiten: Release-PR und CI, danach Tag und vollständiger Build für alle
-Plattformen. Prüfsummen in einem separaten PR nachtragen und den fertigen
-Entwurf übergeben. Veröffentlichung und Paketquellen bleiben eigene Schritte.
+**Nächster Schritt:** Prüfsummen-PR #13 für v0.9.2 prüfen und integrieren.
+[Release v0.9.2](https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2)
+mit 15 geprüften Paketen ist mit ausdrücklicher Maintainer-Freigabe
+veröffentlicht. Einreichungen bei Paketquellen bleiben eigene Maintainer-Aufgaben.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -26,7 +26,7 @@ ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
 ## Tags
 
-Die Tags `phase-0` bis `phase-8` und `v0.9.1` sind bereits auf GitHub
+Die Tags `phase-0` bis `phase-8`, `v0.9.1` und `v0.9.2` sind auf GitHub
 vorhanden. Bestehende Tags werden nicht verschoben. Die folgende Tabelle
 dokumentiert die ursprüngliche Phasen-Zuordnung:
 
@@ -40,15 +40,39 @@ dokumentiert die ursprüngliche Phasen-Zuordnung:
 
 ## CI-Stand
 
-CI auf `main` bei `9dbf168d79c2d7fbcae6eb03ea8ef3f7ae9cd683` vollständig
-grün (Lauf `40007763684`): Formatierung, Clippy und Tests auf drei Systemen,
-Cross-Builds und `deny`. Windows-x64-Testbuild `40007776955` erfolgreich;
-MSI, ZIP, deren SHA256-Werte und fehlende Authenticode-Signaturen geprüft.
+CI auf dem Release-Merge-Commit `df8b023d9a7252674afc670f2db3f9fc709402cc`
+vollständig grün (Lauf `40011650498`): Formatierung, Clippy und Tests auf drei
+Systemen, Cross-Builds und `deny`. Vollständiger Release-Lauf `40011680091`
+mit allen sechs Jobs erfolgreich; alle 15 Pakete und 21 Asset-Digests geprüft.
 
 ## Verlauf
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.2 nach ausdrücklicher Maintainer-Freigabe
+  veröffentlicht (22:59 Uhr Europe/Berlin). Unveränderter Release-Commit
+  `df8b023d9a7252674afc670f2db3f9fc709402cc`; alle 21 Asset-Digests vor
+  Veröffentlichung erneut geprüft. Öffentlicher Link:
+  https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2.
+  Hinweis bleibt „unsigniert, nur zum Testen“. Alle acht CI-Jobs von
+  Prüfsummen-PR #13 auf `3d7de4a` grün (Lauf `40013502875`); dieser
+  Dokumentationsnachtrag aktualisiert denselben PR. Keine Einreichung bei
+  Paketquellen; bestehende Tags und v0.9.1-Entwurf unverändert.
+- 2026-10-23 – 8 – Release v0.9.2: PR #12 nach acht grünen CI-Jobs
+  (Lauf `40010852504`) per Merge-Commit
+  `df8b023d9a7252674afc670f2db3f9fc709402cc` integriert; neues Tag `v0.9.2`
+  auf diesem Commit gepusht. Auch die CI auf `main` grün (Lauf `40011650498`).
+  Release-Lauf `40011680091` erfolgreich: 15 Pakete für Windows x64/ARM64,
+  macOS und Linux x64/ARM64 sowie sechs Prüfsummendateien im Entwurf.
+  Alle Pakete lokal gegen die gemeinsamen und plattformspezifischen
+  Prüfsummen geprüft; alle 21 Dateien stimmen mit den GitHub-Asset-Digests
+  überein. Beide Windows-ZIPs enthalten CLI und App; vier EXEs und beide
+  MSI-Dateien haben Authenticode-Status `NotSigned`. macOS ohne Developer-ID-
+  Signierung/Notarisierung, Linux ohne Paketsignierung. Acht verifizierte
+  Hashes in den Paketvorlagen auf `release/v0.9.2-checksums` eingetragen.
+  Status: Entwurf fertig, Prüfsummen-PR zur Prüfung; nichts veröffentlicht
+  oder bei Paketquellen eingereicht. Bestehende Tags und v0.9.1-Entwurf
+  unverändert.
 - 2026-10-23 – 8 – Release v0.9.2 beauftragt und Zielversion bestätigt.
   Ausgangspunkt: `main` bei `9dbf168d79c2d7fbcae6eb03ea8ef3f7ae9cd683`.
   Versionen und Changelog auf Release-Branch aktualisiert. Die noch nötigen

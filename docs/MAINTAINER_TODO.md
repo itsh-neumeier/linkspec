@@ -12,11 +12,14 @@ Alles ist vorbereitet; hier stehen die genauen Schritte.
       `e8dbe151b88194a5a2fe596f79d59b3359abd2e7`.
 - [x] Tags `phase-0` … `phase-8` und `v0.9.1` auf GitHub vorhanden
       (am 2026-10-23 geprüft). Bestehende Tags bleiben unverändert.
-- [ ] Release v0.9.2: CI des Release-PRs abwarten, Tag und vollständigen
-      Build erzeugen, Pakete und Prüfsummen prüfen, Paketvorlagen in einem
-      eigenen PR ergänzen und den fertigen Entwurf übergeben.
-- [ ] Veröffentlichung des fertigen Release-Entwurfs ausdrücklich freigeben.
-      Alle Pakete ohne eingerichtete Signierung als unsigniert kennzeichnen.
+- [x] Release v0.9.2: PR #12 nach grüner CI gemergt, Tag auf
+      `df8b023d9a7252674afc670f2db3f9fc709402cc`, vollständiger Build
+      `40011680091` erfolgreich. 15 Pakete und 21 Asset-Digests geprüft;
+      acht Hashes in den Paketvorlagen auf `release/v0.9.2-checksums`.
+- [ ] Prüfsummen-PR für v0.9.2 prüfen und integrieren.
+- [x] Release v0.9.2 nach ausdrücklicher Freigabe am 2026-10-23
+      veröffentlicht: https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2.
+      Kennzeichnung „unsigniert, nur zum Testen“ bleibt erhalten.
 
 ## 2. Hardware-Prüfläufe (vor 1.0)
 
