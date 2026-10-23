@@ -27,8 +27,12 @@
       </Component>
       <Component Directory="INSTALLFOLDER">
         <File Source="LICENSE" Name="LICENSE.txt" KeyPath="yes" />
-        <File Source="THIRD_PARTY_LICENSES" Name="THIRD_PARTY_LICENSES.txt" />
-        <File Source="packaging\linux\linkspec-packaged" Name="linkspec-packaged" />
+      </Component>
+      <Component Directory="INSTALLFOLDER">
+        <File Source="THIRD_PARTY_LICENSES" Name="THIRD_PARTY_LICENSES.txt" KeyPath="yes" />
+      </Component>
+      <Component Directory="INSTALLFOLDER">
+        <File Source="packaging\linux\linkspec-packaged" Name="linkspec-packaged" KeyPath="yes" />
       </Component>
     </Feature>
 

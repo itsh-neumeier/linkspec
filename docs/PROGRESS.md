@@ -3,10 +3,11 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Vollständige grüne CI für Release-PR #4 nach dem
-Merge von `main` abwarten. Die Maintainer-Freigabe zum Merge von PR #4
-liegt seit 2026-10-23 unter dieser Bedingung vor. Danach Tags und
-Release-Entwurf, Prüfsummen-PR und Übergabe.
+**Nächster Schritt:** Packaging-Korrektur aus PR #7 mit dem Release-Workflow
+auf `fix/release-v0.9.1-packaging` für `tag=v0.9.1` vollständig prüfen;
+das Tag bleibt unverändert und die Anwendungsquellen müssen ihm entsprechen.
+Danach Entwurf, Prüfsummen-PR und Übergabe. Für den Merge von PR #7 ist
+eine eigene Maintainer-Freigabe erforderlich; die bisherige galt PR #4.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -26,9 +27,9 @@ ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
 ## Tags
 
-Die Tags sind lokal angelegt; das Pushen von Tags ist in der Arbeitssitzung
-nicht erlaubt (nur der Arbeits-Branch). Der Maintainer setzt sie nach dem
-Merge (`docs/MAINTAINER_TODO.md`, Abschnitt 1):
+Die Tags `phase-0` bis `phase-8` und `v0.9.1` wurden am 2026-10-23 mit
+Maintainer-Freigabe gepusht. `v0.9.1` zeigt auf den Merge-Commit von PR #4:
+`7e38d1d972ea90259f0e0f2141e9bc1875f94246`. Die Phasen-Zuordnung:
 
 | Tag | Commit | Inhalt |
 |---|---|---|
@@ -36,20 +37,34 @@ Merge (`docs/MAINTAINER_TODO.md`, Abschnitt 1):
 | `phase-1`, `phase-2` | `1ff604f` | Core, CLI, Backends Linux/macOS |
 | `phase-3` | `9f38a13` | Windows Stufe 1 und Dienst |
 | `phase-4` … `phase-7` | `51d29ec` | App, Dashboard, Monitor, Historie, Widgets |
-| `phase-8` | letzter Commit des Branches | Paketierung, Doku, Leistung |
+| `phase-8` | `d0e07de` | Abschlussstand des ursprünglichen Phasen-PRs #1: Paketierung, Doku, Leistung |
 
 ## CI-Stand
 
-Letzter Lauf: `fmt`, `test (ubuntu-latest)`, `test (windows-latest)`,
-`test (macos-latest)`, `deny`, Cross-Builds (Windows ARM64, Linux aarch64,
-macOS Intel-CLI mit Exit 3) grün. Lokal getestet: `.deb`, `.rpm` und Tarball
-bauen (`packaging/linux/build-packages.sh`); AppImage, MSI und `.dmg` laufen
-erst im Release-Workflow (noch nie ausgeführt).
+CI auf `main` bei `7e38d1d`: alle acht Jobs grün (Lauf `39939159272`).
+Zuvor waren alle acht Jobs des Release-PRs #4 auf `9f2e161` grün
+(Lauf `39937360036`).
+
+Erster Release-Lauf `39939267276`: Linux x64/ARM64 und macOS erfolgreich,
+Windows ARM64 beim Paketieren fehlgeschlagen (WiX v7 verlangt EULA-Annahme;
+zusätzlich Selbst-Hashing der offenen Prüfsummendatei). Windows x64 dadurch
+abgebrochen, Entwurfs-Job übersprungen. In Linux-Artefakten fehlt wegen des
+Upload-Musters `dist/*.*` die Datei `SHA256SUMS-linux-*`.
 
 ## Verlauf
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1: PR #4 nach vollständig grüner CI und
+  Maintainer-Freigabe gemergt, Commit
+  `7e38d1d972ea90259f0e0f2141e9bc1875f94246`. Release- und Phasen-Tags
+  gepusht, CI auf `main` grün. Status: Packaging-Korrektur für den ersten
+  Release-Lauf vorbereitet; noch kein Entwurf und keine Release-Prüfsummen.
+  WiX 4.0.6 festgelegt, unversionierte MSI-Dateien auf einzelne Komponenten
+  verteilt, Windows-Selbst-Hashing und Linux-Upload korrigiert; lokale
+  MSI-Smoke-Builds für x64/ARM64 mit Testdateien erfolgreich. Der erneute
+  Lauf darf nur Packaging-/Doku-Abweichungen zum unveränderten Release-Tag
+  enthalten und soll ausschließlich einen Entwurf erzeugen.
 - 2026-10-23 – 8 – Release v0.9.1 fortgesetzt: `main` bei
   `338bfc7a2b4dbca895e11224d1522cb2ee92c3e5` (PR #6) per Merge in
   `release/v0.9.1` übernommen. `clipboard-win 5.4.3` ersetzt die
