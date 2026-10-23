@@ -14,6 +14,8 @@ Release-Agenten (`docs/release-agent.md`).
 ### Behoben
 - Clippy-Fehler in der Erkennung der Tray-Verfügbarkeit behoben (Issue #2,
   PR #3).
+- Zurückgezogene transitive Abhängigkeit `clipboard-win 5.4.1` durch
+  Version 5.4.3 ersetzt (Issue #5, PR #6).
 
 ### Doku
 - AGENTS.md, Fähigkeitsmatrix, ADRs 0001–0009, Datenschutz, Grenzen,

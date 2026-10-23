@@ -3,9 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Blocker aus Issue #5 beheben (`clipboard-win 5.4.1`
-laut CI zurückgezogen); danach vollständige grüne CI für Release-PR #4
-und Maintainer-Freigabe zum Merge abwarten. Tags und Release-Entwurf folgen.
+**Nächster Schritt:** Vollständige grüne CI für Release-PR #4 nach dem
+Merge von `main` abwarten. Die Maintainer-Freigabe zum Merge von PR #4
+liegt seit 2026-10-23 unter dieser Bedingung vor. Danach Tags und
+Release-Entwurf, Prüfsummen-PR und Übergabe.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -49,6 +50,11 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1 fortgesetzt: `main` bei
+  `338bfc7a2b4dbca895e11224d1522cb2ee92c3e5` (PR #6) per Merge in
+  `release/v0.9.1` übernommen. `clipboard-win 5.4.3` ersetzt die
+  zurückgezogene Version 5.4.1; Issue #5 damit behoben. Status:
+  vollständige CI von PR #4 ausstehend; Merge bei grüner CI freigegeben.
 - 2026-10-23 – 8 – Release v0.9.1, PR #4, Commit
   `e2f64e52d673c28ec75599982dbc1b4147ec3607`: PR-CI meldet im Job `deny`
   `error[yanked]` für `clipboard-win 5.4.1` in `Cargo.lock`
