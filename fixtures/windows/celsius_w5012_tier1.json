@@ -1,0 +1,976 @@
+{
+  "schema": "linkspec.capture.v1",
+  "backend": "windows",
+  "anonymized": true,
+  "synthetic": false,
+  "host": {
+    "os": "windows",
+    "os_version": "10.0.26300 (26H2)",
+    "model": "CELSIUS W5012",
+    "arch": "x86_64"
+  },
+  "data": {
+    "hubs": [
+      {
+        "key": "hub-1",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)",
+        "info": {
+          "hub_type": "root",
+          "highest_port": 24
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": true,
+              "type_c": true,
+              "companion_index": 0,
+              "companion_port": 17
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 3,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 18
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 4,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 19
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 5,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 20
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 6,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 21
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 7,
+            "connector": {
+              "user_connectable": false,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 8,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": true,
+              "type_c": true,
+              "companion_index": 0,
+              "companion_port": 24
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 9,
+            "connector": {
+              "user_connectable": false,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 10,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 23
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 11,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 12,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 13,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": true,
+              "bcd_usb": 528,
+              "device_class": 9,
+              "vendor_id": 1507,
+              "product_id": 1552,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": true,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB2.1 Hub",
+            "product_string": "USB2.1 Hub",
+            "bos_max": "gen1",
+            "child_hub": "hub-2"
+          },
+          {
+            "port": 14,
+            "connector": {
+              "user_connectable": false,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 15,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 16,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 17,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": true,
+              "type_c": true,
+              "companion_index": 0,
+              "companion_port": 1
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 18,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 3
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 19,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 4
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 20,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 5
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 21,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 6
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 22,
+            "connector": {
+              "user_connectable": false,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 23,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 10
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 24,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": true,
+              "multiple_companions": true,
+              "type_c": true,
+              "companion_index": 0,
+              "companion_port": 8
+            },
+            "companion_hub": "hub-1",
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          }
+        ]
+      },
+      {
+        "key": "hub-2",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(13)",
+        "info": {
+          "hub_type": "usb20",
+          "highest_port": 4
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 3,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": true,
+              "bcd_usb": 528,
+              "device_class": 9,
+              "vendor_id": 1507,
+              "product_id": 1552,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": true,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB2.1 Hub",
+            "product_string": "USB2.1 Hub",
+            "bos_max": "gen1",
+            "child_hub": "hub-3"
+          },
+          {
+            "port": 4,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 1,
+              "is_hub": false,
+              "bcd_usb": 512,
+              "device_class": 0,
+              "vendor_id": 1130,
+              "product_id": 49297,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "CHERRY Wireless Desktop",
+            "product_string": "CHERRY Wireless Desktop\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+          }
+        ]
+      },
+      {
+        "key": "hub-3",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(13)#USB(3)",
+        "info": {
+          "hub_type": "usb20",
+          "highest_port": 4
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": false,
+              "bcd_usb": 512,
+              "device_class": 239,
+              "vendor_id": 1133,
+              "product_id": 2194,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "HD Pro Webcam C920",
+            "product_string": "HD Pro Webcam C920"
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 1,
+              "is_hub": false,
+              "bcd_usb": 272,
+              "device_class": 0,
+              "vendor_id": 6408,
+              "product_id": 4913,
+              "i_product": 0
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB-Verbundgerät"
+          },
+          {
+            "port": 3,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 1,
+              "is_hub": false,
+              "bcd_usb": 512,
+              "device_class": 224,
+              "vendor_id": 4311,
+              "product_id": 45074,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "general adapter",
+            "manufacturer": "GenericAdapter",
+            "product_string": "general adapter"
+          },
+          {
+            "port": 4,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 2,
+              "is_hub": true,
+              "bcd_usb": 528,
+              "device_class": 9,
+              "vendor_id": 1507,
+              "product_id": 1552,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": true,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB2.1 Hub",
+            "product_string": "USB2.1 Hub",
+            "bos_max": "gen1",
+            "child_hub": "hub-4"
+          }
+        ]
+      },
+      {
+        "key": "hub-4",
+        "location": "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(13)#USB(3)#USB(4)",
+        "info": {
+          "hub_type": "usb20",
+          "highest_port": 4
+        },
+        "ports": [
+          {
+            "port": 1,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 2,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          },
+          {
+            "port": 3,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "connected",
+              "speed": 1,
+              "is_hub": false,
+              "bcd_usb": 512,
+              "device_class": 239,
+              "vendor_id": 12346,
+              "product_id": 4097,
+              "i_product": 2
+            },
+            "v2": {
+              "usb110": true,
+              "usb200": true,
+              "usb300": false,
+              "operating_at_ss": false,
+              "ss_capable": false,
+              "operating_at_ssp": false,
+              "ssp_capable": false
+            },
+            "description": "USB JTAG/serial debug unit",
+            "product_string": "USB JTAG/serial debug unit\u0000"
+          },
+          {
+            "port": 4,
+            "connector": {
+              "user_connectable": true,
+              "debug_capable": false,
+              "multiple_companions": false,
+              "type_c": false,
+              "companion_index": 0,
+              "companion_port": 0
+            },
+            "conn": {
+              "status": "no_device",
+              "speed": 0,
+              "is_hub": false,
+              "bcd_usb": 0,
+              "device_class": 0,
+              "vendor_id": 0,
+              "product_id": 0,
+              "i_product": 0
+            }
+          }
+        ]
+      }
+    ],
+    "batteries": [],
+    "displays": [
+      {
+        "output_technology": 10,
+        "current": {
+          "width": 2560,
+          "height": 1440,
+          "refresh_hz": 60.0
+        },
+        "edid": {
+          "name": "27E2N2500",
+          "bits_per_color": 10,
+          "preferred": {
+            "width": 2560,
+            "height": 1440,
+            "refresh_mhz": 60000
+          },
+          "max": {
+            "width": 2560,
+            "height": 1440,
+            "refresh_mhz": 120001
+          }
+        }
+      },
+      {
+        "output_technology": 10,
+        "current": {
+          "width": 2560,
+          "height": 1440,
+          "refresh_hz": 60.0
+        },
+        "edid": {
+          "name": "27E2N2500",
+          "bits_per_color": 10,
+          "preferred": {
+            "width": 2560,
+            "height": 1440,
+            "refresh_mhz": 60000
+          },
+          "max": {
+            "width": 2560,
+            "height": 1440,
+            "refresh_mhz": 120001
+          }
+        }
+      }
+    ],
+    "usb4_routers": [],
+    "service": {
+      "state": "not_installed"
+    },
+    "host": {
+      "os_version": "10.0.26300 (26H2)",
+      "model": "CELSIUS W5012",
+      "arch": "x86_64"
+    }
+  }
+}

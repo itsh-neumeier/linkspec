@@ -3,7 +3,7 @@
 use std::fmt::Write;
 
 use linkspec_core::I18n;
-use linkspec_core::diagnosis::{Diagnosis, Domain, Limiter, PortDiagnosis, Status};
+use linkspec_core::diagnosis::{DeviceOut, Diagnosis, Domain, Limiter, PortDiagnosis, Status};
 
 /// Colours only on a terminal and without `NO_COLOR`.
 #[derive(Debug, Clone, Copy)]
@@ -130,22 +130,7 @@ pub fn port_block(p: &PortDiagnosis, i18n: &I18n, style: Style, raw: bool) -> St
     if !p.devices.is_empty() {
         let _ = writeln!(s, "  {}:", i18n.t("cli-devices", &[]));
         for d in &p.devices {
-            let name = match (&d.vendor, &d.product) {
-                (Some(v), Some(p)) => format!("{v} {p}"),
-                (None, Some(p)) => p.clone(),
-                (Some(v), None) => v.clone(),
-                (None, None) => "USB".into(),
-            };
-            let _ = writeln!(
-                s,
-                "    {}{} {}",
-                "  ".repeat(usize::from(d.depth)),
-                name,
-                style.dim(&format!(
-                    "({})",
-                    i18n.t("speed-gbps", &[("gbps", d.usb_gbps.into())])
-                ))
-            );
+            device_line(&mut s, d, i18n, "    ");
         }
     }
     // Further verdicts (the summary already shows the most important one).
@@ -192,6 +177,15 @@ pub fn port_block(p: &PortDiagnosis, i18n: &I18n, style: Style, raw: bool) -> St
     s
 }
 
+fn device_line(s: &mut String, d: &DeviceOut, i18n: &I18n, indent: &str) {
+    let _ = writeln!(
+        s,
+        "{indent}{}{}",
+        "  ".repeat(usize::from(d.depth)),
+        d.label(i18n)
+    );
+}
+
 pub fn text(d: &Diagnosis, i18n: &I18n, style: Style, raw: bool, hide_empty: bool) -> String {
     let mut s = String::new();
     for n in &d.notices {
@@ -210,6 +204,12 @@ pub fn text(d: &Diagnosis, i18n: &I18n, style: Style, raw: bool, hide_empty: boo
             s.push('\n');
         }
         s.push_str(&port_block(p, i18n, style, raw));
+    }
+    if !d.other_usb_devices.is_empty() {
+        let _ = writeln!(s, "\n{}", style.bold(&i18n.t("other-usb-title", &[])));
+        for dev in &d.other_usb_devices {
+            device_line(&mut s, dev, i18n, "  ");
+        }
     }
     s
 }

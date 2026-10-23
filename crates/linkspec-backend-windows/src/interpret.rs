@@ -37,6 +37,12 @@ fn speed_mbps(p: &HubPortDump) -> Option<f64> {
     })
 }
 
+/// Device strings from older captures can carry NUL padding.
+fn clean(s: &str) -> Option<String> {
+    let s = s.trim_end_matches('\0').trim();
+    (!s.is_empty()).then(|| s.to_string())
+}
+
 fn device(
     hubs: &BTreeMap<&str, &HubDump>,
     p: &HubPortDump,
@@ -67,8 +73,12 @@ fn device(
     Some(UsbDeviceObservation {
         vendor_id: Some(c.vendor_id),
         product_id: Some(c.product_id),
-        vendor: p.manufacturer.clone(),
-        product: p.product_string.clone().or_else(|| p.description.clone()),
+        vendor: p.manufacturer.as_deref().and_then(clean),
+        product: p
+            .product_string
+            .as_deref()
+            .and_then(clean)
+            .or_else(|| p.description.as_deref().and_then(clean)),
         speed_mbps: speed,
         bcd_usb: Some(c.bcd_usb),
         max_capable,
@@ -272,6 +282,47 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         ports.push(p);
     }
 
+    // All other USB devices: everything below the root hubs that is not on
+    // a Type-C port. Internal hubs are flattened, because their Type-C
+    // ports already have a card.
+    let grouped: BTreeSet<&PortKey> = ordered.iter().flat_map(|(_, g)| g).collect();
+    let mut other_usb_devices = Vec::new();
+    fn walk_other(
+        key: &str,
+        hubs: &BTreeMap<&str, &HubDump>,
+        grouped: &BTreeSet<&PortKey>,
+        internal: &dyn Fn(&str) -> bool,
+        out: &mut Vec<UsbDeviceObservation>,
+        depth: u8,
+    ) {
+        let Some(h) = hubs.get(key) else { return };
+        for p in &h.ports {
+            if grouped.contains(&(key.to_string(), p.port)) {
+                continue;
+            }
+            match p.child_hub.as_deref() {
+                Some(c) if internal(c) && depth < 6 => {
+                    walk_other(c, hubs, grouped, internal, out, depth + 1);
+                }
+                _ => out.extend(device(hubs, p, 0)),
+            }
+        }
+    }
+    for h in dump
+        .hubs
+        .iter()
+        .filter(|h| h.info.hub_type == HubType::Root)
+    {
+        walk_other(
+            &h.key,
+            &hubs,
+            &grouped,
+            &internal,
+            &mut other_usb_devices,
+            0,
+        );
+    }
+
     // USB4 (H-W3): only map when there is exactly one Type-C port.
     let device_routers: Vec<_> = dump
         .usb4_routers
@@ -397,6 +448,7 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         usb_probe: true,
         battery,
         ports,
+        other_usb_devices,
         notices,
     }
 }

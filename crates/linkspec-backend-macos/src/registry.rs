@@ -437,6 +437,8 @@ pub fn interpret(dump: &RegistryDump) -> Snapshot {
         usb_probe: true,
         battery,
         ports,
+        // Not collected on this platform yet (capability matrix).
+        other_usb_devices: vec![],
         notices: vec![],
     }
 }

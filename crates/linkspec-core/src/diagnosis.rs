@@ -18,6 +18,9 @@ pub struct Diagnosis {
     pub host: HostOut,
     pub sources: SourcesOut,
     pub ports: Vec<PortDiagnosis>,
+    /// USB devices outside the USB-C/Thunderbolt ports (additive in v1).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub other_usb_devices: Vec<DeviceOut>,
     /// Platform-wide notices, localized (additive in v1).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub notices: Vec<NoticeOut>,
@@ -254,6 +257,31 @@ pub struct DeviceOut {
     pub depth: u8,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_hub: bool,
+    /// Highest rate the device proves it supports (BOS, UFP VDO or
+    /// `bcdUSB` 2.00), in Gbit/s. Additive in v1.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub capable_gbps: Option<f64>,
+}
+
+impl DeviceOut {
+    /// One display line: name, link rate and, when the device proves it can
+    /// do more, its own maximum ("0.48 Gbit/s, capable of 5 Gbit/s").
+    pub fn label(&self, i18n: &crate::I18n) -> String {
+        let name = match (&self.vendor, &self.product) {
+            (Some(v), Some(p)) => format!("{v} {p}"),
+            (None, Some(p)) => p.clone(),
+            (Some(v), None) => v.clone(),
+            (None, None) => "USB".into(),
+        };
+        let speed = i18n.t("speed-gbps", &[("gbps", self.usb_gbps.into())]);
+        match self.capable_gbps {
+            Some(c) if c > self.usb_gbps + 0.01 => format!(
+                "{name} ({speed}, {})",
+                i18n.t("device-capable", &[("gbps", c.into())])
+            ),
+            _ => format!("{name} ({speed})"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

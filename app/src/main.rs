@@ -732,6 +732,7 @@ fn apply(s: &State<'_>, u: &Update, hide_empty: bool) {
     match u {
         Update::Data {
             ports,
+            other_usb,
             negotiation,
             displays,
             cables,
@@ -794,6 +795,15 @@ fn apply(s: &State<'_>, u: &Update, hide_empty: bool) {
                 })
                 .collect();
             s.set_ports(ModelRc::new(VecModel::from(ports)));
+            s.set_other_usb(ModelRc::new(VecModel::from(
+                other_usb
+                    .iter()
+                    .map(|(t, d)| Device {
+                        text: t.clone().into(),
+                        depth: *d,
+                    })
+                    .collect::<Vec<_>>(),
+            )));
             s.set_negotiation(ModelRc::new(VecModel::from(
                 negotiation
                     .iter()
