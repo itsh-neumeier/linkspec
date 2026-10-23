@@ -152,14 +152,22 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
     let port_of = |k: &PortKey| -> Option<&HubPortDump> {
         hubs.get(k.0.as_str())?.ports.iter().find(|p| p.port == k.1)
     };
-    let hub_is_usb3 = |key: &str| {
-        hubs.get(key).is_some_and(|h| {
-            h.info.hub_type == HubType::Usb30
-                || h.ports.iter().any(|p| p.v2.is_some_and(|v| v.usb300))
-                || h.ports
-                    .iter()
-                    .any(|p| p.conn.as_ref().is_some_and(|c| c.speed >= 3))
-        })
+    // USB 3 per port: an xHCI root hub carries USB 2 and USB 3 ports, so
+    // the hub type alone is not enough. `SupportedUsbProtocols` (V2) is
+    // per port; older dumps without it fall back to hub type and speed.
+    let port_is_usb3 = |k: &PortKey| {
+        let Some(h) = hubs.get(k.0.as_str()) else {
+            return false;
+        };
+        let m = h.ports.iter().find(|p| p.port == k.1);
+        match m.and_then(|m| m.v2) {
+            Some(v) => v.usb300,
+            None => {
+                h.info.hub_type == HubType::Usb30
+                    || m.and_then(|m| m.conn.as_ref())
+                        .is_some_and(|c| c.speed >= 3)
+            }
+        }
     };
 
     // Order: by (location of the hub, port number) of the first member.
@@ -190,7 +198,7 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
             .filter_map(|k| port_of(k).map(|p| (k, p)))
             .collect();
         p.behind_internal_hub = group.iter().any(|k| internal(&k.0));
-        let has_ss = group.iter().any(|k| hub_is_usb3(&k.0));
+        let has_ss = group.iter().any(port_is_usb3);
         let ssp_seen = members
             .iter()
             .any(|(_, m)| m.v2.is_some_and(|v| v.operating_at_ssp));
@@ -258,7 +266,7 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         for (k, _) in &members {
             p.raw.insert(
                 format!("member_{}_{}", k.0, k.1),
-                serde_json::Value::String(if hub_is_usb3(&k.0) { "usb3" } else { "usb2" }.into()),
+                serde_json::Value::String(if port_is_usb3(k) { "usb3" } else { "usb2" }.into()),
             );
         }
         ports.push(p);

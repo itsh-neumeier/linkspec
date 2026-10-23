@@ -92,13 +92,16 @@ pub fn collect_hubs(api: &mut dyn HubApi, usb_probe: bool) -> (Vec<HubDump>, u64
                 .ioctl(path, Req::ConnInfoEx, port)
                 .and_then(|b| parse_conn_info_ex(&b));
             let present = conn.as_ref().is_some_and(|c| c.status.device_present());
-            let (mut v2, mut ssp) = (None, None);
+            // Passive and valid on empty ports too: SupportedUsbProtocols is
+            // what the port supports, so an xHCI root hub tells its USB 2
+            // and USB 3 ports apart.
+            let v2 = api
+                .ioctl(path, Req::ConnInfoV2, port)
+                .and_then(|b| parse_conn_info_v2(&b));
+            let mut ssp = None;
             let (mut description, mut manufacturer) = (None, None);
             let (mut product_string, mut bos_max, mut child_hub) = (None, None, None);
             if present {
-                v2 = api
-                    .ioctl(path, Req::ConnInfoV2, port)
-                    .and_then(|b| parse_conn_info_v2(&b));
                 if v2.is_some_and(|v| v.operating_at_ssp) {
                     ssp = api
                         .ioctl(path, Req::SspInfo, port)
