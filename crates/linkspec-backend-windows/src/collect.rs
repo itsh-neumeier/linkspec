@@ -6,8 +6,9 @@
 use std::collections::BTreeMap;
 
 use crate::ioctl::{
-    self, CONN_INFO_EX_SIZE, CONN_INFO_V2_SIZE, SSP_INFO_SIZE, parse_conn_info_ex,
-    parse_conn_info_v2, parse_connector_props, parse_hub_info_ex, parse_ssp_info,
+    self, CONN_INFO_EX_SIZE, CONN_INFO_V2_SIZE, CONNECTOR_PROPS_SIZE, SSP_INFO_SIZE,
+    parse_conn_info_ex, parse_conn_info_v2, parse_connector_props, parse_hub_info_ex,
+    parse_ssp_info,
 };
 use crate::model::{HubDump, HubPortDump};
 
@@ -25,7 +26,7 @@ impl Req {
     pub fn min_size(self) -> usize {
         match self {
             Req::HubInfoEx => 8,
-            Req::ConnectorProps => 16,
+            Req::ConnectorProps => CONNECTOR_PROPS_SIZE,
             Req::ConnInfoEx => CONN_INFO_EX_SIZE,
             Req::ConnInfoV2 => CONN_INFO_V2_SIZE,
             Req::SspInfo => SSP_INFO_SIZE,
