@@ -4,12 +4,18 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag whose draft should be created or updated (for example v0.9.1)"
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 env:
   CARGO_TERM_COLOR: always
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   linux:
@@ -24,6 +30,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify tagged application sources
+        shell: bash
+        run: git diff --exit-code "$RELEASE_TAG" -- . ':(exclude)packaging/**' ':(exclude).github/workflows/release.yml' ':(exclude)docs/**' ':(exclude)CHANGELOG.md'
       - uses: dtolnay/rust-toolchain@1.99.1
       - name: Linux build dependencies
         timeout-minutes: 10
@@ -42,13 +53,24 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.target }}
-          path: dist/*.*
+          path: |
+            dist/*.tar.gz
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
+            dist/SHA256SUMS-linux-*
+          if-no-files-found: error
 
   macos:
     runs-on: macos-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify tagged application sources
+        shell: bash
+        run: git diff --exit-code "$RELEASE_TAG" -- . ':(exclude)packaging/**' ':(exclude).github/workflows/release.yml' ':(exclude)docs/**' ':(exclude)CHANGELOG.md'
       - uses: dtolnay/rust-toolchain@1.99.1
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
@@ -93,6 +115,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify tagged application sources
+        shell: bash
+        run: git diff --exit-code "$RELEASE_TAG" -- . ':(exclude)packaging/**' ':(exclude).github/workflows/release.yml' ':(exclude)docs/**' ':(exclude)CHANGELOG.md'
       - uses: dtolnay/rust-toolchain@1.99.1
         with:
           targets: ${{ matrix.target }}
@@ -101,8 +128,10 @@ jobs:
         run: |
           $env:RUSTFLAGS = "-C target-feature=+crt-static"
           cargo build --release --locked --target ${{ matrix.target }} -p linkspec-cli -p linkspec-service
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Remove-Item Env:RUSTFLAGS
           cargo build --release --locked --target ${{ matrix.target }} -p linkspec-app
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Sign binaries (optional)
         if: env.WINDOWS_CERT_PFX != ''
         shell: pwsh
@@ -119,14 +148,22 @@ jobs:
           $v = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages | Where-Object name -eq 'linkspec-cli' | Select-Object -ExpandProperty version
           New-Item -ItemType Directory -Force dist | Out-Null
           $bin = "target\${{ matrix.target }}\release"
-          Compress-Archive -Force -Path "$bin\linkspec.exe","README.md","LICENSE","THIRD_PARTY_LICENSES" -DestinationPath "dist\linkspec-$v-windows-${{ matrix.short }}.zip"
-          dotnet tool install --global wix
+          Compress-Archive -Force -Path "$bin\linkspec.exe","$bin\linkspec-app.exe","README.md","LICENSE","THIRD_PARTY_LICENSES" -DestinationPath "dist\linkspec-$v-windows-${{ matrix.short }}.zip"
+          dotnet tool install --global wix --version 4.0.6
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           wix build packaging\windows\linkspec.wxs -arch ${{ matrix.arch }} -d Version=$v -d BinDir=$bin -o "dist\LinkSpec-$v-${{ matrix.arch }}.msi"
-          Get-ChildItem dist | ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name } | Out-File -Encoding ascii "dist\SHA256SUMS-windows-${{ matrix.short }}"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $artifacts = @("dist\linkspec-$v-windows-${{ matrix.short }}.zip", "dist\LinkSpec-$v-${{ matrix.arch }}.msi")
+          $checksums = $artifacts | ForEach-Object { "{0}  {1}" -f (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash.ToLower(), [IO.Path]::GetFileName($_) }
+          $checksums | Out-File -Encoding ascii "dist\SHA256SUMS-windows-${{ matrix.short }}"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.short }}
-          path: dist/*
+          path: |
+            dist/*.zip
+            dist/*.msi
+            dist/SHA256SUMS-windows-*
+          if-no-files-found: error
 
   publish:
     needs: [linux, macos, windows]
@@ -138,8 +175,16 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Combined checksums
-        run: cd dist && cat SHA256SUMS-* > SHA256SUMS && ls -la
+        run: |
+          cd dist
+          cat SHA256SUMS-* | tr -d '\r' > SHA256SUMS
+          sha256sum --check --strict SHA256SUMS
+          find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%f\n' | sort > "$RUNNER_TEMP/release-files"
+          awk '{sub(/^\.\//, "", $2); print $2}' SHA256SUMS | sort > "$RUNNER_TEMP/checksummed-files"
+          diff -u "$RUNNER_TEMP/release-files" "$RUNNER_TEMP/checksummed-files"
+          ls -la
       - uses: softprops/action-gh-release@v2
         with:
           draft: true
+          tag_name: ${{ env.RELEASE_TAG }}
           files: dist/*
