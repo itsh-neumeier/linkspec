@@ -3,10 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Prüfsummen-PR für v0.9.2 prüfen. Der vollständige
-[Release-Entwurf](https://github.com/itsh-neumeier/linkspec/releases/tag/untagged-ca23adbb48634798e4ce)
-mit 15 geprüften Paketen ist fertig. Veröffentlichung ausdrücklich freigeben;
-Einreichungen bei Paketquellen bleiben eigene Maintainer-Aufgaben.
+**Nächster Schritt:** Prüfsummen-PR #13 für v0.9.2 prüfen und integrieren.
+[Release v0.9.2](https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2)
+mit 15 geprüften Paketen ist mit ausdrücklicher Maintainer-Freigabe
+veröffentlicht. Einreichungen bei Paketquellen bleiben eigene Maintainer-Aufgaben.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -49,6 +49,15 @@ mit allen sechs Jobs erfolgreich; alle 15 Pakete und 21 Asset-Digests geprüft.
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.2 nach ausdrücklicher Maintainer-Freigabe
+  veröffentlicht (22:59 Uhr Europe/Berlin). Unveränderter Release-Commit
+  `df8b023d9a7252674afc670f2db3f9fc709402cc`; alle 21 Asset-Digests vor
+  Veröffentlichung erneut geprüft. Öffentlicher Link:
+  https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2.
+  Hinweis bleibt „unsigniert, nur zum Testen“. Alle acht CI-Jobs von
+  Prüfsummen-PR #13 auf `3d7de4a` grün (Lauf `40013502875`); dieser
+  Dokumentationsnachtrag aktualisiert denselben PR. Keine Einreichung bei
+  Paketquellen; bestehende Tags und v0.9.1-Entwurf unverändert.
 - 2026-10-23 – 8 – Release v0.9.2: PR #12 nach acht grünen CI-Jobs
   (Lauf `40010852504`) per Merge-Commit
   `df8b023d9a7252674afc670f2db3f9fc709402cc` integriert; neues Tag `v0.9.2`

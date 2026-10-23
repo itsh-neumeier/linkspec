@@ -17,8 +17,9 @@ Alles ist vorbereitet; hier stehen die genauen Schritte.
       `40011680091` erfolgreich. 15 Pakete und 21 Asset-Digests geprüft;
       acht Hashes in den Paketvorlagen auf `release/v0.9.2-checksums`.
 - [ ] Prüfsummen-PR für v0.9.2 prüfen und integrieren.
-- [ ] Veröffentlichung des fertigen Release-Entwurfs ausdrücklich freigeben.
-      Alle Pakete ohne eingerichtete Signierung als unsigniert kennzeichnen.
+- [x] Release v0.9.2 nach ausdrücklicher Freigabe am 2026-10-23
+      veröffentlicht: https://github.com/itsh-neumeier/linkspec/releases/tag/v0.9.2.
+      Kennzeichnung „unsigniert, nur zum Testen“ bleibt erhalten.
 
 ## 2. Hardware-Prüfläufe (vor 1.0)
 
