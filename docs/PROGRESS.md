@@ -3,8 +3,9 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Release-PR für v0.9.1 prüfen, vollständige grüne CI und
-Maintainer-Freigabe zum Merge abwarten; danach Tags und Release-Entwurf.
+**Nächster Schritt:** Blocker aus Issue #5 beheben (`clipboard-win 5.4.1`
+laut CI zurückgezogen); danach vollständige grüne CI für Release-PR #4
+und Maintainer-Freigabe zum Merge abwarten. Tags und Release-Entwurf folgen.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -48,6 +49,13 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1, PR #4, Commit
+  `e2f64e52d673c28ec75599982dbc1b4147ec3607`: PR-CI meldet im Job `deny`
+  `error[yanked]` für `clipboard-win 5.4.1` in `Cargo.lock`
+  (Lauf `39927926652`, Job `120328788465`). Issue #5 mit Fehlerlog
+  angelegt. Status: Release-Ablauf gestoppt; Abhängigkeits-Fix liegt
+  außerhalb des Release-Agent-Auftrags. Kein Merge, Tag oder
+  Release-Workflow gestartet.
 - 2026-10-23 – 8 – Release v0.9.1 vorbereitet auf `release/v0.9.1`:
   Versionen, Changelog und Paket-URLs aktualisiert. Vorprüfung auf
   `main` bei `e8dbe151b88194a5a2fe596f79d59b3359abd2e7` mit Rust 1.99.1
