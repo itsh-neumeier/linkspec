@@ -10,8 +10,13 @@ Alles ist vorbereitet; hier stehen die genauen Schritte.
       2026-10-22, Commit `a55cd5958825fc6aa05a090afbde9395d84cac3d`.
       Nachtrag PR #3 am 2026-10-23, Commit
       `e8dbe151b88194a5a2fe596f79d59b3359abd2e7`.
-- [ ] Tags `phase-0` … `phase-8` setzen (Commit-Hashes in
-      `docs/PROGRESS.md`), z. B. `git tag phase-3 <hash> && git push --tags`.
+- [x] Tags `phase-0` … `phase-8` und `v0.9.1` auf GitHub vorhanden
+      (am 2026-10-23 geprüft). Bestehende Tags bleiben unverändert.
+- [ ] Release v0.9.2: CI des Release-PRs abwarten, Tag und vollständigen
+      Build erzeugen, Pakete und Prüfsummen prüfen, Paketvorlagen in einem
+      eigenen PR ergänzen und den fertigen Entwurf übergeben.
+- [ ] Veröffentlichung des fertigen Release-Entwurfs ausdrücklich freigeben.
+      Alle Pakete ohne eingerichtete Signierung als unsigniert kennzeichnen.
 
 ## 2. Hardware-Prüfläufe (vor 1.0)
 

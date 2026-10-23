@@ -29,7 +29,7 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.9.1"
+version = "0.9.2"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT"
@@ -38,16 +38,16 @@ authors = ["LinkSpec contributors"]
 
 [workspace.dependencies]
 winresource = "0.1"
-linkspec-core = { path = "crates/linkspec-core", version = "0.9.1" }
-linkspec-platform = { path = "crates/linkspec-platform", version = "0.9.1" }
-linkspec-engine = { path = "crates/linkspec-engine", version = "0.9.1" }
-linkspec-backend-macos = { path = "crates/linkspec-backend-macos", version = "0.9.1" }
-linkspec-backend-linux = { path = "crates/linkspec-backend-linux", version = "0.9.1" }
-linkspec-backend-windows = { path = "crates/linkspec-backend-windows", version = "0.9.1" }
-linkspec-db = { path = "crates/linkspec-db", version = "0.9.1" }
-linkspec-history = { path = "crates/linkspec-history", version = "0.9.1" }
-linkspec-fake = { path = "crates/linkspec-fake", version = "0.9.1" }
-linkspec-cli = { path = "crates/linkspec-cli", version = "0.9.1" }
+linkspec-core = { path = "crates/linkspec-core", version = "0.9.2" }
+linkspec-platform = { path = "crates/linkspec-platform", version = "0.9.2" }
+linkspec-engine = { path = "crates/linkspec-engine", version = "0.9.2" }
+linkspec-backend-macos = { path = "crates/linkspec-backend-macos", version = "0.9.2" }
+linkspec-backend-linux = { path = "crates/linkspec-backend-linux", version = "0.9.2" }
+linkspec-backend-windows = { path = "crates/linkspec-backend-windows", version = "0.9.2" }
+linkspec-db = { path = "crates/linkspec-db", version = "0.9.2" }
+linkspec-history = { path = "crates/linkspec-history", version = "0.9.2" }
+linkspec-fake = { path = "crates/linkspec-fake", version = "0.9.2" }
+linkspec-cli = { path = "crates/linkspec-cli", version = "0.9.2" }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }

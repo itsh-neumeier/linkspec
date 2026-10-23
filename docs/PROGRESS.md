@@ -3,11 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Windows-x64-Testbuild nach PR #11: Packaging-Fix in PR #10 auf
-`fix/windows-x64-testbuild` prüfen und zum Merge freigeben; anschließend
-den Testbuild auf `main` wiederholen. Ergebnisse und Prüfsummen des
-Validierungslaufs werden im Übergabekommentar zu PR #11 dokumentiert.
-Der Auftrag umfasst keinen Versionswechsel, Tag oder Release-Entwurf.
+**Nächster Schritt:** Release v0.9.2 aus dem auf Windows getesteten Stand
+vorbereiten: Release-PR und CI, danach Tag und vollständiger Build für alle
+Plattformen. Prüfsummen in einem separaten PR nachtragen und den fertigen
+Entwurf übergeben. Veröffentlichung und Paketquellen bleiben eigene Schritte.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -27,9 +26,9 @@ ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
 ## Tags
 
-Die Tags sind lokal angelegt; das Pushen von Tags ist in der Arbeitssitzung
-nicht erlaubt (nur der Arbeits-Branch). Der Maintainer setzt sie nach dem
-Merge (`docs/MAINTAINER_TODO.md`, Abschnitt 1):
+Die Tags `phase-0` bis `phase-8` und `v0.9.1` sind bereits auf GitHub
+vorhanden. Bestehende Tags werden nicht verschoben. Die folgende Tabelle
+dokumentiert die ursprüngliche Phasen-Zuordnung:
 
 | Tag | Commit | Inhalt |
 |---|---|---|
@@ -41,16 +40,30 @@ Merge (`docs/MAINTAINER_TODO.md`, Abschnitt 1):
 
 ## CI-Stand
 
-Letzter Lauf: `fmt`, `test (ubuntu-latest)`, `test (windows-latest)`,
-`test (macos-latest)`, `deny`, Cross-Builds (Windows ARM64, Linux aarch64,
-macOS Intel-CLI mit Exit 3) grün. Lokal getestet: `.deb`, `.rpm` und Tarball
-bauen (`packaging/linux/build-packages.sh`); AppImage, MSI und `.dmg` laufen
-erst im Release-Workflow (noch nie ausgeführt).
+CI auf `main` bei `9dbf168d79c2d7fbcae6eb03ea8ef3f7ae9cd683` vollständig
+grün (Lauf `40007763684`): Formatierung, Clippy und Tests auf drei Systemen,
+Cross-Builds und `deny`. Windows-x64-Testbuild `40007776955` erfolgreich;
+MSI, ZIP, deren SHA256-Werte und fehlende Authenticode-Signaturen geprüft.
 
 ## Verlauf
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.2 beauftragt und Zielversion bestätigt.
+  Ausgangspunkt: `main` bei `9dbf168d79c2d7fbcae6eb03ea8ef3f7ae9cd683`.
+  Versionen und Changelog auf Release-Branch aktualisiert. Die noch nötigen
+  Linux- und gemeinsamen Prüfsummen-Korrekturen aus Packaging-PR #7
+  übernommen; die Windows-Korrekturen sind bereits über PR #10 integriert.
+  Status: Release-PR, vollständige CI, Tag, Build und Prüfsummen-PR ausstehend.
+- 2026-10-23 – 8 – PR #10 nach acht grünen CI-Jobs (Lauf `40005525012`)
+  mit zusätzlicher Maintainer-Freigabe per Merge-Commit
+  `9dbf168d79c2d7fbcae6eb03ea8ef3f7ae9cd683` integriert. Erneuter
+  Windows-x64-Testbuild auf `main` erfolgreich (Lauf `40007776955`,
+  Artefakt `12525038382`). Beide Pakete gegen `SHA256SUMS-windows-x86_64`
+  geprüft; MSI und CLI/App-EXEs unsigniert. Übergabe mit Hashes in PR #11.
+  Maintainer meldet, dass der Testbuild funktioniert. Kein Release erzeugt
+  oder veröffentlicht; kein Tag, Versionswechsel oder CHANGELOG-Eintrag
+  im Rahmen dieses Testbuilds.
 - 2026-10-23 – 8 – PR #11 nach acht grünen CI-Jobs auf `dfa95c3`
   (Lauf `40001785670`) mit Maintainer-Freigabe per Merge-Commit
   `75e4e8f8031b93f0ef0aa43f541d4b1ee9dbee3d` integriert. Auch die CI auf

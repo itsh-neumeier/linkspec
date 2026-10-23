@@ -48,7 +48,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.target }}
-          path: dist/*.*
+          path: |
+            dist/*.tar.gz
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
+            dist/SHA256SUMS-linux-*
+          if-no-files-found: error
 
   macos:
     if: ${{ !inputs.windows_x64_only }}
@@ -153,7 +159,14 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Combined checksums
-        run: cd dist && cat SHA256SUMS-* > SHA256SUMS && ls -la
+        run: |
+          cd dist
+          cat SHA256SUMS-* | tr -d '\r' > SHA256SUMS
+          sha256sum --check --strict SHA256SUMS
+          find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%f\n' | sort > "$RUNNER_TEMP/release-files"
+          awk '{sub(/^\.\//, "", $2); print $2}' SHA256SUMS | sort > "$RUNNER_TEMP/checksummed-files"
+          diff -u "$RUNNER_TEMP/release-files" "$RUNNER_TEMP/checksummed-files"
+          ls -la
       - uses: softprops/action-gh-release@v2
         with:
           draft: true
