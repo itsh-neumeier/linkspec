@@ -3,6 +3,32 @@
 Format: je Version ein Abschnitt (Neu, Behoben, Doku, Intern). Gepflegt vom
 Release-Agenten (`docs/release-agent.md`).
 
+## [0.9.2] – 2026-10-23
+
+### Neu
+- Windows: Weitere USB-Geräte an USB-A-Buchsen und internen Ports als Baum
+  anzeigen, einschließlich ihrer möglichen und ausgehandelten Geschwindigkeit.
+- Programm-Icons in die Windows-EXEs einbetten; Tray-Symbol ohne Hintergrund
+  passend zum hellen oder dunklen Windows-Design anzeigen.
+
+### Behoben
+- Windows: USB-3-Unterstützung pro Port statt pro Hub bestimmen und den
+  Puffer für Port-Connector-Eigenschaften korrekt dimensionieren.
+- NUL-Auffüllung in USB-Gerätenamen abschneiden und ANSI-Farben in der
+  Windows-Konsole aktivieren.
+- Windows-Paketierung mit WiX 4.0.6, getrennten MSI-Komponenten und korrekten
+  SHA256-Werten; ZIP enthält jetzt CLI und App.
+- Linux-Prüfsummen im Workflow-Artefakt mitliefern und alle Release-Pakete
+  vor Erstellung des Entwurfs gegen die gemeinsamen Prüfsummen prüfen.
+
+### Doku
+- Capture des Windows-Hardwaretests als Fixture und offene
+  Plattform-Fähigkeiten dokumentieren.
+
+### Intern
+- Windows-x64-Testbuild ohne Tag und Release-Entwurf ermöglichen.
+- Workspace-Versionen und Paketvorlagen auf 0.9.2 aktualisieren.
+
 ## [0.9.1] – 2026-10-23
 
 ### Neu
