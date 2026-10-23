@@ -37,6 +37,7 @@ repository = "https://github.com/itsh-neumeier/linkspec"
 authors = ["LinkSpec contributors"]
 
 [workspace.dependencies]
+winresource = "0.1"
 linkspec-core = { path = "crates/linkspec-core", version = "0.9.1" }
 linkspec-platform = { path = "crates/linkspec-platform", version = "0.9.1" }
 linkspec-engine = { path = "crates/linkspec-engine", version = "0.9.1" }

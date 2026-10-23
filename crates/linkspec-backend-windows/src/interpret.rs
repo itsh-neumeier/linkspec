@@ -37,6 +37,12 @@ fn speed_mbps(p: &HubPortDump) -> Option<f64> {
     })
 }
 
+/// Device strings from older captures can carry NUL padding.
+fn clean(s: &str) -> Option<String> {
+    let s = s.trim_end_matches('\0').trim();
+    (!s.is_empty()).then(|| s.to_string())
+}
+
 fn device(
     hubs: &BTreeMap<&str, &HubDump>,
     p: &HubPortDump,
@@ -67,8 +73,12 @@ fn device(
     Some(UsbDeviceObservation {
         vendor_id: Some(c.vendor_id),
         product_id: Some(c.product_id),
-        vendor: p.manufacturer.clone(),
-        product: p.product_string.clone().or_else(|| p.description.clone()),
+        vendor: p.manufacturer.as_deref().and_then(clean),
+        product: p
+            .product_string
+            .as_deref()
+            .and_then(clean)
+            .or_else(|| p.description.as_deref().and_then(clean)),
         speed_mbps: speed,
         bcd_usb: Some(c.bcd_usb),
         max_capable,
@@ -152,14 +162,22 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
     let port_of = |k: &PortKey| -> Option<&HubPortDump> {
         hubs.get(k.0.as_str())?.ports.iter().find(|p| p.port == k.1)
     };
-    let hub_is_usb3 = |key: &str| {
-        hubs.get(key).is_some_and(|h| {
-            h.info.hub_type == HubType::Usb30
-                || h.ports.iter().any(|p| p.v2.is_some_and(|v| v.usb300))
-                || h.ports
-                    .iter()
-                    .any(|p| p.conn.as_ref().is_some_and(|c| c.speed >= 3))
-        })
+    // USB 3 per port: an xHCI root hub carries USB 2 and USB 3 ports, so
+    // the hub type alone is not enough. `SupportedUsbProtocols` (V2) is
+    // per port; older dumps without it fall back to hub type and speed.
+    let port_is_usb3 = |k: &PortKey| {
+        let Some(h) = hubs.get(k.0.as_str()) else {
+            return false;
+        };
+        let m = h.ports.iter().find(|p| p.port == k.1);
+        match m.and_then(|m| m.v2) {
+            Some(v) => v.usb300,
+            None => {
+                h.info.hub_type == HubType::Usb30
+                    || m.and_then(|m| m.conn.as_ref())
+                        .is_some_and(|c| c.speed >= 3)
+            }
+        }
     };
 
     // Order: by (location of the hub, port number) of the first member.
@@ -190,7 +208,7 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
             .filter_map(|k| port_of(k).map(|p| (k, p)))
             .collect();
         p.behind_internal_hub = group.iter().any(|k| internal(&k.0));
-        let has_ss = group.iter().any(|k| hub_is_usb3(&k.0));
+        let has_ss = group.iter().any(port_is_usb3);
         let ssp_seen = members
             .iter()
             .any(|(_, m)| m.v2.is_some_and(|v| v.operating_at_ssp));
@@ -258,10 +276,51 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         for (k, _) in &members {
             p.raw.insert(
                 format!("member_{}_{}", k.0, k.1),
-                serde_json::Value::String(if hub_is_usb3(&k.0) { "usb3" } else { "usb2" }.into()),
+                serde_json::Value::String(if port_is_usb3(k) { "usb3" } else { "usb2" }.into()),
             );
         }
         ports.push(p);
+    }
+
+    // All other USB devices: everything below the root hubs that is not on
+    // a Type-C port. Internal hubs are flattened, because their Type-C
+    // ports already have a card.
+    let grouped: BTreeSet<&PortKey> = ordered.iter().flat_map(|(_, g)| g).collect();
+    let mut other_usb_devices = Vec::new();
+    fn walk_other(
+        key: &str,
+        hubs: &BTreeMap<&str, &HubDump>,
+        grouped: &BTreeSet<&PortKey>,
+        internal: &dyn Fn(&str) -> bool,
+        out: &mut Vec<UsbDeviceObservation>,
+        depth: u8,
+    ) {
+        let Some(h) = hubs.get(key) else { return };
+        for p in &h.ports {
+            if grouped.contains(&(key.to_string(), p.port)) {
+                continue;
+            }
+            match p.child_hub.as_deref() {
+                Some(c) if internal(c) && depth < 6 => {
+                    walk_other(c, hubs, grouped, internal, out, depth + 1);
+                }
+                _ => out.extend(device(hubs, p, 0)),
+            }
+        }
+    }
+    for h in dump
+        .hubs
+        .iter()
+        .filter(|h| h.info.hub_type == HubType::Root)
+    {
+        walk_other(
+            &h.key,
+            &hubs,
+            &grouped,
+            &internal,
+            &mut other_usb_devices,
+            0,
+        );
     }
 
     // USB4 (H-W3): only map when there is exactly one Type-C port.
@@ -389,6 +448,7 @@ pub fn interpret(dump: &WinDump) -> Snapshot {
         usb_probe: true,
         battery,
         ports,
+        other_usb_devices,
         notices,
     }
 }

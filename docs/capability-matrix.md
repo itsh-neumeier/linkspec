@@ -34,6 +34,7 @@ Quelle: sysfs ohne Root. Doku: Linux-Kernel `Documentation/ABI/testing/`.
 | Type-C-Strom ohne PD | `portN/power_operation_mode` | 4.12 | keine | spec-only |
 | Akku | `/sys/class/power_supply/BAT*/` | alle | keine | spec-only |
 | USB-Geräte und Tempo | `/sys/bus/usb/devices/*/{speed,version,idVendor,…}` | alle | keine | spec-only |
+| Weitere USB-Geräte (USB-A, intern) | – | – | – | noch nicht umgesetzt (nur Windows) |
 | Zuordnung USB-Port ↔ Type-C | Hub-Port-Link `usbN-portM/connector` (und `peer`) | 6.x (je nach Plattform-Firmware) | keine | spec-only |
 | Port-Fähigkeit USB | Bus-Speed des verlinkten Root-Hubs | alle | keine | spec-only |
 | Overcurrent-Zähler | `usbN-portM/over_current_count` | 5.x | keine | spec-only |
@@ -61,6 +62,7 @@ Alle Zuordnungen unten sind Hypothesen, bis ein eigener Capture sie bestätigt.
 | Verbunden | `ConnectionActive` (H-M2) | 14 | keine | hypothesis (H-M2) |
 | Transports aktiv/unterstützt | `TransportsActive`, `TransportsSupported` (`USB2`, `USB3`, `CIO`, `DisplayPort`) (H-M3) | 14 | keine | hypothesis (H-M3) |
 | USB-Geräte | `IOUSBHostDevice` (`idVendor`, `Device Speed` = `kUSBHostPortSpeed*`, `bcdUSB`) | 11 | keine | spec-only (IOUSBHostFamily-Header) |
+| Weitere USB-Geräte (USB-A, intern) | – | – | – | noch nicht umgesetzt (nur Windows) |
 | Zuordnung USB ↔ Port | XHCI-Controller `usb-drdN` → Port N+1 (H-M4) | 14 | keine | hypothesis (H-M4) |
 | Netzteil-PDOs, Vertrag | `AppleSmartBattery.AdapterDetails.UsbHvcMenu`, `UsbHvcHvcIndex` (H-M5); nur zuordenbar, wenn genau ein Port verbunden ist | 14 | keine | hypothesis (H-M5) |
 | Leistungsaufnahme | `AppleSmartBattery.PowerTelemetryData.SystemPowerIn` (H-M5) | 14 | keine | hypothesis (H-M5) |
@@ -76,7 +78,9 @@ Alle Zuordnungen unten sind Hypothesen, bis ein eigener Capture sie bestätigt.
 
 | Feld | Quelle | Mindestversion | Rechte | Status |
 |---|---|---|---|---|
-| Physische USB-C-Ports | Hub-IOCTL `IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES` (`PortConnectorIsTypeC`, `PortIsUserConnectable`, Companion) | Windows 8 | keine | spec-only |
+| Physische USB-C-Ports | Hub-IOCTL `IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES` (`PortConnectorIsTypeC`, `PortIsUserConnectable`, Companion; Puffer 18 Byte) | Windows 8 | keine | verified-on-hardware (CELSIUS W5012, `fixtures/windows/celsius_w5012_tier1.json`) |
+| USB 2/3 je Port | `_V2` `SupportedUsbProtocols`, auch an leeren Ports | Windows 8 | keine | spec-only |
+| Weitere USB-Geräte (USB-A, intern) | Hub-Baum unter den Root-Hubs ohne die USB-C-Ports | Windows 8 | keine | verified-on-hardware (CELSIUS W5012) |
 | Geräte, Tempo | `IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX` (+ `_V2`) | Windows 8 | keine | spec-only |
 | SuperSpeedPlus-Rate, Lanes | `IOCTL_USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION` (Funktionscode 280, H-W6) | Windows 10 1803 | keine | hypothesis (H-W6) |
 | Gerät kann SuperSpeed | `_V2`-Flags `DeviceIsSuperSpeedCapableOrHigher` | Windows 8 | keine | spec-only |

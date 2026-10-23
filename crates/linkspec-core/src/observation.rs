@@ -70,6 +70,10 @@ pub struct Snapshot {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub battery: Option<BatteryObservation>,
     pub ports: Vec<PortObservation>,
+    /// USB devices outside the USB-C/Thunderbolt ports (USB-A sockets,
+    /// internal ports), each as a tree below its host port. Additive in v1.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub other_usb_devices: Vec<UsbDeviceObservation>,
     /// Platform-wide notes (for example: Windows service not installed).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub notices: Vec<Notice>,

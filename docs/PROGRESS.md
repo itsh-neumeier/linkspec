@@ -3,10 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Windows-x64-Testbuild nach PR #9: Packaging-Fix auf
+**Nächster Schritt:** Windows-x64-Testbuild nach PR #11: Packaging-Fix in PR #10 auf
 `fix/windows-x64-testbuild` prüfen und zum Merge freigeben; anschließend
 den Testbuild auf `main` wiederholen. Ergebnisse und Prüfsummen des
-Validierungslaufs werden im Übergabekommentar zu PR #9 dokumentiert.
+Validierungslaufs werden im Übergabekommentar zu PR #11 dokumentiert.
 Der Auftrag umfasst keinen Versionswechsel, Tag oder Release-Entwurf.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
@@ -51,6 +51,17 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – PR #11 nach acht grünen CI-Jobs auf `dfa95c3`
+  (Lauf `40001785670`) mit Maintainer-Freigabe per Merge-Commit
+  `75e4e8f8031b93f0ef0aa43f541d4b1ee9dbee3d` integriert. Auch die CI auf
+  diesem `main`-Commit grün (Lauf `40002876741`). Windows-x64-Testbuild
+  `40003781866`: Build erfolgreich, Paketierung mit `WIX7015` und
+  Selbst-Hashing der offenen Prüfsummendatei fehlgeschlagen; kein Artefakt
+  hochgeladen, `publish` übersprungen. Bestehenden Packaging-PR #10 durch
+  Merge dieses `main`-Commits aktualisiert, ohne Anwendungscode gegenüber
+  `main` zu ändern. Status: CI und Testbuild des aktualisierten PRs prüfen;
+  dessen Merge benötigt eine eigene Maintainer-Freigabe. Kein Versionswechsel,
+  Tag, CHANGELOG-Eintrag, Release-Entwurf oder Paketquellen-Einreichung.
 - 2026-10-23 – 8 – PR #9 nach acht grünen CI-Jobs auf `fd61693`
   (Lauf `39951331314`) mit Maintainer-Freigabe per Merge-Commit
   `af8c2c896d6f14c1b68984ede9b0e53bd33f3483` integriert. Auch die acht

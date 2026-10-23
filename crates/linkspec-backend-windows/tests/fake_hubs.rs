@@ -304,3 +304,66 @@ fn replay_windows_fixture() {
     let s = linkspec_backend_windows::snapshot_from_capture(&doc).unwrap();
     assert_eq!(s.ports.len(), 3);
 }
+
+/// Real capture: Fujitsu CELSIUS W5012 (Intel xHCI, no UCSI). Two USB-C
+/// sockets (1+17, 8+24), all devices behind a USB 2 hub chain on a USB-A
+/// socket (port 13). The capture is from before V2 was read on empty ports.
+fn celsius() -> linkspec_backend_windows::WinDump {
+    let p = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/windows/celsius_w5012_tier1.json");
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(p).unwrap()).unwrap();
+    serde_json::from_value(doc["data"].clone()).unwrap()
+}
+
+#[test]
+fn celsius_type_c_ports_and_other_devices() {
+    let s = interpret(&celsius());
+    assert_eq!(s.ports.len(), 2);
+    assert!(s.ports.iter().all(|p| p.link.usb_devices.is_empty()));
+    // One tree on the USB-A socket: KVM/hub chain with the devices below.
+    assert_eq!(s.other_usb_devices.len(), 1);
+    let hub = &s.other_usb_devices[0];
+    assert!(hub.is_hub);
+    assert_eq!(hub.speed_mbps, 480.0);
+    assert_eq!(hub.max_capable, Some(UsbGen::Gen1));
+    fn names(d: &UsbDeviceObservation, out: &mut Vec<String>) {
+        out.extend(d.product.clone());
+        for c in &d.children {
+            names(c, out);
+        }
+    }
+    let mut all = Vec::new();
+    names(hub, &mut all);
+    assert!(
+        all.contains(&"CHERRY Wireless Desktop".to_string()),
+        "{all:?}"
+    );
+    assert!(all.contains(&"HD Pro Webcam C920".to_string()));
+    assert!(all.iter().all(|n| !n.contains('\0')));
+}
+
+/// With `SupportedUsbProtocols` on empty ports (current collector), the
+/// SuperSpeed halves 17 and 24 make both USB-C sockets USB 3.
+#[test]
+fn celsius_usb3_per_port() {
+    let mut d = celsius();
+    for p in &mut d.hubs[0].ports {
+        let usb3 = p.port >= 17;
+        p.v2.get_or_insert(linkspec_backend_windows::ioctl::ConnInfoV2 {
+            usb110: !usb3,
+            usb200: !usb3,
+            usb300: usb3,
+            operating_at_ss: false,
+            ss_capable: false,
+            operating_at_ssp: false,
+            ssp_capable: false,
+        });
+    }
+    let s = interpret(&d);
+    for p in &s.ports {
+        assert_eq!(p.capabilities.usb, Some(UsbGen::Gen1), "{}", p.id);
+        let raw = serde_json::to_string(&p.raw).unwrap();
+        assert!(raw.contains("usb3") && raw.contains("usb2"), "{raw}");
+    }
+}

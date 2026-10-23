@@ -122,6 +122,8 @@ pub fn interpret(dump: &SysfsDump) -> Snapshot {
         usb_probe: true,
         battery: battery(&d),
         ports,
+        // Not collected on this platform yet (capability matrix).
+        other_usb_devices: vec![],
         notices: vec![],
     }
 }

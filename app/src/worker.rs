@@ -74,6 +74,8 @@ pub struct DisplayData {
 pub enum Update {
     Data {
         ports: Vec<PortData>,
+        /// USB devices outside the Type-C ports: (label, depth).
+        other_usb: Vec<(String, i32)>,
         negotiation: Vec<NegData>,
         displays: Vec<DisplayData>,
         cables: Vec<CableRecord>,
@@ -383,21 +385,7 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
             devices: p
                 .devices
                 .iter()
-                .map(|d| {
-                    let name = match (&d.vendor, &d.product) {
-                        (Some(v), Some(pr)) => format!("{v} {pr}"),
-                        (None, Some(pr)) => pr.clone(),
-                        (Some(v), None) => v.clone(),
-                        _ => "USB".into(),
-                    };
-                    (
-                        format!(
-                            "{name} ({})",
-                            i18n.t("speed-gbps", &[("gbps", d.usb_gbps.into())])
-                        ),
-                        i32::from(d.depth),
-                    )
-                })
+                .map(|d| (d.label(i18n), i32::from(d.depth)))
                 .collect(),
             notes: p
                 .unavailable
@@ -499,8 +487,15 @@ fn refresh(engine: &mut Engine, send: &impl Fn(Update), last: &mut Option<RunRes
             "status": p.status,
         })).collect::<Vec<_>>(),
     });
+    let other_usb = r
+        .diagnosis
+        .other_usb_devices
+        .iter()
+        .map(|d| (d.label(i18n), i32::from(d.depth)))
+        .collect();
     send(Update::Data {
         ports,
+        other_usb,
         negotiation: neg,
         displays,
         cables,
