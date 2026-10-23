@@ -3,11 +3,11 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Packaging-Korrektur aus PR #7 mit dem Release-Workflow
-auf `fix/release-v0.9.1-packaging` für `tag=v0.9.1` vollständig prüfen;
-das Tag bleibt unverändert und die Anwendungsquellen müssen ihm entsprechen.
-Danach Entwurf, Prüfsummen-PR und Übergabe. Für den Merge von PR #7 ist
-eine eigene Maintainer-Freigabe erforderlich; die bisherige galt PR #4.
+**Nächster Schritt:** Packaging-PR #7 und den darauf aufbauenden
+Prüfsummen-PR prüfen. Der Release-Entwurf v0.9.1 ist vollständig vorbereitet,
+aber unveröffentlicht. Die zusätzlichen PRs brauchen eine eigene
+Merge-Freigabe; die bisherige galt PR #4. Veröffentlichung, Paketquellen
+und Hardware-Prüfläufe bleiben Maintainer-Aufgaben.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -51,10 +51,30 @@ zusätzlich Selbst-Hashing der offenen Prüfsummendatei). Windows x64 dadurch
 abgebrochen, Entwurfs-Job übersprungen. In Linux-Artefakten fehlt wegen des
 Upload-Musters `dist/*.*` die Datei `SHA256SUMS-linux-*`.
 
+Korrigierter Release-Lauf `39942631672` auf Packaging-Commit
+`cb155987c2e4dceb90197fef8aed369e2d5b5b0e`: alle sechs Jobs grün,
+Entwurf mit 15 Paketen und sechs Prüfsummendateien erzeugt. Alle 15
+Paket-Hashes gegen `SHA256SUMS` und alle 21 Dateien gegen GitHub-Digests
+lokal geprüft. PR #7 auf demselben Commit: alle acht CI-Jobs grün
+(Lauf `39942637708`). Anwendungsquellen und Lockfile entsprechen dem
+unveränderten Tag `v0.9.1`; nur Packaging und Doku weichen ab.
+
 ## Verlauf
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1 als
+  [Entwurf](https://github.com/itsh-neumeier/linkspec/releases/tag/untagged-3cf9127807272bf00204)
+  vorbereitet (Release-ID `421745958`). Tag-/Merge-Commit
+  `7e38d1d972ea90259f0e0f2141e9bc1875f94246`, Packaging-Build-Commit
+  `cb155987c2e4dceb90197fef8aed369e2d5b5b0e` aus dem noch offenen PR #7.
+  Status: 15 Pakete mit SHA256 geprüft; acht Hashes in winget, Scoop,
+  Homebrew und AUR auf `release/v0.9.1-checksums` eingetragen. Windows:
+  vier EXE-Dateien und zwei MSI-Dateien `NotSigned`; macOS: keine
+  Developer-ID-Signierung/Notarisierung angefordert; Linux: keine
+  Paketsignierung. Entwurf als „unsigniert, nur zum Testen“ gekennzeichnet.
+  Packaging- und Prüfsummen-PR bleiben zur Freigabe offen; nichts
+  veröffentlicht oder bei Paketquellen eingereicht.
 - 2026-10-23 – 8 – Release v0.9.1: PR #4 nach vollständig grüner CI und
   Maintainer-Freigabe gemergt, Commit
   `7e38d1d972ea90259f0e0f2141e9bc1875f94246`. Release- und Phasen-Tags

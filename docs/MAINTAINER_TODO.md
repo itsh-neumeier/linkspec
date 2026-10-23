@@ -16,7 +16,11 @@ Alles ist vorbereitet; hier stehen die genauen Schritte.
       (Zuordnung in `docs/PROGRESS.md`); Release-Tag auf Commit `7e38d1d`.
 - [ ] Packaging-Korrektur aus PR #7 für v0.9.1 zum Merge freigeben.
       Prüfung durch manuellen Workflow auf dem Fix-Branch mit
-      `tag=v0.9.1`; das vorhandene Tag bleibt unverändert.
+      `tag=v0.9.1` erfolgreich (Lauf `39942631672`, Commit `cb15598`);
+      das vorhandene Tag bleibt unverändert.
+- [ ] Darauf aufbauenden Prüfsummen-PR für v0.9.1 prüfen und freigeben.
+- [ ] Vorbereiteten Release-Entwurf v0.9.1 nach eigener Prüfung und
+      ausdrücklicher Freigabe veröffentlichen (Release-ID `421745958`).
 
 ## 2. Hardware-Prüfläufe (vor 1.0)
 
@@ -88,6 +92,10 @@ Entfällt in v1 (ADR 0004).
 
 ## 4. Paketquellen
 
+- [x] SHA256-Werte für v0.9.1 am 2026-10-23 aus `SHA256SUMS` in alle
+      vier Paketvorlagen übernommen (Packaging-Build `cb15598`, Tag
+      `v0.9.1` auf `7e38d1d`); 15 Paket-Hashes lokal verifiziert.
+      Dies bereitet die folgenden Einreichungen nur vor.
 - [ ] **winget**: `packaging/windows/winget/` mit URL/SHA256 des Releases
       füllen, Pull Request an `microsoft/winget-pkgs`
       (`wingetcreate submit`).

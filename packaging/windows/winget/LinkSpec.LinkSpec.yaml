@@ -14,10 +14,10 @@ Installers:
   - Architecture: x64
     InstallerType: wix
     InstallerUrl: https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.1/LinkSpec-0.9.1-x64.msi
-    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+    InstallerSha256: fc212c9d89ea442dc61487b2e12c503ee522c47c816e7441ce1017d8cb09757d
   - Architecture: arm64
     InstallerType: wix
     InstallerUrl: https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.1/LinkSpec-0.9.1-arm64.msi
-    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+    InstallerSha256: ac4f98fb081f6eb57851562b1aa6b1324f336860daeddb28c6cfa0d402a5dc16
 ManifestType: singleton
 ManifestVersion: 1.6.0

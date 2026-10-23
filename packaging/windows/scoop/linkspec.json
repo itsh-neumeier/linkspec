@@ -6,11 +6,11 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.1/linkspec-0.9.1-windows-x86_64.zip",
-            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+            "hash": "6efbe61202f84244227fb85bfbfabe24763b759010d7a6357dc2a4f022cf09da"
         },
         "arm64": {
             "url": "https://github.com/itsh-neumeier/linkspec/releases/download/v0.9.1/linkspec-0.9.1-windows-aarch64.zip",
-            "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+            "hash": "ef37903175110fc871153f98be6e1ac99fca0ecae8d40004825f2f95eb1f7f26"
         }
     },
     "bin": ["linkspec.exe"],
