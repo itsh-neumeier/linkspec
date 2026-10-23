@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- WiX Toolset v4 source. Build:
-     wix build packaging/windows/linkspec.wxs -arch x64 -d Version=0.9.0 -d BinDir=target\release -o dist\LinkSpec.msi
+     wix build packaging/windows/linkspec.wxs -arch x64 -d Version=0.9.1 -d BinDir=target\release -o dist\LinkSpec.msi
      The service feature is optional (Level 2 = not selected by default in "typical"). -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="LinkSpec" Manufacturer="LinkSpec contributors" Version="$(var.Version)"

@@ -3,9 +3,10 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Hardware-Prüfläufe nach `docs/manuell.md`, Captures als
-Fixtures ablegen, Hypothesen in `docs/capability-matrix.md` bestätigen,
-danach Version 1.0.0.
+**Nächster Schritt:** Release-PR für v0.9.1 prüfen, vollständige grüne CI und
+Maintainer-Freigabe zum Merge abwarten; danach Tags und Release-Entwurf.
+Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
+ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
 ## Phasen
 
@@ -47,6 +48,15 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – Release v0.9.1 vorbereitet auf `release/v0.9.1`:
+  Versionen, Changelog und Paket-URLs aktualisiert. Vorprüfung auf
+  `main` bei `e8dbe151b88194a5a2fe596f79d59b3359abd2e7` mit Rust 1.99.1
+  (Windows MSVC): Formatierung, Clippy, 73 Tests (0 ignoriert) und
+  `cargo deny check` grün. Deny meldet fünf nicht benötigte
+  Lizenzfreigaben; beim Testbuild ein nicht fataler Hinweis zum
+  inkrementellen Cache auf dem Netzlaufwerk. Status: Release-PR/CI und
+  Merge-Freigabe ausstehend; Release-Entwurf und Prüfsummen folgen nach
+  dem Merge.
 - 2026-10-23 – 8 – CI: Zeitlimits je Job und apt-Schritt, apt mit Wiederholungen,
   GTK/AppIndicator/xdo aus den Abhängigkeiten entfernt (Tray über ksni).
   Anlass: `test (ubuntu-latest)` hing 6 h in `apt-get`.
