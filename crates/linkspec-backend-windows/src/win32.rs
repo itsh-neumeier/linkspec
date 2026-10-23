@@ -31,7 +31,13 @@ use linkspec_core::observation::DisplayMode;
 use linkspec_platform::{ChangeEvent, SourceError};
 
 use crate::collect::{HubApi, Req, norm};
+use crate::ioctl::{CONN_INFO_V2_SIZE, CONNECTOR_PROPS_SIZE};
 use crate::model::{BatteryDump, DisplayDump, ServiceData, ServiceState, Usb4Router, WinHost};
+
+// The byte parsers in `ioctl.rs` must match the SDK struct sizes; a buffer
+// that is too small makes the hub driver fail the request.
+const _: () = assert!(size_of::<USB_PORT_CONNECTOR_PROPERTIES>() == CONNECTOR_PROPS_SIZE);
+const _: () = assert!(size_of::<USB_NODE_CONNECTION_INFORMATION_EX_V2>() == CONN_INFO_V2_SIZE);
 
 /// `IOCTL_USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION`:
 /// CTL_CODE(FILE_DEVICE_USB, 280, METHOD_BUFFERED, FILE_ANY_ACCESS)
@@ -274,9 +280,14 @@ impl HubApi for Win32Hubs {
         match req {
             Req::HubInfoEx => ioctl(h, IOCTL_USB_GET_HUB_INFORMATION_EX, &[], 128),
             Req::ConnectorProps => {
-                let first = ioctl(h, IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES, &input, 16)?;
+                let first = ioctl(
+                    h,
+                    IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES,
+                    &input,
+                    CONNECTOR_PROPS_SIZE,
+                )?;
                 let actual = u32::from_le_bytes(first.get(4..8)?.try_into().ok()?) as usize;
-                if actual > 16 {
+                if actual > CONNECTOR_PROPS_SIZE {
                     ioctl(
                         h,
                         IOCTL_USB_GET_PORT_CONNECTOR_PROPERTIES,

@@ -73,10 +73,15 @@ pub struct ConnectorProps {
     pub companion_hub_link: Option<String>,
 }
 
+/// `sizeof(USB_PORT_CONNECTOR_PROPERTIES)`: the struct is packed (1-byte
+/// alignment) and ends with `WCHAR CompanionHubSymbolicLinkName[1]`, so it
+/// is 18 bytes. The hub driver rejects smaller buffers.
+pub const CONNECTOR_PROPS_SIZE: usize = 18;
+
 pub fn parse_connector_props(b: &[u8]) -> Option<ConnectorProps> {
     let props = u32le(b, 8)?;
     let actual = u32le(b, 4)? as usize;
-    let name = if actual > 16 && b.len() >= actual {
+    let name = if actual > CONNECTOR_PROPS_SIZE && b.len() >= actual {
         let words: Vec<u16> = b[16..actual]
             .as_chunks::<2>()
             .0
@@ -367,6 +372,21 @@ pub mod build {
 mod tests {
     use super::*;
     use linkspec_core::types::UsbGen;
+
+    #[test]
+    fn connector_props_without_companion_name() {
+        // What the hub driver returns when there is no companion hub:
+        // ActualLength = sizeof(USB_PORT_CONNECTOR_PROPERTIES), empty name.
+        let mut b = vec![0u8; CONNECTOR_PROPS_SIZE];
+        b[0..4].copy_from_slice(&1u32.to_le_bytes());
+        b[4..8].copy_from_slice(&(CONNECTOR_PROPS_SIZE as u32).to_le_bytes());
+        b[8..12].copy_from_slice(&0b1001u32.to_le_bytes());
+        b[14..16].copy_from_slice(&5u16.to_le_bytes());
+        let c = parse_connector_props(&b).unwrap();
+        assert!(c.user_connectable && c.type_c);
+        assert_eq!(c.companion_port, 5);
+        assert_eq!(c.companion_hub_link, None);
+    }
 
     #[test]
     fn conn_info_roundtrip() {

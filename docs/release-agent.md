@@ -102,6 +102,21 @@ ein Issue an und stoppst.
      Paketquellen einreichen, Hardware-Läufe).
 9. **Doku**: Eintrag in `docs/PROGRESS.md` (Datum, Version, Commit, Status).
 
+## Testbuild (nur Windows x64)
+
+Für schnelle Tests auf echter Hardware, ohne Tag und ohne Release:
+
+```sh
+gh workflow run release.yml --ref main -f windows_x64_only=true
+gh run watch
+gh run download <run-id> -n windows-x86_64 -D testbuild
+```
+
+Ergebnis: Workflow-Artefakt `windows-x86_64` mit MSI, ZIP und
+`SHA256SUMS-windows-x86_64`, unsigniert. Der Job `publish` läuft nur bei
+Tags, es entsteht kein Release-Entwurf. Kein Versionswechsel, kein
+CHANGELOG-Eintrag. Übergabe: Link zum Lauf und die SHA256-Werte.
+
 ## Definition of Done
 
 - Tag `vX.Y.Z` gepusht, Release-Entwurf mit allen Artefakten und
