@@ -11,8 +11,8 @@ provides=('linkspec')
 conflicts=('linkspec')
 source_x86_64=("$url/releases/download/v$pkgver/linkspec-$pkgver-linux-x86_64.tar.gz")
 source_aarch64=("$url/releases/download/v$pkgver/linkspec-$pkgver-linux-aarch64.tar.gz")
-sha256sums_x86_64=('SKIP') # maintainer: fill from SHA256SUMS
-sha256sums_aarch64=('SKIP')
+sha256sums_x86_64=('2c51cee56de3fdd904300218b455092efd8e5bd368b868cfda6f8c134586a8bc') # maintainer: fill from SHA256SUMS
+sha256sums_aarch64=('f0646e9b1a4fa531aafdf2f1d4125eaabe72fe42e504a5832400df3b3caa7961')
 
 package() {
   cd "linkspec-$pkgver-linux-$CARCH"
