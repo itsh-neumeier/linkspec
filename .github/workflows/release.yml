@@ -102,8 +102,10 @@ jobs:
         run: |
           $env:RUSTFLAGS = "-C target-feature=+crt-static"
           cargo build --release --locked --target ${{ matrix.target }} -p linkspec-cli -p linkspec-service
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Remove-Item Env:RUSTFLAGS
           cargo build --release --locked --target ${{ matrix.target }} -p linkspec-app
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Sign binaries (optional)
         if: env.WINDOWS_CERT_PFX != ''
         shell: pwsh
@@ -118,16 +120,25 @@ jobs:
         shell: pwsh
         run: |
           $v = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages | Where-Object name -eq 'linkspec-cli' | Select-Object -ExpandProperty version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           New-Item -ItemType Directory -Force dist | Out-Null
           $bin = "target\${{ matrix.target }}\release"
-          Compress-Archive -Force -Path "$bin\linkspec.exe","README.md","LICENSE","THIRD_PARTY_LICENSES" -DestinationPath "dist\linkspec-$v-windows-${{ matrix.short }}.zip"
-          dotnet tool install --global wix
+          Compress-Archive -Force -Path "$bin\linkspec.exe","$bin\linkspec-app.exe","README.md","LICENSE","THIRD_PARTY_LICENSES" -DestinationPath "dist\linkspec-$v-windows-${{ matrix.short }}.zip"
+          dotnet tool install --global wix --version 4.0.6
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           wix build packaging\windows\linkspec.wxs -arch ${{ matrix.arch }} -d Version=$v -d BinDir=$bin -o "dist\LinkSpec-$v-${{ matrix.arch }}.msi"
-          Get-ChildItem dist | ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name } | Out-File -Encoding ascii "dist\SHA256SUMS-windows-${{ matrix.short }}"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $packages = @("dist\linkspec-$v-windows-${{ matrix.short }}.zip", "dist\LinkSpec-$v-${{ matrix.arch }}.msi")
+          $checksums = $packages | ForEach-Object { "{0}  {1}" -f (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash.ToLower(), (Split-Path -Leaf $_) }
+          $checksums | Set-Content -Encoding ascii "dist\SHA256SUMS-windows-${{ matrix.short }}"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.short }}
-          path: dist/*
+          path: |
+            dist/*.zip
+            dist/*.msi
+            dist/SHA256SUMS-windows-*
+          if-no-files-found: error
 
   publish:
     # Only tag pushes create the release draft; a manual run only keeps the

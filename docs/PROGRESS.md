@@ -3,10 +3,11 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Vollständige grüne CI für Release-PR #4 nach dem
-Merge von `main` abwarten. Die Maintainer-Freigabe zum Merge von PR #4
-liegt seit 2026-10-23 unter dieser Bedingung vor. Danach Tags und
-Release-Entwurf, Prüfsummen-PR und Übergabe.
+**Nächster Schritt:** Windows-x64-Testbuild nach PR #9: Packaging-Fix auf
+`fix/windows-x64-testbuild` prüfen und zum Merge freigeben; anschließend
+den Testbuild auf `main` wiederholen. Ergebnisse und Prüfsummen des
+Validierungslaufs werden im Übergabekommentar zu PR #9 dokumentiert.
+Der Auftrag umfasst keinen Versionswechsel, Tag oder Release-Entwurf.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
@@ -50,6 +51,21 @@ erst im Release-Workflow (noch nie ausgeführt).
 
 Neueste Einträge oben. Format: Datum – Phase – Schritt – Commit.
 
+- 2026-10-23 – 8 – PR #9 nach acht grünen CI-Jobs auf `fd61693`
+  (Lauf `39951331314`) mit Maintainer-Freigabe per Merge-Commit
+  `af8c2c896d6f14c1b68984ede9b0e53bd33f3483` integriert. Auch die acht
+  CI-Jobs auf `main` grün (Lauf `39952208185`). Windows-x64-Testbuild
+  `39952225147` auf diesem Merge-Commit: Anwendung erfolgreich gebaut,
+  Paketierung fehlgeschlagen (`WIX7015` durch ungepinntes WiX 7;
+  anschließend Selbst-Hashing der offenen Prüfsummendatei). Packaging-Fix
+  auf `fix/windows-x64-testbuild`: WiX 4.0.6, getrennte MSI-Komponenten
+  für unversionierte Dateien, explizite Fehlerprüfung, App im ZIP,
+  ausschließlich MSI/ZIP hashen und Pakete/Prüfsummen hochladen. Lokale
+  Prüfung: actionlint, PowerShell-Parser, tatsächlicher Prüfsummen-Code
+  mit vorhandener Ausgabedatei und x64-MSI-Smoke-Build mit Testdateien
+  grün; keine Installation ausgeführt. Status: Merge des Packaging-Fixes
+  benötigt eigene Freigabe. Kein Versionswechsel, Tag, CHANGELOG-Eintrag,
+  Release-Entwurf oder Paketquellen-Einreichung für diesen Testbuild.
 - 2026-10-23 – 8 – Release v0.9.1 fortgesetzt: `main` bei
   `338bfc7a2b4dbca895e11224d1522cb2ee92c3e5` (PR #6) per Merge in
   `release/v0.9.1` übernommen. `clipboard-win 5.4.3` ersetzt die
