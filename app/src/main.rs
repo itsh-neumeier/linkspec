@@ -58,18 +58,19 @@ fn init_logging() -> Option<tracing_appender::non_blocking::WorkerGuard> {
     Some(guard)
 }
 
-fn load_icon(bytes: &[u8], template: bool) -> Option<Icon> {
+/// Decode a PNG into a tray icon. `tint` recolours every pixel and keeps
+/// the alpha channel, so one glyph serves light and dark taskbars.
+fn load_icon(bytes: &[u8], tint: Option<[u8; 3]>) -> Option<Icon> {
     let dec = png::Decoder::new(std::io::Cursor::new(bytes));
     let mut reader = dec.read_info().ok()?;
     let mut buf = vec![0; reader.output_buffer_size()?];
     let info = reader.next_frame(&mut buf).ok()?;
     let mut rgba = buf[..info.buffer_size()].to_vec();
-    if template {
-        // macOS template image: black with alpha.
+    if let Some([r, g, b]) = tint {
         for px in rgba.as_chunks_mut::<4>().0 {
-            px[0] = 0;
-            px[1] = 0;
-            px[2] = 0;
+            px[0] = r;
+            px[1] = g;
+            px[2] = b;
         }
     }
     Icon::from_rgba(rgba, info.width, info.height).ok()
@@ -511,15 +512,17 @@ fn main() {
         let mw_fallback = main_window.as_weak();
         slint::Timer::single_shot(std::time::Duration::from_millis(0), move || {
             let menus = Menus::new(&i18n.borrow(), keep_open);
-            // macOS: white template glyph for the menu bar. Windows and
-            // Linux: the coloured app icon, because a white glyph is
-            // invisible on a light taskbar.
-            let template = cfg!(target_os = "macos");
-            let icon = if template {
-                load_icon(include_bytes!("../../packaging/icons/tray-32.png"), true)
+            // The glyph without background. macOS draws it as a template
+            // image (black + alpha); Windows follows the taskbar theme
+            // (white is hard to see on a light taskbar).
+            let tint = if cfg!(target_os = "macos") {
+                Some([0, 0, 0])
+            } else if platform::taskbar_is_light() {
+                Some([22, 62, 112])
             } else {
-                load_icon(include_bytes!("../../packaging/icons/linkspec-32.png"), false)
+                None
             };
+            let icon = load_icon(include_bytes!("../../packaging/icons/tray-32.png"), tint);
             let mut b = TrayIconBuilder::new()
                 .with_menu(Box::new(menus.menu()))
                 .with_tooltip("LinkSpec")
