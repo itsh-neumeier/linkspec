@@ -30,6 +30,11 @@
         "usb_probe": { "type": "boolean" }
       }
     },
+    "other_usb_devices": {
+      "description": "USB devices outside the USB-C/Thunderbolt ports, depth-first (additive in v1).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/device" }
+    },
     "notices": {
       "type": "array",
       "items": { "$ref": "#/$defs/coded_text" }
@@ -206,7 +211,8 @@
         "via": { "enum": ["direct", "hub"] },
         "usb_gbps": { "type": "number" },
         "depth": { "type": "integer", "minimum": 0 },
-        "is_hub": { "type": "boolean" }
+        "is_hub": { "type": "boolean" },
+        "capable_gbps": { "type": "number", "description": "Highest proven rate of the device in Gbit/s (additive in v1)." }
       }
     },
     "display": {

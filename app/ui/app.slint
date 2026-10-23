@@ -76,6 +76,8 @@ export global Tr {
 
 export global State {
     in property <[Port]> ports;
+    // USB devices outside the USB-C/Thunderbolt ports.
+    in property <[Device]> other-usb;
     in property <[NegRow]> negotiation;
     in property <[CableRow]> cables;
     in property <[DisplayRow]> displays;
@@ -249,6 +251,32 @@ component PortList inherits ScrollView {
         for p in State.ports: PortCard {
             port: p;
             compact: compact;
+        }
+        if !compact && State.other-usb.length > 0: Rectangle {
+            border-radius: 8px;
+            background: Palette.alternate-background;
+            border-width: 1px;
+            border-color: Palette.border;
+            VerticalLayout {
+                padding: 10px;
+                spacing: 4px;
+                Text {
+                    text: Tr.t("other-usb-title", Tr.rev);
+                    font-weight: 700;
+                    color: Palette.foreground;
+                    accessible-role: text;
+                    accessible-label: self.text;
+                }
+                for d in State.other-usb: Text {
+                    x: d.depth * 14px;
+                    text: "• " + d.text;
+                    color: Palette.foreground;
+                    opacity: 0.85;
+                    wrap: word-wrap;
+                    accessible-role: text;
+                    accessible-label: d.text;
+                }
+            }
         }
     }
 }

@@ -155,6 +155,41 @@ pub fn set_dock_icon(visible: bool) {
     let _ = visible;
 }
 
+/// Windows: `SystemUsesLightTheme` = 1 means a light taskbar (Windows 10/11
+/// personalization setting). Other systems: false (white glyph).
+pub fn taskbar_is_light() -> bool {
+    #[cfg(windows)]
+    {
+        use windows_sys::Win32::System::Registry::*;
+        let wide = |s: &str| {
+            s.encode_utf16()
+                .chain(std::iter::once(0))
+                .collect::<Vec<u16>>()
+        };
+        let key = wide(r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+        let name = wide("SystemUsesLightTheme");
+        let mut value = 0u32;
+        let mut size = std::mem::size_of::<u32>() as u32;
+        // SAFETY: reads one DWORD into a local of the given size.
+        let rc = unsafe {
+            RegGetValueW(
+                HKEY_CURRENT_USER,
+                key.as_ptr(),
+                name.as_ptr(),
+                RRF_RT_REG_DWORD,
+                std::ptr::null_mut(),
+                (&mut value as *mut u32).cast(),
+                &mut size,
+            )
+        };
+        rc == 0 && value == 1
+    }
+    #[cfg(not(windows))]
+    {
+        false
+    }
+}
+
 /// Linux: a tray needs a StatusNotifierItem host. GNOME has none without an
 /// extension, so LinkSpec falls back to the window there.
 pub fn tray_probably_available() -> bool {

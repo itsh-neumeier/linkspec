@@ -27,6 +27,9 @@ ratatui.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 
+[build-dependencies]
+winresource.workspace = true
+
 [dev-dependencies]
 jsonschema.workspace = true
 insta.workspace = true

@@ -110,6 +110,7 @@ pub fn diagnose(snap: &Snapshot, ctx: &Context<'_>) -> Diagnosis {
             .into_iter()
             .map(|p| diagnose_port(p, snap, ctx))
             .collect(),
+        other_usb_devices: devices_out(&snap.other_usb_devices, ctx),
         notices,
     }
 }
@@ -1531,6 +1532,7 @@ fn devices_out(devs: &[UsbDeviceObservation], ctx: &Context<'_>) -> Vec<DeviceOu
             usb_gbps: d.speed_mbps / 1000.0,
             depth,
             is_hub: d.is_hub,
+            capable_gbps: d.proven_max().map(UsbGen::link_gbps),
         });
         for c in &d.children {
             walk(c, depth.saturating_add(1), ctx, out);

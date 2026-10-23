@@ -279,6 +279,8 @@ pub fn parse_string_descriptor(b: &[u8]) -> Option<String> {
         .0
         .iter()
         .map(|c| u16::from_le_bytes([c[0], c[1]]))
+        // Some devices pad the string with NULs (seen on real hardware).
+        .take_while(|w| *w != 0)
         .collect();
     let s = String::from_utf16_lossy(&words).trim().to_string();
     (!s.is_empty()).then_some(s)

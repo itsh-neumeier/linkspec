@@ -45,6 +45,7 @@ fn base(connected: bool, data: bool, oc: u32) -> Snapshot {
         usb_probe: true,
         battery: None,
         ports: vec![p],
+        other_usb_devices: vec![],
         notices: vec![],
     }
 }
