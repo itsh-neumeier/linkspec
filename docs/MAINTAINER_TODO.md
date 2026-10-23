@@ -14,8 +14,9 @@ Alles ist vorbereitet; hier stehen die genauen Schritte.
       `7e38d1d972ea90259f0e0f2141e9bc1875f94246`.
 - [x] Tags `phase-0` … `phase-8` und `v0.9.1` am 2026-10-23 gepusht
       (Zuordnung in `docs/PROGRESS.md`); Release-Tag auf Commit `7e38d1d`.
-- [ ] Packaging-Korrektur für v0.9.1 freigeben; danach Release-Workflow
-      mit `tag=v0.9.1` wiederholen (Tag bleibt unverändert).
+- [ ] Packaging-Korrektur aus PR #7 für v0.9.1 zum Merge freigeben.
+      Prüfung durch manuellen Workflow auf dem Fix-Branch mit
+      `tag=v0.9.1`; das vorhandene Tag bleibt unverändert.
 
 ## 2. Hardware-Prüfläufe (vor 1.0)
 

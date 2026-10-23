@@ -3,11 +3,11 @@
 **Aktuelle Phase:** 8 (Release-Vorbereitung) – Software fertig bis auf die
 Maintainer-Aufgaben in `docs/MAINTAINER_TODO.md`.
 **Letzter erledigter Schritt:** siehe Tabelle unten.
-**Nächster Schritt:** Packaging-Korrektur auf
-`fix/release-v0.9.1-packaging` prüfen und mergen (eigene Maintainer-Freigabe
-erforderlich; die bisherige Freigabe bezog sich auf PR #4). Danach den
-Release-Workflow manuell mit `tag=v0.9.1` wiederholen, ohne das Tag zu
-verschieben. Anschließend Entwurf prüfen, Prüfsummen-PR und Übergabe.
+**Nächster Schritt:** Packaging-Korrektur aus PR #7 mit dem Release-Workflow
+auf `fix/release-v0.9.1-packaging` für `tag=v0.9.1` vollständig prüfen;
+das Tag bleibt unverändert und die Anwendungsquellen müssen ihm entsprechen.
+Danach Entwurf, Prüfsummen-PR und Übergabe. Für den Merge von PR #7 ist
+eine eigene Maintainer-Freigabe erforderlich; die bisherige galt PR #4.
 Vor 1.0.0: Hardware-Prüfläufe nach `docs/manuell.md`, Captures als Fixtures
 ablegen und Hypothesen in `docs/capability-matrix.md` bestätigen.
 
