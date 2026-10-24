@@ -263,21 +263,32 @@ pub struct DeviceOut {
     pub capable_gbps: Option<f64>,
 }
 
+/// Below 1 Gbit/s in Mbit/s (USB 1.x: 1.5/12, USB 2: 480), else Gbit/s.
+fn rate(i18n: &crate::I18n, gbps: f64) -> String {
+    if gbps < 1.0 {
+        i18n.t("speed-mbps", &[("mbps", (gbps * 1000.0).into())])
+    } else {
+        i18n.t("speed-gbps", &[("gbps", gbps.into())])
+    }
+}
+
 impl DeviceOut {
     /// One display line: name, link rate and, when the device proves it can
     /// do more, its own maximum ("0.48 Gbit/s, capable of 5 Gbit/s").
     pub fn label(&self, i18n: &crate::I18n) -> String {
         let name = match (&self.vendor, &self.product) {
+            // Many products already start with the vendor ("CHERRY Wireless …").
+            (Some(v), Some(p)) if p.to_lowercase().starts_with(&v.to_lowercase()) => p.clone(),
             (Some(v), Some(p)) => format!("{v} {p}"),
             (None, Some(p)) => p.clone(),
             (Some(v), None) => v.clone(),
             (None, None) => "USB".into(),
         };
-        let speed = i18n.t("speed-gbps", &[("gbps", self.usb_gbps.into())]);
+        let speed = rate(i18n, self.usb_gbps);
         match self.capable_gbps {
-            Some(c) if c > self.usb_gbps + 0.01 => format!(
+            Some(c) if c > self.usb_gbps + 0.001 => format!(
                 "{name} ({speed}, {})",
-                i18n.t("device-capable", &[("gbps", c.into())])
+                i18n.t("device-capable", &[("rate", rate(i18n, c).into())])
             ),
             _ => format!("{name} ({speed})"),
         }

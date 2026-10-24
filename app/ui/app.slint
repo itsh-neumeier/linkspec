@@ -122,6 +122,21 @@ component StatusIcon inherits Text {
     accessible-role: none;
 }
 
+// One device of a USB tree; layouts ignore `x`, so the depth is padding.
+component DeviceLine inherits HorizontalLayout {
+    in property <Device> device;
+    padding-left: device.depth * 16px;
+    Text {
+        text: (device.depth > 0 ? "└ " : "• ") + device.text;
+        color: Palette.foreground;
+        opacity: 0.85;
+        wrap: word-wrap;
+        horizontal-stretch: 1;
+        accessible-role: text;
+        accessible-label: device.text;
+    }
+}
+
 component PortCard inherits Rectangle {
     in property <Port> port;
     in property <bool> compact;
@@ -198,13 +213,7 @@ component PortCard inherits Rectangle {
             opacity: 0.85;
         }
         if !compact: VerticalLayout {
-            for d in port.devices: Text {
-                x: d.depth * 14px;
-                text: "• " + d.text;
-                color: Palette.foreground;
-                opacity: 0.85;
-                wrap: word-wrap;
-            }
+            for d in port.devices: DeviceLine { device: d; }
         }
         if !compact: VerticalLayout {
             spacing: 2px;
@@ -267,15 +276,7 @@ component PortList inherits ScrollView {
                     accessible-role: text;
                     accessible-label: self.text;
                 }
-                for d in State.other-usb: Text {
-                    x: d.depth * 14px;
-                    text: "• " + d.text;
-                    color: Palette.foreground;
-                    opacity: 0.85;
-                    wrap: word-wrap;
-                    accessible-role: text;
-                    accessible-label: d.text;
-                }
+                for d in State.other-usb: DeviceLine { device: d; }
             }
         }
     }
@@ -313,6 +314,25 @@ export component Flyout inherits Window {
                 Switch {
                     text: Tr.t("app-tech-details", Tr.rev);
                     checked <=> State.tech-details;
+                }
+                // Close the flyout (it stays in the tray).
+                Rectangle {
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 4px;
+                    background: close-ta.has-hover ? Palette.alternate-background : transparent;
+                    accessible-role: button;
+                    accessible-label: Tr.t("app-close-flyout", Tr.rev);
+                    accessible-action-default => { root.hide(); }
+                    Text {
+                        text: "✕";
+                        color: Palette.foreground;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    close-ta := TouchArea {
+                        clicked => { root.hide(); }
+                    }
                 }
             }
             PortList {
