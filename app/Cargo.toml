@@ -24,7 +24,7 @@ serde_json.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 tracing-appender.workspace = true
-slint = { version = "1.18", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-software", "accessibility"] }
+slint = { version = "1.18", default-features = false, features = ["std", "compat-1-2", "backend-winit", "renderer-software", "accessibility", "unstable-winit-030"] }
 tray-icon = { version = "0.26", default-features = false, features = ["ksni"] }
 png = "0.18"
 notify-rust = "4"

@@ -556,8 +556,14 @@ fn main() {
         let _ = main_window.show();
     }
 
+    // When the flyout hid itself because it lost focus. A click on the
+    // tray icon first takes the focus away; without this the same click
+    // would show the flyout again right away.
+    let focus_hidden: Rc<std::cell::Cell<Option<std::time::Instant>>> = Rc::default();
+
     // Tray and menu events: handlers wake the UI thread (no polling).
     {
+        let focus_hidden = focus_hidden.clone();
         let tray = tray.clone();
         let fo = flyout.as_weak();
         let mw = main_window.as_weak();
@@ -605,8 +611,13 @@ fn main() {
                 } = ev
                     && let Some(fo) = fo.upgrade()
                 {
+                    let just_hidden = focus_hidden
+                        .take()
+                        .is_some_and(|t| t.elapsed() < std::time::Duration::from_millis(400));
                     if fo.window().is_visible() {
                         let _ = fo.hide();
+                    } else if just_hidden {
+                        // The click that took the focus closes the flyout.
                     } else {
                         let size = fo.window().size();
                         let x = rect.position.x as i32 + (rect.size.width as i32 / 2)
@@ -668,14 +679,26 @@ fn main() {
         PUMP.with(|p| *p.borrow_mut() = Some(Box::new(body)));
     }
 
-    // Hide the flyout when it loses focus (unless "keep open").
+    // Hide the flyout when it loses focus, like the Windows and macOS
+    // system flyouts (click on the desktop or another window).
     {
+        use slint::winit_030::{EventResult, WinitWindowAccessor, winit::event::WindowEvent};
         let fo = flyout.as_weak();
         flyout.window().on_close_requested(move || {
             if let Some(fo) = fo.upgrade() {
                 let _ = fo.hide();
             }
             slint::CloseRequestResponse::HideWindow
+        });
+        let focus_hidden = focus_hidden.clone();
+        flyout.window().on_winit_window_event(move |w, ev| {
+            if let WindowEvent::Focused(false) = ev
+                && w.is_visible()
+            {
+                focus_hidden.set(Some(std::time::Instant::now()));
+                let _ = w.hide();
+            }
+            EventResult::Propagate
         });
     }
     {

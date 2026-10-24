@@ -43,6 +43,7 @@ usb-class-gen2 = USB 3 (10 Gbit/s)
 usb-class-gen3 = USB4 (40 Gbit/s)
 usb-class-gen4 = USB4 (80 Gbit/s)
 speed-gbps = { $gbps } Gbit/s
+speed-mbps = { $mbps } Mbit/s
 speed-fabric = Thunderbolt/USB4
 
 ## Urteile (Abschnitt 5.2)
@@ -148,7 +149,8 @@ cli-cable = Kabel
 cli-power = Laden
 cli-devices = Geräte
 other-usb-title = Weitere USB-Geräte
-device-capable = kann { $gbps } Gbit/s
+app-close-flyout = Schließen
+device-capable = kann { $rate }
 cli-link = Verbindung
 cli-verdict-power = Laden
 cli-verdict-data = Daten

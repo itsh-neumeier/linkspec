@@ -1532,7 +1532,9 @@ fn devices_out(devs: &[UsbDeviceObservation], ctx: &Context<'_>) -> Vec<DeviceOu
             usb_gbps: d.speed_mbps / 1000.0,
             depth,
             is_hub: d.is_hub,
-            capable_gbps: d.proven_max().map(UsbGen::link_gbps),
+            // Only a positive proof (BOS, UFP VDO, SuperSpeed flag): bcdUSB
+            // 2.00 is an upper bound, full-speed HID devices report it too.
+            capable_gbps: d.max_capable.map(UsbGen::link_gbps),
         });
         for c in &d.children {
             walk(c, depth.saturating_add(1), ctx, out);
